@@ -1,0 +1,41 @@
+{
+  "type": "timeline",
+  "title": "How the five stages became a sequence they were never meant to be",
+  "subtitle": "The model describes five responses. Almost everything that went wrong with it came from reading them as steps.",
+  "intent": "Learners can explain what Kübler-Ross actually claimed, and why describing grief as five ordered stages misleads both workers and families.",
+  "events": [
+    {
+      "date": "1969",
+      "label": "On Death and Dying is published",
+      "detail": "Elisabeth Kübler-Ross describes five responses she observed while interviewing people who were dying. The subject is a person facing their own death, not a person grieving someone else's."
+    },
+    {
+      "date": "1970s and 1980s",
+      "label": "The model is borrowed for bereavement",
+      "detail": "It spreads into bereavement care, training and popular culture, applied to grieving a death rather than facing one. It is also flattened into five numbered steps along the way.",
+      "emphasis": true
+    },
+    {
+      "date": "2005",
+      "label": "Kübler-Ross says plainly that they are not a sequence",
+      "detail": "In On Grief and Grieving, written with David Kessler, she states the responses are not stops on a linear timeline, that not everyone experiences all of them, and that they can recur.",
+      "emphasis": true
+    },
+    {
+      "date": "2000s onward",
+      "label": "The evidence does not find a fixed order",
+      "detail": "Studies of bereaved people repeatedly fail to find everyone moving through a set sequence. The most common pattern reported is resilience rather than progression through stages."
+    },
+    {
+      "date": "2019",
+      "label": "A sixth response is proposed",
+      "detail": "David Kessler adds finding meaning, arguing the original five stop at acceptance and leave out what people do afterwards."
+    },
+    {
+      "date": "Now",
+      "label": "The flattened version is still the one people arrive with",
+      "detail": "Most learners, and most families, meet grief as five stages in order. Expect to have to correct it, and expect a family to worry that someone is grieving wrongly because they are out of order."
+    }
+  ],
+  "source": "Kübler-Ross, On Death and Dying, 1969. Kübler-Ross and Kessler, On Grief and Grieving, 2005. Kessler, Finding Meaning, 2019. Generated for review, verify against your unit's prescribed text before use."
+}

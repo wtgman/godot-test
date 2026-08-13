@@ -8,7 +8,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, measure, ellipsize, roundRect, n } from '../svg.js';
+import { el, text, textBlock, measure, ellipsize, roundRect, n, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth, legend } from './frame.js';
 
 const ROW_H = 30;
@@ -208,7 +208,7 @@ export function describe(spec) {
     structure: `${tasks.length} rows, one per item.${trackNames.length > 1 ? ` Bars are coloured by group: ${trackNames.join(', ')}.` : ''} Bars that overlap vertically are happening at the same time.`,
     items: tasks.map((t) => ({
       key: t.label,
-      value: `starts at ${t.start} ${spec.timeUnit}, runs for ${t.duration}, finishing at ${t.start + t.duration}${t.track ? ` (${t.track})` : ''}${t.note ? `. ${t.note}` : ''}`,
+      value: sentences(`starts at ${t.start} ${spec.timeUnit}, runs for ${t.duration}, finishing at ${t.start + t.duration}${t.track ? ` (${t.track})` : ''}`, t.note),
     })),
     visibleText: [
       spec.timeUnit,

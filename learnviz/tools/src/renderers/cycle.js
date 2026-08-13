@@ -9,7 +9,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, n, roundRect } from '../svg.js';
+import { el, text, textBlock, n, roundRect, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth } from './frame.js';
 
 const NODE_W = 150;
@@ -145,7 +145,7 @@ export function describe(spec) {
     structure: `${spec.stages.length} stages around the ring, numbered clockwise from the top.${spec.stages.some((s) => s.detail) ? ' A numbered key underneath the ring explains each stage.' : ''}`,
     items: spec.stages.map((s, i) => ({
       key: `Stage ${i + 1}`,
-      value: s.detail ? `${s.label}. ${s.detail}` : s.label,
+      value: sentences(s.label, s.detail),
     })),
     visibleText: [
       ...(spec.centre ? [spec.centre] : []),

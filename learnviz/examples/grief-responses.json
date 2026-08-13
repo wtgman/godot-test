@@ -1,0 +1,47 @@
+{
+  "type": "comparison",
+  "title": "Recognising the five grief responses in what someone says",
+  "subtitle": "Kübler-Ross named five responses. She did not claim people move through them in order, and most do not.",
+  "intent": "Learners can recognise each of the five responses in what a client says, and choose a reply that keeps the conversation open.",
+  "caption": "These are responses, not stages in a fixed order. A person can move between them, return to one they seemed to have left, or never show some of them at all. The order of the rows here is the order Kübler-Ross listed them in, and nothing more. Treat a person who is angry in week one and angry again in week six as normal, not as having gone backwards.",
+  "criteria": [
+    "Denial",
+    "Anger",
+    "Bargaining",
+    "Depression",
+    "Acceptance"
+  ],
+  "items": [
+    {
+      "label": "What it can sound like",
+      "values": [
+        "There has been a mistake. Get the tests done again.",
+        "Why did nobody pick this up sooner? Often aimed at whoever is in the room.",
+        "If I do everything right, will that change it? Often carries what if and if only.",
+        "Little talk. Withdrawal from things that used to matter.",
+        "I want to get the house sorted out. Practical planning."
+      ]
+    },
+    {
+      "label": "What the person may need",
+      "values": [
+        "Time, and the information offered again later rather than pressed now.",
+        "To be heard without the anger being taken personally or argued down.",
+        "Honesty about what is and is not possible, given without stripping out hope.",
+        "Someone present rather than fixing it. Watch for risk and escalate to a supervisor.",
+        "Support to act on the decisions they have made themselves."
+      ]
+    },
+    {
+      "label": "What not to say",
+      "values": [
+        "You need to accept this.",
+        "There is no point getting angry about it.",
+        "That is not going to make any difference.",
+        "Try to look on the bright side.",
+        "You are being so brave about it."
+      ]
+    }
+  ],
+  "source": "Elisabeth Kübler-Ross, On Death and Dying, 1969. Generated for review, verify against your unit's prescribed text before use."
+}

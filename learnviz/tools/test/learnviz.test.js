@@ -16,7 +16,7 @@ import { render } from '../src/renderers/index.js';
 import { build } from '../src/interactive/index.js';
 import { audit } from '../src/a11y.js';
 import { diagramBlock, interactiveBlock } from '../src/emble.js';
-import { measure, wrap, esc } from '../src/svg.js';
+import { measure, wrap, esc, sentences } from '../src/svg.js';
 
 /* ------------------------------------------------------------------ */
 /* Fixtures, one valid spec per type.                                  */
@@ -437,5 +437,27 @@ describe('label fitting', () => {
     const { svg } = render(spec);
     assert.ok(svg.includes('>Volunteer induction<'), 'the longest label was truncated');
     assert.ok(!/Volunteer inducti\u2026/.test(svg));
+  });
+});
+
+describe('generated prose', () => {
+  test('no visual produces a double full stop in its text equivalent', () => {
+    // describe() builds sentences by joining a label with a detail, and source
+    // content usually already punctuates its own sentences. Joining naively
+    // gave "done again.. What the person needs", which a screen reader reads
+    // as an odd double pause.
+    for (const type of staticTypes) {
+      const spec = validate(FIXTURES[type]);
+      const { a11y } = render(spec);
+      assert.ok(!/\.\s*\./.test(a11y.fullAlt), `${type} full alt has a double full stop`);
+      assert.ok(!/\.\s*\./.test(a11y.textEquivalent), `${type} text equivalent has a double full stop`);
+    }
+  });
+
+  test('sentences() collapses punctuation between fragments', () => {
+    assert.equal(sentences('Denial', 'Get the tests done again.'), 'Denial. Get the tests done again');
+    assert.equal(sentences('One.', 'Two'), 'One. Two');
+    assert.equal(sentences('Only one', null), 'Only one');
+    assert.equal(sentences(null, undefined, ''), '');
   });
 });

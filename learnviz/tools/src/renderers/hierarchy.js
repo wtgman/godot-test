@@ -9,7 +9,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, textBlock, n, roundRect } from '../svg.js';
+import { el, textBlock, n, roundRect, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth } from './frame.js';
 
 const ROW_GAP = 12;
@@ -136,7 +136,7 @@ export function describe(spec) {
     const where = depth === 0 ? 'Top level' : `Level ${depth + 1}, under ${path}`;
     lines.push({
       key: where,
-      value: node.detail ? `${node.label}. ${node.detail}` : node.label,
+      value: sentences(node.label, node.detail),
     });
     for (const c of node.children || []) walk(c, depth + 1, node.label);
   };

@@ -12,7 +12,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, esc, n, roundRect } from '../svg.js';
+import { el, text, textBlock, esc, n, roundRect, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth } from './frame.js';
 
 const PIN_R = 13;
@@ -115,7 +115,7 @@ export function describe(spec) {
       : 'The image frame sits on the left and is currently a placeholder awaiting a photograph. The numbered key sits on the right.',
     items: spec.parts.map((p, i) => ({
       key: `${i + 1}, ${positionWords(p.x, p.y)} of the image`,
-      value: p.detail ? `${p.label}. ${p.detail}` : p.label,
+      value: sentences(p.label, p.detail),
     })),
     visibleText: ['Key', ...spec.parts.flatMap((p, i) => [String(i + 1), p.label])],
   };

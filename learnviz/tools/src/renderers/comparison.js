@@ -8,7 +8,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, n, roundRect } from '../svg.js';
+import { el, text, textBlock, measure, n, roundRect, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth } from './frame.js';
 
 const CELL_PAD = 11;
@@ -20,8 +20,18 @@ export function render(spec, width = PAGE.width) {
   const items = spec.items;
   const criteria = spec.criteria;
 
-  // The criterion column takes a third, the rest is split evenly between items.
-  const critW = Math.min(Math.max(total * 0.28, 150), 300);
+  // Size the criterion column to what is actually in it, rather than giving it
+  // a fixed share. Criteria are often single words ("Denial", "Anger"), and a
+  // fixed third of the width then sits empty while the value columns, which
+  // hold whole sentences, are squeezed. Capped so a long criterion wraps
+  // instead of eating the table.
+  const longestCriterion = Math.max(
+    ...criteria.map((c) => measure(c, TYPE.label, 'bold')),
+  );
+  const critW = Math.min(
+    Math.max(Math.ceil(longestCriterion) + CELL_PAD * 2, 120),
+    total * 0.34,
+  );
   const colW = (total - critW) / items.length;
 
   // Measure every cell first so each row can be as tall as its tallest cell.
@@ -109,7 +119,7 @@ export function describe(spec) {
     structure: `${spec.criteria.length} rows, one per criterion. ${spec.items.length} columns, one per item: ${spec.items.map((i) => i.label).join(', ')}. Read across a row to compare all items on one criterion, or down a column to see one item in full.`,
     items: spec.criteria.map((criterion, r) => ({
       key: criterion,
-      value: spec.items.map((item) => `${item.label}, ${item.values[r]}`).join('. '),
+      value: spec.items.map((item) => sentences(`${item.label}, ${String(item.values[r]).replace(/[.\s]+$/, '')}`)).join('. '),
     })),
     visibleText: [
       ...spec.items.map((i) => i.label),

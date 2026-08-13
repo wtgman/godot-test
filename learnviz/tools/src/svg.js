@@ -230,3 +230,19 @@ export function document_({ width, height, title, desc, body, defs = '' }) {
     + body
     + '</svg>';
 }
+
+/**
+ * Join fragments into prose with exactly one full stop between them.
+ *
+ * The describe() functions build sentences by concatenating a label with a
+ * detail, and the source content usually already ends its sentences properly.
+ * Naive joining then produces "Get the tests done again.. What the person
+ * needs", which a screen reader reads as an odd double pause and which looks
+ * careless in the plain text version.
+ */
+export function sentences(...parts) {
+  return parts
+    .map((p) => String(p ?? '').trim().replace(/[.\s]+$/, ''))
+    .filter(Boolean)
+    .join('. ');
+}

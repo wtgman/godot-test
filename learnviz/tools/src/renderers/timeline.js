@@ -9,7 +9,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, n } from '../svg.js';
+import { el, text, textBlock, n, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth } from './frame.js';
 
 const SPINE_X = PAGE.margin + 8;
@@ -119,7 +119,7 @@ export function describe(spec) {
     structure: `${spec.events.length} events, in chronological order. Each has a date, a heading, and a short explanation to the right of the line.`,
     items: spec.events.map((e) => ({
       key: e.date,
-      value: e.detail ? `${e.label}. ${e.detail}` : e.label,
+      value: sentences(e.label, e.detail),
       emphasis: Boolean(e.emphasis),
     })),
     visibleText: spec.events.flatMap((e) => [e.date, e.label]),

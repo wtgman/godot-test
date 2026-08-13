@@ -9,7 +9,7 @@
  */
 
 import { BRAND, TYPE, series } from '../theme.js';
-import { el, text, textBlock, roundRect, n } from '../svg.js';
+import { el, text, textBlock, roundRect, n, sentences } from '../svg.js';
 import { PAGE, header, footer, contentWidth, arrow } from './frame.js';
 
 const ROW_LIMIT = 5;
@@ -146,7 +146,7 @@ export function describe(spec) {
     structure: `${spec.steps.length} numbered steps in a fixed order, running ${horizontal ? 'left to right' : 'top to bottom'}. The process has a clear first step and last step.`,
     items: spec.steps.map((s, i) => ({
       key: `Step ${i + 1}`,
-      value: s.detail ? `${s.label}. ${s.detail}` : s.label,
+      value: sentences(s.label, s.detail),
     })),
     visibleText: spec.steps.flatMap((s, i) => [String(i + 1), s.label, s.detail].filter(Boolean)),
   };

@@ -51,8 +51,10 @@ function slugify(title, fallback) {
   const s = String(title)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60);
+    .slice(0, 60)
+    // Trim after slicing as well as before, or a title cut mid-word leaves a
+    // trailing hyphen on every file in the bundle.
+    .replace(/^-+|-+$/g, '');
   return s || fallback;
 }
 
