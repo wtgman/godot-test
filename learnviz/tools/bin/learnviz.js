@@ -2,6 +2,7 @@
 /**
  * learnviz. Build a learning visual from a spec.
  *
+ *   learnviz propose <proposal.json> [--out DIR]
  *   learnviz build <spec.json...> [--out DIR] [--no-png] [--video] [--width N]
  *   learnviz validate <spec.json...>
  *   learnviz types
@@ -22,6 +23,7 @@ import { audit } from '../src/a11y.js';
 import { diagramBlock, interactiveBlock, genericBlock } from '../src/emble.js';
 import { svgToPng, pageToVideo, capabilities } from '../src/raster.js';
 import { assertPaletteAccessible } from '../src/theme.js';
+import { validateProposal, renderProposal, summariseProposal, DATA_STATUS } from '../src/proposal.js';
 
 const argv = process.argv.slice(2);
 const command = argv[0];
@@ -150,6 +152,49 @@ Pick one of these instead, in order of preference:
 3. **Ship a video instead.** Build again with \`--video\` to get a recording of the model running, then upload that to Canvas Studio. The learner cannot change the parameters, but nothing is sandboxed and it plays everywhere, including the mobile apps. Run \`learnviz doctor\` first: this needs a full ffmpeg, and the cut-down one bundled with the Playwright browsers cannot do it.
 
 The file is entirely self-contained. It loads no fonts, no libraries and no data from anywhere, so it works behind a strict Content Security Policy and offline.`;
+
+/**
+ * Render a proposal into a brief a teacher can reply to.
+ *
+ * This runs before anything is built. The point of the step is that choosing
+ * the visual is the decision worth spending time on, and it is much cheaper to
+ * change your mind about a line in a menu than about a finished artefact.
+ */
+async function cmdPropose(args) {
+  const { flags, files } = parseFlags(args);
+  if (files.length !== 1) {
+    console.error('Give me exactly one proposal file. Try: learnviz propose options.json --out build');
+    process.exitCode = 1;
+    return;
+  }
+
+  const raw = await readFile(files[0], 'utf8');
+  let proposal;
+  try {
+    proposal = validateProposal(JSON.parse(raw));
+  } catch (e) {
+    console.error(`${red('FAILED')} ${files[0]}\n  ${e.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const brief = renderProposal(proposal);
+  await mkdir(flags.out, { recursive: true });
+  const name = `${slugify(proposal.topic, 'proposal')}.options.md`;
+  await writeFile(join(flags.out, name), brief);
+
+  for (const row of summariseProposal(proposal)) {
+    const status = DATA_STATUS[row.status];
+    const mark = row.recommended ? green('PICK ') : '     ';
+    const flag = status.blocking ? red(status.label) : dim(status.label);
+    console.log(`${mark} ${String(row.n).padStart(2)}. ${row.name}`);
+    console.log(`      ${dim(row.type)} · ${flag} · ${dim(`${row.effort} effort`)}`);
+  }
+
+  const blocked = proposal.candidates.filter((c) => DATA_STATUS[c.data.status].blocking).length;
+  console.log(`\n${bold(String(proposal.candidates.length))} candidates, ${blocked} needing data before they can be built.`);
+  console.log(`Brief written to ${bold(join(resolve(flags.out), name))}`);
+}
 
 async function cmdBuild(args) {
   const { flags, files } = parseFlags(args);
@@ -312,10 +357,15 @@ function cmdDoctor() {
 function usage() {
   console.log(`${bold('learnviz')} builds accessible, Canvas-ready learning visuals from a JSON spec.
 
+  ${bold('learnviz propose')} <proposal.json> [--out DIR]
   ${bold('learnviz build')} <spec.json...> [--out DIR] [--no-png] [--video] [--width N] [--scale N]
   ${bold('learnviz validate')} <spec.json...>
   ${bold('learnviz types')}
   ${bold('learnviz doctor')}
+
+Propose first. It turns a piece of content into a menu of candidate visuals,
+each declaring where its data comes from, and recommends one. Build only what
+gets chosen.
 
 Each build writes the visual, a paste-ready Canvas block, a plain text
 equivalent, and build notes carrying the alt text and the embed steps.`);
@@ -325,6 +375,7 @@ equivalent, and build notes carrying the alt text and the embed steps.`);
 
 try {
   switch (command) {
+    case 'propose': await cmdPropose(argv.slice(1)); break;
     case 'build': await cmdBuild(argv.slice(1)); break;
     case 'validate': await cmdValidate(argv.slice(1)); break;
     case 'types': cmdTypes(); break;

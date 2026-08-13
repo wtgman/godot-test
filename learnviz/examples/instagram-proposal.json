@@ -1,0 +1,105 @@
+{
+  "kind": "proposal",
+  "topic": "The Instagram acquisition",
+  "sourceSummary": "Source material is the existing rise-of-Instagram timeline: launch October 2010, acquired by Facebook April 2012 for one billion US dollars, thirteen employees, no revenue. Everything below either uses those figures or says plainly what else would have to be sourced.",
+  "audience": "Social media and digital marketing learners meeting platform economics for the first time.",
+  "questions": [
+    {
+      "ask": "Is the lesson about valuation, or about competitive strategy?",
+      "why": "The same one billion dollars supports two different pages. Valuation asks how you price a company with no revenue. Strategy asks why you pay anything at all to stop a rival. The comparison sets you build are different.",
+      "options": [
+        "Valuation, how you price something with no revenue",
+        "Strategy, why you buy a competitor",
+        "Both, as a before and after pair"
+      ]
+    },
+    {
+      "ask": "Do you want figures kept to 2012, or brought up to date?",
+      "why": "A 2012-only page is fully sourceable from the announcements and stays true. Bringing it to today means using third-party estimates, because Meta has never published Instagram's revenue or profit separately. That is a real teaching point in itself, but it changes what I can cite.",
+      "options": [
+        "2012 only, everything citable",
+        "Bring it up to date using clearly labelled estimates"
+      ]
+    },
+    {
+      "ask": "Will learners be assessed on reading charts, or on the argument?",
+      "why": "If chart reading is assessed, the comparison set should include a deliberately awkward one, such as prices across different years without inflation adjustment, so they have to notice the problem."
+    }
+  ],
+  "candidates": [
+    {
+      "name": "One billion dollars, compared to what",
+      "type": "chart",
+      "angle": "The figure means nothing alone. Set it against the other acquisitions in the same era and it starts to argue: YouTube went for less, WhatsApp for nineteen times more two years later. The lesson is that a price is only readable next to other prices.",
+      "payoff": "Learners can place an acquisition price in context and say what makes one company worth more than another.",
+      "data": {
+        "status": "needs-research",
+        "needs": "Announced prices for four or five comparable acquisitions, each with the year and a citable source. These are all public. Decide first whether to adjust for inflation: comparing a 2006 price with a 2014 price without adjusting is the kind of thing worth making learners notice rather than hiding."
+      },
+      "effort": "medium",
+      "recommended": true
+    },
+    {
+      "name": "Same price, opposite outcome",
+      "type": "comparison",
+      "angle": "Instagram cost about the same as Tumblr. One is now central to its parent company, the other was written down to almost nothing. Putting them side by side kills the idea that the Instagram price was obviously clever at the time. It was a bet, and most bets at that price do not pay.",
+      "payoff": "Learners can argue that an acquisition price is a judgement under uncertainty, not a calculation, and can name what made the difference.",
+      "data": {
+        "status": "needs-research",
+        "needs": "The Tumblr purchase price and the later write-down figure, plus one sentence on what happened to each platform. Both are public and widely reported. This is the candidate I would build second, because the argument is stronger than the chart above and it is the one learners will remember."
+      },
+      "effort": "medium",
+      "recommended": true
+    },
+    {
+      "name": "The acquisition in four numbers",
+      "type": "stat",
+      "angle": "Let the figures land as figures: the price, thirteen employees, zero revenue, eighteen months from launch. The zero is the one that does the work, because it forces the question the whole lesson turns on.",
+      "payoff": "Learners can state what Facebook actually bought, and explain why revenue was not what was being priced.",
+      "data": {
+        "status": "in-source",
+        "needs": "Already built from the timeline figures. Nothing further required."
+      },
+      "effort": "low"
+    },
+    {
+      "name": "Users at the moment of sale, against the price paid",
+      "type": "chart",
+      "angle": "If not revenue, then what. Plot the user count and the price together and the implied value per user appears, which is the number the deal was actually made on.",
+      "payoff": "Learners can compute and interpret a value-per-user figure and say what it assumes about the future.",
+      "data": {
+        "status": "needs-research",
+        "needs": "Instagram's user count in April 2012, and equivalent figures for the comparison acquisitions. Reported numbers vary by source and by whether they count registered or active users, so pick one definition and hold it across every company."
+      },
+      "effort": "medium"
+    },
+    {
+      "name": "Where Instagram's revenue is estimated to sit today",
+      "type": "chart",
+      "angle": "Ends the story with what the bet returned, and doubles as a lesson in reading estimates. Every figure available is a third-party model, not a company disclosure, and different firms disagree by billions.",
+      "payoff": "Learners can distinguish a reported figure from an estimated one and can say why the distinction matters.",
+      "data": {
+        "status": "needs-research",
+        "needs": "Two or three third-party revenue estimates from named firms, with their dates. Every one must be labelled on the chart as an estimate and attributed. Do not present these as company figures, because they are not."
+      },
+      "effort": "high"
+    }
+  ],
+  "rejected": [
+    {
+      "name": "Instagram's profit over time",
+      "type": "chart",
+      "because": "The data does not exist. Meta has never reported Instagram's profit separately, and reports segments rather than individual apps, so there is no profit figure to chart. Anything found online is a third-party model of revenue with an assumed margin applied. Charting it as profit would present a guess as a disclosure. The estimated-revenue candidate above is the honest version of this idea."
+    },
+    {
+      "name": "The acquisition as a process flow",
+      "type": "process",
+      "because": "The negotiation ran over a weekend and the steps are not documented well enough to draw without inventing them. It would also teach nothing: the interesting part is the judgement, not the sequence."
+    },
+    {
+      "name": "Growth of every social platform since 2004",
+      "type": "chart",
+      "because": "Too many series, too many definitions of a user, and it answers no question this page is asking. A chart that covers everything makes no argument."
+    }
+  ]
+}

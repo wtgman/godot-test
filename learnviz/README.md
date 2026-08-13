@@ -1,8 +1,13 @@
 # learnviz
 
-Turns a piece of learner content into a visual or interactive learning object
-that can be embedded in Canvas LMS, together with the alt text, the image
-description, the plain text equivalent and the paste-ready Canvas markup.
+Turns a piece of learner content into visual and interactive learning objects
+for Canvas LMS, together with the alt text, the image description, the plain
+text equivalent and the paste-ready Canvas markup.
+
+It proposes before it builds. Given content, the first thing it produces is a
+menu of candidate visuals with the questions worth answering first, not an
+artefact. Half the value is in the ideas: the angle nobody had thought of, and
+the honest note that the data for one of them does not exist.
 
 Built to sit alongside the `cove-canvas-page` skill, which builds the page this
 drops into. That skill reaches its Visual Element section and can only write a
@@ -29,6 +34,7 @@ means will produce a bar chart of nothing. Neither half works alone.
 cd tools
 node bin/learnviz.js doctor                                  # what this machine can do
 node bin/learnviz.js types                                   # the twelve visual types
+node bin/learnviz.js propose ../examples/grief-proposal.json --out ../examples/out
 node bin/learnviz.js validate ../examples/*.json
 node bin/learnviz.js build ../examples/*.json --out ../examples/out
 npm test
@@ -36,6 +42,24 @@ npm test
 
 No dependencies. Node 22 or later. PNG output uses whatever Chromium is on the
 machine; without one you still get SVG.
+
+## Propose first
+
+`learnviz propose` turns a proposal into a brief a teacher can read in a minute
+and reply to with a list of numbers. The validator enforces the two things that
+make a menu useful rather than decorative:
+
+- **Every candidate declares where its data comes from**: `none-needed`,
+  `in-source`, `needs-teacher`, `needs-research` or `unavailable`. Anything
+  blocking must say what specifically is missing. This is what catches "chart
+  Instagram's profit over time" before someone publishes a guess as a
+  disclosure.
+- **One or two candidates are recommended.** Not none, which hands the decision
+  back. Not all of them, which is the same thing in disguise.
+
+The brief also records what was ruled out and why, which on well-known content
+is often the most useful part: it stops the obvious-but-wrong visual being
+proposed again next term.
 
 ## What a build produces
 
@@ -108,11 +132,13 @@ anything fails.
 
 ```
 SKILL.md                  the skill: what to build and why
-references/               spec reference, Canvas embedding, design notes, prompt packs
-examples/                 eight worked examples, and their built output
+references/               proposing, spec reference, Canvas embedding, design notes, prompt packs
+examples/                 two worked proposals, eight worked visuals, and their output
 tools/
   bin/learnviz.js         the CLI
-  src/spec.js             the schema and validator
+  src/validate.js         shared validation primitives
+  src/spec.js             the visual schema and validator
+  src/proposal.js         the proposal schema, validator and brief renderer
   src/theme.js            palette, contrast and colour-distance checks
   src/svg.js              SVG primitives and text measurement
   src/a11y.js             alt text, image descriptions, the audit
@@ -121,5 +147,5 @@ tools/
   src/raster.js           PNG and video rendering
   src/renderers/          the ten static types
   src/interactive/        the two interactive types
-  test/                   104 tests
+  test/                   122 tests
 ```

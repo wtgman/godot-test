@@ -1,6 +1,6 @@
 ---
 name: learnviz
-description: Turns a piece of learner content into a visual or interactive learning object that can be embedded in Canvas LMS. Takes pasted text, a document or a link, works out what shape the content actually is, and builds the visual that teaches it, along with the alt text, the five-part image description, the plain text equivalent and the paste-ready Canvas block. Use this skill whenever someone hands over course content and wants a diagram, timeline, schedule, process flow, cycle, comparison, chart, labelled diagram, simulation, animation or interactive built from it, or asks how to get an interactive into Canvas. Also use for auditing an existing visual against accessibility and Canvas embedding rules. Pairs with cove-canvas-page, which builds the page this drops into.
+description: Turns a piece of learner content into visual and interactive learning objects for Canvas LMS. Takes pasted text, a document or a link, works out what shapes are latent in it, and proposes a menu of candidate visuals with the questions worth answering first, rather than building immediately. Once a candidate is chosen it builds the artefact along with the alt text, the five-part image description, the plain text equivalent and the paste-ready Canvas block. Use it to generate ideas for turning content into visuals as much as to produce them. Use this skill whenever someone hands over course content and wants a diagram, timeline, schedule, process flow, cycle, comparison, chart, labelled diagram, simulation, animation or interactive built from it, or asks how to get an interactive into Canvas. Also use for auditing an existing visual against accessibility and Canvas embedding rules. Pairs with cove-canvas-page, which builds the page this drops into.
 ---
 
 # Learning visual builder
@@ -8,8 +8,15 @@ description: Turns a piece of learner content into a visual or interactive learn
 Turns content into a learning object. Not a picture of the content, a thing a
 learner does something with.
 
-The output is always a bundle: the visual, its text equivalent, and the markup
-to paste into Canvas. Never just an image.
+**Propose before you build.** The default output of this skill is a menu of
+candidate visuals, not an artefact. The first visual that comes to mind is
+almost always the one the prose already states, so it teaches nothing, and once
+it exists people edit it rather than ask whether it was the right thing to
+build. Choosing is the decision worth spending time on, and it is far cheaper to
+change your mind about a line in a menu than about a finished page.
+
+Build only what gets chosen. Then the output is a bundle: the visual, its text
+equivalent, and the markup to paste into Canvas. Never just an image.
 
 ## What this is for, and what it is not for
 
@@ -74,7 +81,58 @@ Say so plainly, and say why, if:
 
 ---
 
-## Stage 1: Write the learning intent first
+## Stage 1: Find the angles
+
+**Read `references/proposing.md`.** It carries the ten moves for finding an
+angle, the six questions that actually change a build, and the data provenance
+rules.
+
+The short version: never ask "how do I illustrate this paragraph". Ask **"what
+is true about this content that you cannot see from reading it?"** The moves
+that pay off most often are:
+
+- **Compared to what.** A number alone means nothing. One billion dollars against what?
+- **The misconception to pre-empt.** What do learners arrive already believing that is wrong? This never appears in the source, because the source was written by someone who does not hold the misconception.
+- **The decision the learner will actually face.** Content describes; practice decides.
+- **The ratio nobody computed.** Two figures in the source imply a third that is more striking than either.
+
+Aim for two or three candidates the teacher had not thought of. That is the
+value of this step. A menu of the obvious is not worth reading.
+
+---
+
+## Stage 2: Propose, then stop
+
+Write a proposal and hand it over. **Do not build anything yet.**
+
+```
+node bin/learnviz.js propose options.json --out build
+```
+
+The proposal is JSON with `kind: "proposal"`. Its shape is validated, and the
+validator enforces the two things that make a menu useful:
+
+- **Every candidate declares where its data comes from.** One of `none-needed`, `in-source`, `needs-teacher`, `needs-research`, `unavailable`. A blocking status must also say what specifically is missing, because "needs figures" is not something a teacher can act on.
+- **One or two candidates are recommended.** Not none, which pushes the decision back onto the teacher. Not all of them, which is the same thing in disguise.
+
+Also fill in `rejected`. On well-known content this is often the most useful
+part of the brief: it records why the obvious visual was not built, so nobody
+proposes it again next term. Give the reason in terms of what it would teach.
+
+Present the rendered brief, and say plainly that nothing will be built until
+they pick. If they answer the questions in a way that changes the menu, revise
+the menu rather than pressing on.
+
+### When to skip straight to building
+
+Only when the person has already named the visual they want, in their own words,
+and the data is in hand. "Make me a gantt of this schedule" is an instruction,
+not a request for options. Even then, say in one line what else the content
+would have supported.
+
+---
+
+## Stage 3: Write the learning intent first
 
 Every spec requires an `intent`, and the builder refuses to run without one. It
 is one sentence, and it starts with what the learner can do afterwards.
@@ -88,7 +146,7 @@ data. If you cannot write it, go back to Stage 0.
 
 ---
 
-## Stage 2: Write the spec
+## Stage 4: Write the spec
 
 Specs are JSON. Run `learnviz types` for the list, and read
 `references/spec-reference.md` for every field of every type.
@@ -102,7 +160,7 @@ Content rules that apply to all of them.
 
 ---
 
-## Stage 3: Build
+## Stage 5: Build
 
 ```
 cd learnviz/tools
@@ -124,7 +182,7 @@ again. Do not hand over a bundle with an unresolved check.
 
 ---
 
-## Stage 4: Get it into Canvas
+## Stage 6: Get it into Canvas
 
 **Read `references/canvas-embedding.md` before promising anyone anything.**
 
@@ -141,7 +199,7 @@ or file id is needed and not known, it emits the house placeholder highlight
 
 ---
 
-## Stage 5: Pair it with a retrieval check
+## Stage 7: Pair it with a retrieval check
 
 A visual a learner looks at is worth much less than a visual a learner is asked
 a question about. Every object this skill produces should be followed on the
@@ -181,6 +239,8 @@ there.
 Run every line before handing over. Fix and rebuild on any failure.
 
 ```
+[ ] A proposal was presented and a candidate chosen, or the person named the visual themselves
+[ ] Every candidate declared its data provenance, and nothing marked needs-research was built from memory
 [ ] Learning intent written as a capability, not a description
 [ ] Visual type chosen from the content shape, not from preference
 [ ] No invented data, dates, figures or citations
@@ -199,6 +259,7 @@ Run every line before handing over. Fix and rebuild on any failure.
 
 ## Reference files
 
+- **`references/proposing.md`.** The ten moves for finding an angle, the questions worth asking, data provenance, how to recommend. Read at Stage 1.
 - **`references/spec-reference.md`.** Every type, every field, worked examples. Read before writing a spec.
 - **`references/canvas-embedding.md`.** The embedding ladder, what Canvas strips, hosting options, and the exact markup for each. Read before promising an interactive.
 - **`references/visual-design.md`.** Why each type is drawn the way it is, the accessibility rules, and how to extend the toolkit with a new type.

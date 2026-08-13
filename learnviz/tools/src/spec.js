@@ -11,6 +11,8 @@
  * TypeError three files later.
  */
 
+import { SpecError, fail, str, num, arr } from './validate.js';
+
 export const VISUAL_TYPES = [
   'timeline',
   'process',
@@ -29,46 +31,6 @@ export const VISUAL_TYPES = [
 /** Types that render to an interactive HTML page rather than a static image. */
 export const INTERACTIVE_TYPES = new Set(['sequencer', 'simulation']);
 
-class SpecError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'SpecError';
-  }
-}
-
-const fail = (path, message) => {
-  throw new SpecError(`${path}: ${message}`);
-};
-
-function str(value, path, { required = true, max = 400 } = {}) {
-  if (value === undefined || value === null || value === '') {
-    if (required) fail(path, 'is required and must be a non-empty string');
-    return undefined;
-  }
-  if (typeof value !== 'string') fail(path, `must be a string, got ${typeof value}`);
-  if (value.length > max) fail(path, `must be ${max} characters or fewer (got ${value.length})`);
-  return value;
-}
-
-function num(value, path, { required = true } = {}) {
-  if (value === undefined || value === null) {
-    if (required) fail(path, 'is required and must be a number');
-    return undefined;
-  }
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    fail(path, `must be a finite number, got ${JSON.stringify(value)}`);
-  }
-  return value;
-}
-
-function arr(value, path, { min = 1, max = 40 } = {}) {
-  if (!Array.isArray(value)) fail(path, `must be an array, got ${typeof value}`);
-  if (value.length < min) fail(path, `needs at least ${min} item${min === 1 ? '' : 's'}`);
-  if (value.length > max) {
-    fail(path, `has ${value.length} items, which is more than ${max}. A visual carrying more than ${max} items stops teaching and starts listing. Split it into two.`);
-  }
-  return value;
-}
 
 /* ------------------------------------------------------------------ */
 /* Per-type validation                                                 */
