@@ -1,0 +1,16 @@
+Community garden build, twelve week schedule
+============================================
+
+What this shows: A horizontal schedule chart. Time runs left to right along the top, measured in weeks from project start, from 0 to 12.
+How it is arranged: 9 rows, one per item. Bars are coloured by group: Approvals, People, Site. Bars that overlap vertically are happening at the same time.
+
+Contents:
+  - Council permit: starts at 0 weeks from project start, runs for 6, finishing at 6 (Approvals). Six weeks is the statutory maximum and nothing on site can begin without it. This is the critical path.
+  - Soil testing: starts at 1 weeks from project start, runs for 2, finishing at 3 (Approvals).
+  - Recruit volunteers: starts at 2 weeks from project start, runs for 4, finishing at 6 (People).
+  - Volunteer induction: starts at 6 weeks from project start, runs for 1, finishing at 7 (People). Cannot run before recruitment closes, and must finish before anyone is on site.
+  - Clear the ground: starts at 6 weeks from project start, runs for 2, finishing at 8 (Site).
+  - Build raised beds: starts at 8 weeks from project start, runs for 3, finishing at 11 (Site).
+  - Install irrigation: starts at 9 weeks from project start, runs for 2, finishing at 11 (Site). Overlaps the bed build deliberately, because the plumber is only available in week 9.
+  - Lay paths: starts at 10 weeks from project start, runs for 2, finishing at 12 (Site).
+  - Planting day: starts at 11 weeks from project start, runs for 1, finishing at 12 (People).

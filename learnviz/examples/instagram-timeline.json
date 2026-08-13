@@ -1,0 +1,16 @@
+{
+  "type": "timeline",
+  "title": "The rise of Instagram",
+  "subtitle": "Each turning point is a response to a competitor or a change in how people used their phones.",
+  "intent": "Learners can place the platform's major pivots in order and explain what pressure each one answered.",
+  "events": [
+    { "date": "October 2010", "label": "Launch, iPhone only", "detail": "Photo sharing with filters, built for slow mobile connections. Twenty five thousand users on the first day." },
+    { "date": "April 2012", "label": "Acquired by Facebook for one billion US dollars", "detail": "Thirteen employees, no revenue. The price was for the audience and the threat it posed.", "emphasis": true },
+    { "date": "June 2013", "label": "Video arrives", "detail": "Fifteen second clips, a direct answer to Vine." },
+    { "date": "August 2016", "label": "Stories launches", "detail": "Twenty four hour posts, copied openly from Snapchat. Within two years Stories had more daily users than Snapchat entirely.", "emphasis": true },
+    { "date": "June 2018", "label": "IGTV and one billion users", "detail": "A push into long form video that never found an audience and was retired in 2022." },
+    { "date": "August 2020", "label": "Reels launches", "detail": "Short vertical video, answering TikTok. The feed shifts from people you follow to what the algorithm picks.", "emphasis": true },
+    { "date": "2023 to 2025", "label": "Recommendation first", "detail": "Most of what a user sees comes from accounts they do not follow. The product is now closer to television than to a friend list." }
+  ],
+  "source": "Compiled from company announcements and press releases."
+}

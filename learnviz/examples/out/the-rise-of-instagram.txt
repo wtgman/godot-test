@@ -1,0 +1,16 @@
+The rise of Instagram
+=====================
+
+What this shows: A vertical timeline. Events run from earliest at the top to latest at the bottom, joined by a single vertical line.
+How it is arranged: 7 events, in chronological order. Each has a date, a heading, and a short explanation to the right of the line.
+
+Contents:
+  - October 2010: Launch, iPhone only. Photo sharing with filters, built for slow mobile connections. Twenty five thousand users on the first day.
+  - April 2012: Acquired by Facebook for one billion US dollars. Thirteen employees, no revenue. The price was for the audience and the threat it posed.
+  - June 2013: Video arrives. Fifteen second clips, a direct answer to Vine.
+  - August 2016: Stories launches. Twenty four hour posts, copied openly from Snapchat. Within two years Stories had more daily users than Snapchat entirely.
+  - June 2018: IGTV and one billion users. A push into long form video that never found an audience and was retired in 2022.
+  - August 2020: Reels launches. Short vertical video, answering TikTok. The feed shifts from people you follow to what the algorithm picks.
+  - 2023 to 2025: Recommendation first. Most of what a user sees comes from accounts they do not follow. The product is now closer to television than to a friend list.
+
+Source: Compiled from company announcements and press releases.

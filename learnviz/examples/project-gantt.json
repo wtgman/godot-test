@@ -1,0 +1,22 @@
+{
+  "type": "gantt",
+  "title": "Community garden build, twelve week schedule",
+  "subtitle": "Three workstreams running at once. The dependencies are what make the schedule tight, not the total effort.",
+  "intent": "Learners can read a schedule for parallel work and identify which tasks sit on the critical path.",
+  "timeUnit": "weeks from project start",
+  "tasks": [
+    { "label": "Council permit", "start": 0, "duration": 6, "track": "Approvals", "note": "Six weeks is the statutory maximum and nothing on site can begin without it. This is the critical path." },
+    { "label": "Soil testing", "start": 1, "duration": 2, "track": "Approvals" },
+    { "label": "Recruit volunteers", "start": 2, "duration": 4, "track": "People" },
+    { "label": "Volunteer induction", "start": 6, "duration": 1, "track": "People", "note": "Cannot run before recruitment closes, and must finish before anyone is on site." },
+    { "label": "Clear the ground", "start": 6, "duration": 2, "track": "Site" },
+    { "label": "Build raised beds", "start": 8, "duration": 3, "track": "Site" },
+    { "label": "Install irrigation", "start": 9, "duration": 2, "track": "Site", "note": "Overlaps the bed build deliberately, because the plumber is only available in week 9." },
+    { "label": "Lay paths", "start": 10, "duration": 2, "track": "Site" },
+    { "label": "Planting day", "start": 11, "duration": 1, "track": "People" }
+  ],
+  "milestones": [
+    { "at": 6, "label": "Permit granted, site work can start" },
+    { "at": 12, "label": "Handover to the volunteer committee" }
+  ]
+}

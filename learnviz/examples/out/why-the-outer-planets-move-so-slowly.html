@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the outer planets move so slowly</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #000054;
+  --paper: #ffffff;
+  --panel: #f3f3f3;
+  --rule: #d5d5dd;
+  --accent: #fac800;
+  --ok: #00706b;
+  --no: #a4177c;
+  --font: Helvetica, Arial, 'Liberation Sans', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  padding: 20px;
+}
+h1 { font-size: 21px; margin: 0 0 6px; }
+h2 { font-size: 16px; margin: 22px 0 8px; }
+.lv-sub { margin: 0 0 14px; max-width: 70ch; }
+.lv-rule { width: 64px; height: 4px; background: var(--accent); margin: 0 0 18px; }
+.lv-intent {
+  background: var(--panel);
+  border-left: 4px solid var(--ink);
+  padding: 10px 14px;
+  margin: 0 0 18px;
+  max-width: 80ch;
+}
+.lv-intent strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* Focus is never removed, only restyled, and it is visible against every
+   background this page uses. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+button {
+  font: inherit;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  padding: 9px 16px;
+  cursor: pointer;
+  min-height: 44px; /* Comfortable target on a phone, which is where Canvas gets read. */
+}
+button.lv-secondary { color: var(--ink); background: var(--paper); }
+button:hover { opacity: .88; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+input[type="number"], input[type="range"] { font: inherit; }
+input[type="number"] {
+  width: 6.5em; padding: 8px; min-height: 44px;
+  border: 2px solid var(--rule); border-radius: 5px; color: var(--ink); background: var(--paper);
+}
+input[type="range"] { width: 100%; min-height: 30px; accent-color: #000054; }
+
+table { border-collapse: collapse; width: 100%; margin: 0 0 14px; }
+caption { text-align: left; font-weight: 700; padding: 0 0 8px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+/* Column headers are set in small caps. Row headers are content, often a
+   proper noun, and must keep the capitalisation they were written with. */
+thead th { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+tbody th { font-weight: 700; }
+tbody tr:nth-child(odd) { background: var(--panel); }
+
+.lv-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 18px; }
+.lv-feedback { margin: 0 0 16px; }
+.lv-feedback:empty { margin: 0; }
+.lv-verdict { padding: 12px 14px; border-radius: 6px; border-left: 5px solid; background: var(--panel); }
+.lv-verdict.is-ok { border-color: var(--ok); }
+.lv-verdict.is-no { border-color: var(--no); }
+
+/* Right and wrong are marked by a word and a symbol, never by colour alone. */
+.lv-mark { font-weight: 700; white-space: nowrap; }
+.lv-mark.is-ok { color: var(--ok); }
+.lv-mark.is-no { color: var(--no); }
+.lv-why { margin: 4px 0 0; font-size: 14px; }
+
+.lv-controls { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 0 0 18px; }
+.lv-control label { display: block; font-weight: 700; font-size: 14px; margin: 0 0 4px; }
+.lv-control output { display: inline-block; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+.lv-stage { border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); overflow: hidden; }
+.lv-stage svg { display: block; width: 100%; height: auto; }
+
+.lv-readout { margin: 12px 0 0; }
+.lv-readout table { margin: 0; }
+
+details { border: 1px solid var(--rule); border-radius: 6px; margin: 20px 0 0; }
+summary { cursor: pointer; padding: 12px; font-weight: 700; }
+details > div { padding: 0 12px 12px; }
+details pre { white-space: pre-wrap; font: inherit; margin: 0; }
+
+.lv-visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+@media print {
+  button, input[type="range"] { display: none; }
+  details { open: true; }
+}
+</style>
+
+</head>
+<body>
+<main>
+  <h1>Why the outer planets move so slowly</h1>
+  <p class="lv-sub">Drag the star&apos;s mass and watch which orbit changes most. The period of every planet follows the same law.</p>
+  <div class="lv-rule"></div>
+  <p class="lv-intent"><strong>What this is for</strong>Learners can state Kepler&apos;s third law in their own words and predict how an orbital period changes when distance or stellar mass changes.</p>
+  
+<div class="lv-controls" id="lv-controls"></div>
+
+<h2 id="lv-stage-heading">The system</h2>
+<p class="lv-sub" id="lv-stage-desc">Each planet moves at the speed its distance and the star's mass demand. Change the mass and watch which orbit changes most.</p>
+<div class="lv-stage">
+  <svg id="lv-stage" viewBox="0 0 720 460" role="img"
+       aria-labelledby="lv-stage-heading" aria-describedby="lv-stage-desc"></svg>
+</div>
+
+<div class="lv-actions">
+  <button type="button" id="lv-play">Pause</button>
+  <button type="button" class="lv-secondary" id="lv-reset">Reset</button>
+</div>
+
+<div class="lv-readout">
+  <table>
+    <caption>Orbital period at the current star mass</caption>
+    <thead>
+      <tr>
+        <th scope="col">Planet</th>
+        <th scope="col">Distance (AU)</th>
+        <th scope="col">Orbital period (years)</th>
+        <th scope="col">Speed, relative to Earth</th>
+      </tr>
+    </thead>
+    <tbody id="lv-readout-body"></tbody>
+  </table>
+</div>
+  <details>
+    <summary>Text version of this activity</summary>
+    <div><pre>Why the outer planets move so slowly
+====================================
+
+What this shows: An interactive model of 5 bodies orbiting a central star, with sliders that change the model and a table of results underneath.
+How it is arranged: Controls sit above the picture, the picture in the middle, the results table below. Mass of the star, adjustable from 0.2 to 3 solar masses, starting at 1.
+
+Contents:
+  - Mercury: orbits at 0.39 astronomical units. At the starting star mass of 1 solar masses its orbital period is 0.24 years.
+  - Venus: orbits at 0.72 astronomical units. At the starting star mass of 1 solar masses its orbital period is 0.61 years.
+  - Earth: orbits at 1 astronomical units. At the starting star mass of 1 solar masses its orbital period is 1 years.
+  - Mars: orbits at 1.52 astronomical units. At the starting star mass of 1 solar masses its orbital period is 1.87 years.
+  - Jupiter: orbits at 5.2 astronomical units. At the starting star mass of 1 solar masses its orbital period is 11.86 years.
+  - The relationship being shown: Orbital period follows Kepler&apos;s third law: period equals the square root of distance cubed divided by the star&apos;s mass. Doubling the distance from the star multiplies the period by about 2.83. Increasing the star&apos;s mass shortens every period.
+
+Source: Orbital distances in astronomical units, NASA planetary fact sheet.</pre></div>
+  </details>
+  <p style="opacity:.75;font-size:12px;margin-top:16px">Source: Orbital distances in astronomical units, NASA planetary fact sheet.</p>
+</main>
+<script>
+(function () {
+  function reportHeight() {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    try { parent.postMessage({ type: 'lv:height', height: h }, '*'); } catch (e) {}
+  }
+  window.addEventListener('load', reportHeight);
+  window.addEventListener('resize', reportHeight);
+  if (window.ResizeObserver) new ResizeObserver(reportHeight).observe(document.body);
+  window.lvReportHeight = reportHeight;
+})();
+</script>
+<script>(function () {
+  var PARAMS = [{"key":"mass","label":"Mass of the star","min":0.2,"max":3,"value":1,"unit":"solar masses"}];
+  var DATA = {"bodies":[{"label":"Mercury","distance":0.39,"radius":5,"index":0},{"label":"Venus","distance":0.72,"radius":7,"index":1},{"label":"Earth","distance":1,"radius":7,"index":2},{"label":"Mars","distance":1.52,"radius":6,"index":3},{"label":"Jupiter","distance":5.2,"radius":13,"index":4}]};
+  var state = {};
+  PARAMS.forEach(function (p) { state[p.key] = p.value; });
+
+  var SERIES = ['#000054', '#00706b', '#a4177c', '#8a5a00', '#3d5566', '#5b3a8e'];
+  var stage = document.getElementById('lv-stage');
+  var readout = document.getElementById('lv-readout-body');
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function round(v, dp) {
+    var f = Math.pow(10, dp === undefined ? 2 : dp);
+    return Math.round(v * f) / f;
+  }
+
+  /**
+   * "1 solar masses" is wrong on screen, and a unit label is the one place a
+   * learner will notice sloppiness. Singularise when the value is exactly one.
+   */
+  function unitFor(value, unit) {
+    if (!unit) return '';
+    if (value !== 1) return ' ' + unit;
+    return ' ' + unit.replace(/(ss|ch|sh|x)es$/, '$1').replace(/([^se])s$/, '$1');
+  }
+
+  /**
+   * A step on a 1, 2, 5 scale giving roughly 40 stops across the range.
+   * Dividing the range by a round number instead lands the slider on values
+   * like 1.0279999 solar masses, which is not a thing anyone wants to read.
+   */
+  function niceStep(range) {
+    var rough = range / 40;
+    var mag = Math.pow(10, Math.floor(Math.log10(rough)));
+    var chosen = mag * 10;
+    [1, 2, 2.5, 5, 10].some(function (m) {
+      if (mag * m >= rough) { chosen = mag * m; return true; }
+      return false;
+    });
+    return chosen;
+  }
+
+  /**
+   * Build a labelled slider per parameter. A range input alone is not enough:
+   * the current value is shown in an <output> so it is readable, and the
+   * output is tied to the input so a screen reader announces it on change.
+   */
+  function buildControls() {
+    var host = document.getElementById('lv-controls');
+    host.innerHTML = PARAMS.map(function (p) {
+      var stepAttr = p.step || niceStep(p.max - p.min);
+      return '<div class="lv-control">'
+        + '<label for="p-' + esc(p.key) + '">' + esc(p.label) + '</label>'
+        + '<input type="range" id="p-' + esc(p.key) + '" min="' + p.min + '" max="' + p.max
+        + '" step="' + stepAttr + '" value="' + p.value + '"'
+        + ' aria-describedby="v-' + esc(p.key) + '">'
+        + '<output id="v-' + esc(p.key) + '" for="p-' + esc(p.key) + '">'
+        + p.value + esc(unitFor(p.value, p.unit)) + '</output>'
+        + '</div>';
+    }).join('');
+
+    PARAMS.forEach(function (p) {
+      var input = document.getElementById('p-' + p.key);
+      var out = document.getElementById('v-' + p.key);
+      input.addEventListener('input', function () {
+        state[p.key] = Number(input.value);
+        out.textContent = round(state[p.key], 3) + unitFor(round(state[p.key], 3), p.unit);
+        render();
+      });
+    });
+  }
+
+  // Kepler's third law in solar units: T in years, a in AU, M in solar masses.
+  // T = sqrt(a^3 / M). Earth at 1 AU around 1 solar mass gives T = 1 year.
+  function periodOf(distance) {
+    var m = state.mass !== undefined ? state.mass : 1;
+    if (m <= 0) return Infinity;
+    return Math.sqrt(Math.pow(distance, 3) / m);
+  }
+
+  var clock = 0;          // Simulated years elapsed.
+  var running = true;
+  var lastFrame = null;
+
+  function outerPeriod() {
+    return Math.max.apply(null, DATA.bodies.map(function (b) { return periodOf(b.distance); }));
+  }
+
+  /**
+   * Orbit radii are drawn on a square-root scale, not a linear one.
+   *
+   * Drawn linearly with Jupiter at 5.2 AU setting the edge, Mercury at 0.39 AU
+   * lands inside the star and Venus sits on its rim, so the four bodies the
+   * lesson is about become invisible. Compressing the outer distances keeps
+   * every orbit legible. It is a distortion, so the diagram says so on its face
+   * and the text equivalent repeats it.
+   */
+  function radiusOf(distance, maxDist, maxR) {
+    return (Math.sqrt(distance) / Math.sqrt(maxDist)) * maxR;
+  }
+
+  function render() {
+    var W = 720, H = 460, cx = W / 2, cy = H / 2;
+    var maxDist = Math.max.apply(null, DATA.bodies.map(function (b) { return b.distance; }));
+    var maxR = Math.min(W, H) / 2 - 52;
+
+    var s = '';
+    s += '<rect width="' + W + '" height="' + H + '" fill="#fbfbfd"/>';
+
+    // Orbit paths.
+    DATA.bodies.forEach(function (b) {
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + round(radiusOf(b.distance, maxDist, maxR))
+        + '" fill="none" stroke="#d5d5dd" stroke-width="1" stroke-dasharray="3 4"/>';
+    });
+
+    // The star. Its drawn size responds to mass so the control has a visible
+    // effect even before anything has moved.
+    var starR = 7 + 6 * Math.cbrt(Math.max(state.mass || 1, 0.01));
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + round(starR) + '" fill="#fac800" stroke="#8a5a00" stroke-width="2"/>';
+
+    DATA.bodies.forEach(function (b, i) {
+      var T = periodOf(b.distance);
+      var angle = isFinite(T) && T > 0 ? (clock / T) * Math.PI * 2 : 0;
+      var r = radiusOf(b.distance, maxDist, maxR);
+      var x = cx + r * Math.cos(angle);
+      var y = cy + r * Math.sin(angle);
+      var colour = SERIES[i % SERIES.length];
+
+      s += '<circle cx="' + round(x) + '" cy="' + round(y) + '" r="' + round(b.radius || 7) + '" fill="' + colour + '"/>';
+      s += '<text x="' + round(x) + '" y="' + round(y - (b.radius || 7) - 6) + '" font-size="11.5" font-weight="bold" fill="' + colour + '" text-anchor="middle">'
+        + esc(b.label) + '</text>';
+    });
+
+    var mass = round(state.mass, 2);
+    s += '<text x="14" y="22" font-size="11.5" fill="#000054">Elapsed: ' + round(clock, 2) + ' years</text>';
+    s += '<text x="' + (W - 14) + '" y="22" font-size="11.5" font-weight="bold" fill="#000054" text-anchor="end">Star: '
+      + mass + ' solar mass' + (mass === 1 ? '' : 'es') + '</text>';
+    // The distortion is stated on the picture itself, not only in the notes.
+    s += '<text x="' + (W - 14) + '" y="' + (H - 12) + '" font-size="10.5" fill="#000054" text-anchor="end" opacity=".8">'
+      + 'Orbit spacing on a square-root scale, so the inner planets stay visible. Not to scale.</text>';
+
+    stage.innerHTML = s;
+
+    readout.innerHTML = DATA.bodies.map(function (b) {
+      var T = periodOf(b.distance);
+      // Orbital speed goes as sqrt(M/a), expressed against Earth's 1 AU value.
+      var rel = Math.sqrt((state.mass || 1) / b.distance);
+      return '<tr><th scope="row">' + esc(b.label) + '</th><td>' + round(b.distance, 2)
+        + '</td><td>' + (isFinite(T) ? round(T, 2).toFixed(2) : 'never completes')
+        + '</td><td>' + round(rel, 2).toFixed(2) + '</td></tr>';
+    }).join('');
+  }
+
+  /** Deterministic seek, used by the frame capturer. One outer orbit per loop. */
+  window.lvSeek = function (t) {
+    running = false;
+    clock = t * outerPeriod();
+    render();
+  };
+
+  function tick(now) {
+    if (lastFrame === null) lastFrame = now;
+    var dt = (now - lastFrame) / 1000;
+    lastFrame = now;
+    if (running) {
+      // One outer orbit takes twelve seconds of wall time, whatever the scale.
+      clock += dt * (outerPeriod() / 12);
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  var playBtn = document.getElementById('lv-play');
+  playBtn.addEventListener('click', function () {
+    running = !running;
+    playBtn.textContent = running ? 'Pause' : 'Play';
+    playBtn.setAttribute('aria-pressed', String(!running));
+  });
+  document.getElementById('lv-reset').addEventListener('click', function () {
+    clock = 0;
+    PARAMS.forEach(function (p) {
+      state[p.key] = p.value;
+      var input = document.getElementById('p-' + p.key);
+      var out = document.getElementById('v-' + p.key);
+      if (input) input.value = p.value;
+      if (out) out.textContent = p.value + unitFor(p.value, p.unit);
+    });
+    render();
+  });
+
+  // Honour the operating system setting. A learner who has asked for reduced
+  // motion gets a still frame and the controls, not a spinning system.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    running = false;
+    playBtn.textContent = 'Play';
+  }
+
+  buildControls();
+  render();
+  requestAnimationFrame(tick);
+})();</script>
+</body>
+</html>

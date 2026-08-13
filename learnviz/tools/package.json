@@ -1,0 +1,15 @@
+{
+  "name": "learnviz",
+  "version": "1.0.0",
+  "description": "Turns learner content into accessible, Canvas-embeddable learning visuals and interactives.",
+  "type": "module",
+  "bin": {
+    "learnviz": "./bin/learnviz.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "examples": "node bin/learnviz.js build ../examples/*.json --out ../examples/out"
+  },
+  "license": "MIT",
+  "private": true
+}

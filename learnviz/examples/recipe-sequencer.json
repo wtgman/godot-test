@@ -1,0 +1,17 @@
+{
+  "type": "sequencer",
+  "title": "Timing a roast dinner",
+  "subtitle": "Everything has to arrive at the table hot, at the same moment. Work out when each thing goes on.",
+  "intent": "Learners can work backwards from a serving time to decide when each component of a multi-part meal must start.",
+  "timeUnit": "minutes from start",
+  "prompt": "Dinner is served 105 minutes after you start. Enter the minute at which each task should begin.",
+  "items": [
+    { "label": "Put the lamb in the oven", "at": 0, "because": "A 1.5 kg leg needs 90 minutes at 180C, then 15 minutes resting. That resting time is the reason it goes in first." },
+    { "label": "Parboil the potatoes", "at": 45, "because": "Twelve minutes in boiling water, then they need to steam dry before they hit the fat. Start them too early and they collapse." },
+    { "label": "Move potatoes to the oven", "at": 60, "because": "Forty five minutes to go crisp. They share the oven with the lamb for its last half hour." },
+    { "label": "Take the lamb out to rest", "at": 90, "because": "Resting lets the juices redistribute. Carve straight away and they run out onto the board." },
+    { "label": "Make the gravy", "at": 92, "because": "Built in the roasting tin while the meat rests, using the pan juices. It cannot be made before the lamb comes out." },
+    { "label": "Steam the beans", "at": 95, "because": "Eight minutes. Green vegetables are the last thing on, because they lose colour and bite within minutes of being cooked." }
+  ],
+  "source": "Kitchen operations, timing a multi-component service."
+}

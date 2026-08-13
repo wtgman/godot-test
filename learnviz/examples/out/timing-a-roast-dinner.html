@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timing a roast dinner</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #000054;
+  --paper: #ffffff;
+  --panel: #f3f3f3;
+  --rule: #d5d5dd;
+  --accent: #fac800;
+  --ok: #00706b;
+  --no: #a4177c;
+  --font: Helvetica, Arial, 'Liberation Sans', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  padding: 20px;
+}
+h1 { font-size: 21px; margin: 0 0 6px; }
+h2 { font-size: 16px; margin: 22px 0 8px; }
+.lv-sub { margin: 0 0 14px; max-width: 70ch; }
+.lv-rule { width: 64px; height: 4px; background: var(--accent); margin: 0 0 18px; }
+.lv-intent {
+  background: var(--panel);
+  border-left: 4px solid var(--ink);
+  padding: 10px 14px;
+  margin: 0 0 18px;
+  max-width: 80ch;
+}
+.lv-intent strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* Focus is never removed, only restyled, and it is visible against every
+   background this page uses. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+button {
+  font: inherit;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  padding: 9px 16px;
+  cursor: pointer;
+  min-height: 44px; /* Comfortable target on a phone, which is where Canvas gets read. */
+}
+button.lv-secondary { color: var(--ink); background: var(--paper); }
+button:hover { opacity: .88; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+input[type="number"], input[type="range"] { font: inherit; }
+input[type="number"] {
+  width: 6.5em; padding: 8px; min-height: 44px;
+  border: 2px solid var(--rule); border-radius: 5px; color: var(--ink); background: var(--paper);
+}
+input[type="range"] { width: 100%; min-height: 30px; accent-color: #000054; }
+
+table { border-collapse: collapse; width: 100%; margin: 0 0 14px; }
+caption { text-align: left; font-weight: 700; padding: 0 0 8px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+/* Column headers are set in small caps. Row headers are content, often a
+   proper noun, and must keep the capitalisation they were written with. */
+thead th { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+tbody th { font-weight: 700; }
+tbody tr:nth-child(odd) { background: var(--panel); }
+
+.lv-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 18px; }
+.lv-feedback { margin: 0 0 16px; }
+.lv-feedback:empty { margin: 0; }
+.lv-verdict { padding: 12px 14px; border-radius: 6px; border-left: 5px solid; background: var(--panel); }
+.lv-verdict.is-ok { border-color: var(--ok); }
+.lv-verdict.is-no { border-color: var(--no); }
+
+/* Right and wrong are marked by a word and a symbol, never by colour alone. */
+.lv-mark { font-weight: 700; white-space: nowrap; }
+.lv-mark.is-ok { color: var(--ok); }
+.lv-mark.is-no { color: var(--no); }
+.lv-why { margin: 4px 0 0; font-size: 14px; }
+
+.lv-controls { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 0 0 18px; }
+.lv-control label { display: block; font-weight: 700; font-size: 14px; margin: 0 0 4px; }
+.lv-control output { display: inline-block; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+.lv-stage { border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); overflow: hidden; }
+.lv-stage svg { display: block; width: 100%; height: auto; }
+
+.lv-readout { margin: 12px 0 0; }
+.lv-readout table { margin: 0; }
+
+details { border: 1px solid var(--rule); border-radius: 6px; margin: 20px 0 0; }
+summary { cursor: pointer; padding: 12px; font-weight: 700; }
+details > div { padding: 0 12px 12px; }
+details pre { white-space: pre-wrap; font: inherit; margin: 0; }
+
+.lv-visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+@media print {
+  button, input[type="range"] { display: none; }
+  details { open: true; }
+}
+</style>
+
+</head>
+<body>
+<main>
+  <h1>Timing a roast dinner</h1>
+  <p class="lv-sub">Everything has to arrive at the table hot, at the same moment. Work out when each thing goes on.</p>
+  <div class="lv-rule"></div>
+  <p class="lv-intent"><strong>What this is for</strong>Learners can work backwards from a serving time to decide when each component of a multi-part meal must start.</p>
+  
+<form id="lv-form">
+  <p id="unit-hint">Give each answer in minutes from start.</p>
+  <table>
+    <caption id="lv-prompt">Dinner is served 105 minutes after you start. Enter the minute at which each task should begin.</caption>
+    <thead>
+      <tr>
+        <th scope="col">Item</th>
+        <th scope="col">Your answer</th>
+        <th scope="col">Result</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <th scope="row" id="item-0-label">Put the lamb in the oven</th>
+      <td>
+        <input type="number" id="item-0" name="item-0"
+               aria-labelledby="item-0-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-0-verdict"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="item-1-label">Parboil the potatoes</th>
+      <td>
+        <input type="number" id="item-1" name="item-1"
+               aria-labelledby="item-1-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-1-verdict"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="item-2-label">Move potatoes to the oven</th>
+      <td>
+        <input type="number" id="item-2" name="item-2"
+               aria-labelledby="item-2-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-2-verdict"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="item-3-label">Take the lamb out to rest</th>
+      <td>
+        <input type="number" id="item-3" name="item-3"
+               aria-labelledby="item-3-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-3-verdict"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="item-4-label">Make the gravy</th>
+      <td>
+        <input type="number" id="item-4" name="item-4"
+               aria-labelledby="item-4-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-4-verdict"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="item-5-label">Steam the beans</th>
+      <td>
+        <input type="number" id="item-5" name="item-5"
+               aria-labelledby="item-5-label"
+               aria-describedby="unit-hint"
+               min="0" step="any" inputmode="decimal">
+      </td>
+      <td id="item-5-verdict"></td>
+    </tr></tbody>
+  </table>
+
+  <div class="lv-actions">
+    <button type="submit" id="lv-check">Check my answers</button>
+    <button type="button" class="lv-secondary" id="lv-model">Show the model schedule</button>
+    <button type="button" class="lv-secondary" id="lv-reset">Start again</button>
+  </div>
+</form>
+
+<div class="lv-feedback" id="lv-feedback" role="status" aria-live="polite"></div>
+
+<h2 id="lv-stage-heading">Your schedule</h2>
+<p class="lv-sub" id="lv-stage-desc">Your answers appear on this axis as you type. After you check, the model timing appears underneath each one.</p>
+<div class="lv-stage">
+  <svg id="lv-chart" viewBox="0 0 720 240" role="img"
+       aria-labelledby="lv-stage-heading" aria-describedby="lv-stage-desc"></svg>
+</div>
+
+  <details>
+    <summary>Text version of this activity</summary>
+    <div><pre>Timing a roast dinner
+=====================
+
+What this shows: An interactive scheduling exercise. The learner is asked when each of 6 items should happen, in minutes from start, then checks their answers against the model timing.
+How it is arranged: A table with one row per item, followed by a time axis. Dinner is served 105 minutes after you start. Enter the minute at which each task should begin.
+
+Contents:
+  - Put the lamb in the oven: model timing 0 minutes from start. A 1.5 kg leg needs 90 minutes at 180C, then 15 minutes resting. That resting time is the reason it goes in first.
+  - Parboil the potatoes: model timing 45 minutes from start. Twelve minutes in boiling water, then they need to steam dry before they hit the fat. Start them too early and they collapse.
+  - Move potatoes to the oven: model timing 60 minutes from start. Forty five minutes to go crisp. They share the oven with the lamb for its last half hour.
+  - Take the lamb out to rest: model timing 90 minutes from start. Resting lets the juices redistribute. Carve straight away and they run out onto the board.
+  - Make the gravy: model timing 92 minutes from start. Built in the roasting tin while the meat rests, using the pan juices. It cannot be made before the lamb comes out.
+  - Steam the beans: model timing 95 minutes from start. Eight minutes. Green vegetables are the last thing on, because they lose colour and bite within minutes of being cooked.
+
+Source: Kitchen operations, timing a multi-component service.</pre></div>
+  </details>
+  <p style="opacity:.75;font-size:12px;margin-top:16px">Source: Kitchen operations, timing a multi-component service.</p>
+</main>
+<script>
+(function () {
+  function reportHeight() {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    try { parent.postMessage({ type: 'lv:height', height: h }, '*'); } catch (e) {}
+  }
+  window.addEventListener('load', reportHeight);
+  window.addEventListener('resize', reportHeight);
+  if (window.ResizeObserver) new ResizeObserver(reportHeight).observe(document.body);
+  window.lvReportHeight = reportHeight;
+})();
+</script>
+<script>
+(function () {
+  var ITEMS = [{"id":"item-0","label":"Put the lamb in the oven","at":0,"because":"A 1.5 kg leg needs 90 minutes at 180C, then 15 minutes resting. That resting time is the reason it goes in first.","tolerance":5},{"id":"item-1","label":"Parboil the potatoes","at":45,"because":"Twelve minutes in boiling water, then they need to steam dry before they hit the fat. Start them too early and they collapse.","tolerance":5},{"id":"item-2","label":"Move potatoes to the oven","at":60,"because":"Forty five minutes to go crisp. They share the oven with the lamb for its last half hour.","tolerance":5},{"id":"item-3","label":"Take the lamb out to rest","at":90,"because":"Resting lets the juices redistribute. Carve straight away and they run out onto the board.","tolerance":5},{"id":"item-4","label":"Make the gravy","at":92,"because":"Built in the roasting tin while the meat rests, using the pan juices. It cannot be made before the lamb comes out.","tolerance":5},{"id":"item-5","label":"Steam the beans","at":95,"because":"Eight minutes. Green vegetables are the last thing on, because they lose colour and bite within minutes of being cooked.","tolerance":5}];
+  var UNIT = "minutes from start";
+  var MAX = 95;
+  var checked = false;
+
+  var form = document.getElementById('lv-form');
+  var feedback = document.getElementById('lv-feedback');
+  var chart = document.getElementById('lv-chart');
+
+  function inputFor(it) { return document.getElementById(it.id); }
+  function answerFor(it) {
+    var v = inputFor(it).value;
+    return v === '' ? null : Number(v);
+  }
+
+  /** Axis runs a little past the last model event so nothing sits on the edge. */
+  function axisMax() {
+    var given = ITEMS.map(answerFor).filter(function (v) { return v !== null && isFinite(v); });
+    return Math.max(MAX, given.length ? Math.max.apply(null, given) : 0) * 1.1 + 1;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function drawChart() {
+    var W = 720, PADL = 12, PADR = 12, top = 34;
+    var rowH = 26;
+    var height = top + ITEMS.length * rowH + 34;
+    var max = axisMax();
+    var plotL = PADL + 150, plotR = W - PADR;
+    var plotW = plotR - plotL;
+    var x = function (v) { return plotL + (v / max) * plotW; };
+
+    var s = '';
+    s += '<text x="' + plotL + '" y="16" font-size="11" font-weight="bold" fill="#000054">' + esc(UNIT) + '</text>';
+
+    // Ticks.
+    var step = Math.pow(10, Math.floor(Math.log10(max / 5)));
+    [1, 2, 2.5, 5, 10].some(function (m) {
+      if (step * m >= max / 5) { step = step * m; return true; }
+      return false;
+    });
+    for (var v = 0; v <= max; v += step) {
+      s += '<line x1="' + x(v) + '" y1="' + top + '" x2="' + x(v) + '" y2="' + (top + ITEMS.length * rowH) + '" stroke="#d5d5dd"/>';
+      s += '<text x="' + x(v) + '" y="' + (top - 6) + '" font-size="10" fill="#000054" text-anchor="middle" opacity=".85">' + (Math.round(v * 100) / 100) + '</text>';
+    }
+
+    ITEMS.forEach(function (it, i) {
+      var y = top + i * rowH + rowH / 2;
+      s += '<text x="' + PADL + '" y="' + (y + 4) + '" font-size="11.5" font-weight="bold" fill="#000054">'
+        + esc(it.label.length > 24 ? it.label.slice(0, 23) + '\u2026' : it.label) + '</text>';
+
+      var given = answerFor(it);
+      if (given !== null && isFinite(given) && given >= 0) {
+        // The learner's answer: a hollow ring, so it reads as provisional.
+        s += '<circle cx="' + x(given) + '" cy="' + y + '" r="6" fill="#ffffff" stroke="#000054" stroke-width="2.5"/>';
+      }
+      if (checked) {
+        // The model answer: a filled diamond, plus a connector showing the gap.
+        var mx = x(it.at);
+        if (given !== null && isFinite(given)) {
+          s += '<line x1="' + x(given) + '" y1="' + y + '" x2="' + mx + '" y2="' + y + '" stroke="#a4177c" stroke-width="1.5" stroke-dasharray="3 3"/>';
+        }
+        s += '<polygon points="' + mx + ',' + (y - 6) + ' ' + (mx + 6) + ',' + y + ' ' + mx + ',' + (y + 6) + ' ' + (mx - 6) + ',' + y + '" fill="#00706b"/>';
+      }
+    });
+
+    // Legend, always spelled out in words.
+    var ly = height - 12;
+    s += '<circle cx="' + (PADL + 6) + '" cy="' + (ly - 4) + '" r="5" fill="#ffffff" stroke="#000054" stroke-width="2.5"/>';
+    s += '<text x="' + (PADL + 18) + '" y="' + ly + '" font-size="11" fill="#000054">Your answer</text>';
+    if (checked) {
+      s += '<polygon points="' + (PADL + 140) + ',' + (ly - 9) + ' ' + (PADL + 146) + ',' + (ly - 4) + ' ' + (PADL + 140) + ',' + (ly + 1) + ' ' + (PADL + 134) + ',' + (ly - 4) + '" fill="#00706b"/>';
+      s += '<text x="' + (PADL + 152) + '" y="' + ly + '" font-size="11" fill="#000054">Model timing</text>';
+    }
+
+    chart.setAttribute('viewBox', '0 0 ' + W + ' ' + height);
+    chart.innerHTML = s;
+  }
+
+  function verdictCell(it, given) {
+    var cell = document.getElementById(it.id + '-verdict');
+    if (given === null || !isFinite(given)) {
+      cell.innerHTML = '<span class="lv-mark">Not answered</span>'
+        + '<p class="lv-why">Model timing: ' + it.at + ' ' + esc(UNIT) + '. ' + esc(it.because) + '</p>';
+      return false;
+    }
+    var ok = Math.abs(given - it.at) <= it.tolerance;
+    // The symbol and the word both carry the verdict, so it survives greyscale
+    // and colour vision deficiency.
+    cell.innerHTML = '<span class="lv-mark ' + (ok ? 'is-ok' : 'is-no') + '">'
+      + (ok ? '\u2713 Close enough' : '\u2717 Not yet') + '</span>'
+      + '<p class="lv-why">Model timing: ' + it.at + ' ' + esc(UNIT)
+      + (ok ? '' : ' (you said ' + given + ')') + '. ' + esc(it.because) + '</p>';
+    return ok;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    checked = true;
+    var correct = 0;
+    ITEMS.forEach(function (it) {
+      if (verdictCell(it, answerFor(it))) correct += 1;
+    });
+    var all = correct === ITEMS.length;
+    feedback.innerHTML = '<div class="lv-verdict ' + (all ? 'is-ok' : 'is-no') + '">'
+      + '<strong>' + correct + ' of ' + ITEMS.length + ' within range.</strong> '
+      + (all
+        ? 'Every item is timed correctly. Read the reasons below to check that you got them right for the right reason.'
+        : 'Look at the reason given for each one you missed, adjust your answers and check again.')
+      + '</div>';
+    drawChart();
+    window.lvReportHeight && window.lvReportHeight();
+  });
+
+  document.getElementById('lv-model').addEventListener('click', function () {
+    checked = true;
+    ITEMS.forEach(function (it) {
+      inputFor(it).value = it.at;
+      verdictCell(it, it.at);
+    });
+    feedback.innerHTML = '<div class="lv-verdict is-ok"><strong>Model schedule shown.</strong> '
+      + 'Every field now holds the model timing, with the reason beside it.</div>';
+    drawChart();
+    window.lvReportHeight && window.lvReportHeight();
+  });
+
+  document.getElementById('lv-reset').addEventListener('click', function () {
+    checked = false;
+    ITEMS.forEach(function (it) {
+      inputFor(it).value = '';
+      document.getElementById(it.id + '-verdict').innerHTML = '';
+    });
+    feedback.innerHTML = '';
+    drawChart();
+    inputFor(ITEMS[0]).focus();
+    window.lvReportHeight && window.lvReportHeight();
+  });
+
+  form.addEventListener('input', function () { if (!checked) drawChart(); });
+
+  drawChart();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+Why the outer planets move so slowly
+====================================
+
+What this shows: An interactive model of 5 bodies orbiting a central star, with sliders that change the model and a table of results underneath.
+How it is arranged: Controls sit above the picture, the picture in the middle, the results table below. Mass of the star, adjustable from 0.2 to 3 solar masses, starting at 1.
+
+Contents:
+  - Mercury: orbits at 0.39 astronomical units. At the starting star mass of 1 solar masses its orbital period is 0.24 years.
+  - Venus: orbits at 0.72 astronomical units. At the starting star mass of 1 solar masses its orbital period is 0.61 years.
+  - Earth: orbits at 1 astronomical units. At the starting star mass of 1 solar masses its orbital period is 1 years.
+  - Mars: orbits at 1.52 astronomical units. At the starting star mass of 1 solar masses its orbital period is 1.87 years.
+  - Jupiter: orbits at 5.2 astronomical units. At the starting star mass of 1 solar masses its orbital period is 11.86 years.
+  - The relationship being shown: Orbital period follows Kepler's third law: period equals the square root of distance cubed divided by the star's mass. Doubling the distance from the star multiplies the period by about 2.83. Increasing the star's mass shortens every period.
+
+Source: Orbital distances in astronomical units, NASA planetary fact sheet.

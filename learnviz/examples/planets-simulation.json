@@ -1,0 +1,18 @@
+{
+  "type": "simulation",
+  "model": "orbit",
+  "title": "Why the outer planets move so slowly",
+  "subtitle": "Drag the star's mass and watch which orbit changes most. The period of every planet follows the same law.",
+  "intent": "Learners can state Kepler's third law in their own words and predict how an orbital period changes when distance or stellar mass changes.",
+  "parameters": [
+    { "key": "mass", "label": "Mass of the star", "min": 0.2, "max": 3, "value": 1, "unit": "solar masses" }
+  ],
+  "bodies": [
+    { "label": "Mercury", "distance": 0.39, "radius": 5 },
+    { "label": "Venus", "distance": 0.72, "radius": 7 },
+    { "label": "Earth", "distance": 1.0, "radius": 7 },
+    { "label": "Mars", "distance": 1.52, "radius": 6 },
+    { "label": "Jupiter", "distance": 5.2, "radius": 13 }
+  ],
+  "source": "Orbital distances in astronomical units, NASA planetary fact sheet."
+}
