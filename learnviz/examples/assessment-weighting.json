@@ -1,0 +1,15 @@
+{
+  "type": "waffle",
+  "title": "Where the marks come from in this unit",
+  "subtitle": "One hundred squares, one hundred marks. Count them.",
+  "intent": "Learners can say how much each assessment is worth and work out what they still need to pass.",
+  "unitLabel": "marks",
+  "total": 100,
+  "categories": [
+    { "label": "Practical observation", "value": 50, "detail": "Two observed sessions in the simulated workplace, 25 marks each." },
+    { "label": "Portfolio of evidence", "value": 30, "detail": "Submitted in week 10. Marked against the four criteria in the rubric." },
+    { "label": "Knowledge quiz", "value": 20, "detail": "Week 6, in class, open book." }
+  ],
+  "caption": "Half the marks are in the practical, so a strong portfolio cannot rescue a missed observation. Note also that the quiz alone will not carry you to the 50 marks needed to pass.",
+  "source": "Example weighting for layout review. Replace with the weighting in your own unit guide before publishing."
+}

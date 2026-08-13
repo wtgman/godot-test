@@ -11,7 +11,7 @@ messages are written to be acted on, so read them rather than guessing.
 
 | Field | Required | Notes |
 |---|---|---|
-| `type` | yes | One of the ten below |
+| `type` | yes | One of the twelve below |
 | `title` | yes | Up to 120 characters. Becomes the heading and the basis of the alt text |
 | `intent` | yes | What the learner can do afterwards. The build refuses to run without it |
 | `subtitle` | no | One line under the title. Use it to say what to look for |
@@ -181,6 +181,87 @@ cannot see the image still knows the steam wand is upper right.
 
 ---
 
+## stat
+
+Big-number callouts. The infographic register, for figures that deserve to land
+as figures rather than be buried mid-paragraph.
+
+| Field | Required | Notes |
+|---|---|---|
+| `stats` | yes | 2 to 6 |
+| `stats[].value` | yes | Up to 20 characters. A **string**, so "1 billion", "68%", "1 in 4" and "under 30 seconds" all work |
+| `stats[].label` | yes | What the figure counts. Required, and the validator enforces it |
+| `stats[].detail` | no | The qualifier that stops the number being misread |
+
+The value is reproduced exactly as written. The toolkit computes nothing and
+rounds nothing, so it cannot quietly turn 47.6 into "nearly 50" or invent a
+percentage the source never gave.
+
+`label` is required for a reason. A number without its unit and its population
+is not a fact, it is decoration. "13" means nothing; "13 employees at the time
+of sale" means something.
+
+Tiles lay out in one row up to three, then a grid. The figure is auto-sized to
+the widest value so all tiles share one type size.
+
+```json
+{
+  "type": "stat",
+  "title": "The Instagram acquisition, in four numbers",
+  "intent": "Learners can state what Facebook actually bought in 2012.",
+  "stats": [
+    { "value": "$1bn", "label": "Paid by Facebook in April 2012", "detail": "For a company that had never charged anyone anything." },
+    { "value": "$0", "label": "Revenue at the time of sale" }
+  ]
+}
+```
+
+---
+
+## waffle
+
+Part to whole, as a grid of countable squares.
+
+| Field | Required | Notes |
+|---|---|---|
+| `unitLabel` | yes | What one square is. "marks", "students", "minutes". Singularised automatically |
+| `total` | yes | Whole number, 1 to 400. The number of squares |
+| `categories` | yes | 2 to 6 |
+| `categories[].label` | yes | |
+| `categories[].value` | yes | Whole number of squares. The validator rejects fractions, because a square cannot be split |
+| `categories[].detail` | no | Appears under the category in the key |
+
+**Use this instead of a pie chart.** People read angles badly: asked to compare
+a 30 per cent wedge against a 25 per cent wedge, most cannot, and labelling does
+not fix it because the quantity is encoded in the channel the eye is worst at.
+Squares are counted rather than estimated. It also degrades honestly into text:
+"50 of 100 squares" carries the picture's information, "a wedge of roughly half"
+does not.
+
+Values may add to less than `total`. The shortfall is drawn as empty outlined
+squares and named in the key and the text equivalent as "Not accounted for",
+never silently filled. Values may not add to more than `total`, and the
+validator says so with the arithmetic.
+
+Blocks are contiguous, filled left to right then down, which is what makes the
+proportion readable at a glance.
+
+```json
+{
+  "type": "waffle",
+  "title": "Where the marks come from in this unit",
+  "intent": "Learners can say how much each assessment is worth.",
+  "unitLabel": "marks",
+  "total": 100,
+  "categories": [
+    { "label": "Practical observation", "value": 50, "detail": "Two observed sessions, 25 marks each." },
+    { "label": "Knowledge quiz", "value": 20 }
+  ]
+}
+```
+
+---
+
 ## sequencer (interactive)
 
 Predict, check, explain. The learner is asked when each item should happen,
@@ -248,6 +329,8 @@ These are all pedagogical limits, not technical ones.
 - A comparison where an item has the wrong number of values
 - A chart series whose length does not match the categories
 - A gantt task with zero or negative duration
+- A stat tile with no label, or waffle parts that add to more than the whole
+- A fractional waffle count, because a square cannot be split
 - A pin coordinate outside 0 to 100
 - Any spec with no `intent`
 

@@ -20,6 +20,8 @@ export const VISUAL_TYPES = [
   'hierarchy',
   'chart',
   'labelled',
+  'stat',
+  'waffle',
   'sequencer',
   'simulation',
 ];
@@ -186,6 +188,51 @@ const validators = {
       if (p.y < 0 || p.y > 100) fail(`parts[${i}].y`, 'must be between 0 and 100 (percent of the image height)');
     });
     str(s.image, 'image', { required: false, max: 500 });
+  },
+
+  /**
+   * A panel of big-number callouts. The infographic register.
+   *
+   * `value` is a string, not a number, so "1 billion", "68%", "1 in 4" and
+   * "under 30 seconds" all work. The toolkit never computes these: whoever
+   * writes the spec supplies the figure and is accountable for it.
+   */
+  stat(s) {
+    arr(s.stats, 'stats', { min: 2, max: 6 }).forEach((st, i) => {
+      str(st.value, `stats[${i}].value`, { max: 20 });
+      str(st.label, `stats[${i}].label`, { max: 90 });
+      str(st.detail, `stats[${i}].detail`, { required: false, max: 220 });
+    });
+  },
+
+  /**
+   * Part to whole, drawn as a grid of countable squares.
+   *
+   * A pictogram rather than a pie, because a learner can count squares and
+   * cannot reliably compare the angles of a pie. It also degrades to a text
+   * equivalent honestly: "50 of 100 squares" means something, "a wedge of
+   * about half" does not.
+   */
+  waffle(s) {
+    str(s.unitLabel, 'unitLabel', { max: 40 });
+    const total = num(s.total, 'total');
+    if (total <= 0) fail('total', 'must be greater than zero');
+    if (!Number.isInteger(total)) fail('total', 'must be a whole number, because each square is one unit');
+    if (total > 400) fail('total', 'is more than 400, which is more squares than anyone will count. Scale the figures down, for example to a percentage.');
+
+    let sum = 0;
+    arr(s.categories, 'categories', { min: 2, max: 6 }).forEach((c, i) => {
+      str(c.label, `categories[${i}].label`, { max: 70 });
+      const v = num(c.value, `categories[${i}].value`);
+      if (v <= 0) fail(`categories[${i}].value`, 'must be greater than zero');
+      if (!Number.isInteger(v)) fail(`categories[${i}].value`, 'must be a whole number, because each square is one unit');
+      str(c.detail, `categories[${i}].detail`, { required: false, max: 200 });
+      sum += v;
+    });
+
+    if (sum > total) {
+      fail('categories', `add up to ${sum}, which is more than the total of ${total}. A part cannot be bigger than the whole.`);
+    }
   },
 
   /**

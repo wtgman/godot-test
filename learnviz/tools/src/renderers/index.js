@@ -11,6 +11,8 @@ import * as comparison from './comparison.js';
 import * as hierarchy from './hierarchy.js';
 import * as chart from './chart.js';
 import * as labelled from './labelled.js';
+import * as stat from './stat.js';
+import * as waffle from './waffle.js';
 
 import { document_, patternDefs, markerDefs } from '../svg.js';
 import { accessibility } from '../a11y.js';
@@ -25,6 +27,8 @@ export const RENDERERS = {
   hierarchy,
   chart,
   labelled,
+  stat,
+  waffle,
 };
 
 /** True when this spec type draws a static image. */

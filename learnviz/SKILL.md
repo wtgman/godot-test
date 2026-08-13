@@ -40,14 +40,17 @@ in here that a learner has to hold in their head?**
 | Something that repeats with no start or end | `cycle` |
 | What runs at the same time as what | `gantt` |
 | How options differ across the same criteria | `comparison` |
-| How a whole breaks into parts | `hierarchy` |
+| How a whole breaks into named parts and sub-parts | `hierarchy` |
 | How much, and which way it is moving | `chart` |
 | What the parts of a thing are called | `labelled` |
+| A handful of figures that should land as figures | `stat` |
+| What share of a whole each part takes | `waffle` |
 | Getting the timing right, as a skill to practise | `sequencer` (interactive) |
 | A relationship the learner should push on and test | `simulation` (interactive) |
 
 Two rules that resolve most of the hard cases.
 
+- **Share versus amount.** If the point is what fraction of the whole something is, that is a `waffle`. If the point is how big it is, or which way it is moving, that is a `chart`. Never a pie: people read angles badly, and a learner cannot check a wedge the way they can count squares.
 - **Sequence versus schedule.** If the steps happen one after another, that is a
   `process`. If they overlap, it is a `gantt`. A recipe with one pan is a
   process. A roast dinner is a gantt, because the whole difficulty is that the

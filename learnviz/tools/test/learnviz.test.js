@@ -93,6 +93,23 @@ const FIXTURES = {
       { label: 'Steam wand', x: 72, y: 48 },
     ],
   },
+  stat: {
+    type: 'stat', title: 'The acquisition in numbers', intent: 'Learners can state what was bought.',
+    stats: [
+      { value: '$1bn', label: 'Paid in April 2012', detail: 'For a company with no revenue.' },
+      { value: '13', label: 'Employees at the time of sale' },
+      { value: '$0', label: 'Revenue at the time of sale', detail: 'No advertising, no subscriptions.' },
+    ],
+  },
+  waffle: {
+    type: 'waffle', title: 'Where the marks come from', intent: 'Learners can say what each task is worth.',
+    unitLabel: 'marks', total: 100,
+    categories: [
+      { label: 'Practical observation', value: 50, detail: 'Two observed sessions.' },
+      { label: 'Portfolio', value: 30 },
+      { label: 'Knowledge quiz', value: 20, detail: 'Week 6, open book.' },
+    ],
+  },
   sequencer: {
     type: 'sequencer', title: 'Timing a roast', intent: 'Learners can plan backwards.',
     timeUnit: 'minutes', prompt: 'When does each task start?',
@@ -459,5 +476,77 @@ describe('generated prose', () => {
     assert.equal(sentences('One.', 'Two'), 'One. Two');
     assert.equal(sentences('Only one', null), 'Only one');
     assert.equal(sentences(null, undefined, ''), '');
+  });
+});
+
+describe('stat panel', () => {
+  test('the figure is reproduced exactly as supplied, never reformatted', () => {
+    // The toolkit computes nothing here. If it rounded "47.6" to "nearly 50"
+    // it would be inventing a claim the source never made.
+    const spec = validate({
+      ...FIXTURES.stat,
+      stats: [
+        { value: '47.6%', label: 'A precise figure' },
+        { value: '1 in 4', label: 'A ratio, not a number' },
+      ],
+    });
+    const { svg, a11y } = render(spec);
+    assert.ok(svg.includes('>47.6%<'));
+    assert.ok(svg.includes('>1 in 4<'));
+    assert.ok(a11y.fullAlt.includes('47.6%'));
+  });
+
+  test('a stat with no label is rejected', () => {
+    // A number without its unit and population is decoration, not a fact.
+    const bad = structuredClone(FIXTURES.stat);
+    delete bad.stats[0].label;
+    assert.throws(() => validate(bad), SpecError);
+  });
+});
+
+describe('waffle', () => {
+  test('parts that exceed the whole are rejected with the arithmetic shown', () => {
+    const bad = structuredClone(FIXTURES.waffle);
+    bad.categories[0].value = 90;
+    assert.throws(
+      () => validate(bad),
+      (e) => /add up to 140, which is more than the total of 100/.test(e.message),
+    );
+  });
+
+  test('fractional counts are rejected, because a square cannot be split', () => {
+    const bad = structuredClone(FIXTURES.waffle);
+    bad.categories[0].value = 50.5;
+    assert.throws(() => validate(bad), (e) => /whole number/.test(e.message));
+  });
+
+  test('draws exactly one square per unit', () => {
+    const spec = validate(FIXTURES.waffle);
+    const { svg } = render(spec);
+    const cells = svg.match(/class="lv-cell"/g) || [];
+    assert.equal(cells.length, spec.total);
+  });
+
+  test('an unaccounted remainder is drawn as empty squares and named in the text', () => {
+    // Silently filling the gap would misstate the data. The picture and the
+    // description both have to show that the parts do not reach the whole.
+    const spec = validate({
+      ...FIXTURES.waffle,
+      categories: [
+        { label: 'Practical observation', value: 50 },
+        { label: 'Portfolio', value: 30 },
+      ],
+    });
+    const { svg, a11y } = render(spec);
+    assert.match(svg, /stroke="#d5d5dd"/, 'empty squares must be outlined');
+    assert.match(a11y.fullAlt, /Not accounted for: 20 of 100/);
+  });
+
+  test('percentages in the key match the counts', () => {
+    const spec = validate(FIXTURES.waffle);
+    const { svg } = render(spec);
+    assert.ok(svg.includes('50 of 100 (50%)'));
+    assert.ok(svg.includes('30 of 100 (30%)'));
+    assert.ok(svg.includes('20 of 100 (20%)'));
   });
 });

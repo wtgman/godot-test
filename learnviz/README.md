@@ -28,7 +28,7 @@ means will produce a bar chart of nothing. Neither half works alone.
 ```bash
 cd tools
 node bin/learnviz.js doctor                                  # what this machine can do
-node bin/learnviz.js types                                   # the ten visual types
+node bin/learnviz.js types                                   # the twelve visual types
 node bin/learnviz.js validate ../examples/*.json
 node bin/learnviz.js build ../examples/*.json --out ../examples/out
 npm test
@@ -53,7 +53,7 @@ For a static visual, from one spec:
 For an interactive: a single self-contained `.html` that loads nothing from
 anywhere, plus the same supporting files.
 
-## The ten types
+## The twelve types
 
 | Type | For |
 |---|---|
@@ -62,9 +62,11 @@ anywhere, plus the same supporting files.
 | `cycle` | Something that repeats, no start or end |
 | `gantt` | What runs at the same time as what |
 | `comparison` | How options differ across shared criteria |
-| `hierarchy` | How a whole breaks into parts |
+| `hierarchy` | How a whole breaks into named parts and sub-parts |
 | `chart` | How much, and which way it is moving |
 | `labelled` | What the parts of a thing are called |
+| `stat` | Big-number callouts. The infographic register |
+| `waffle` | What share of a whole each part takes, as countable squares. Use instead of a pie chart |
 | `sequencer` | **Interactive.** Learner predicts the timing, then checks against the model |
 | `simulation` | **Interactive.** A model with sliders. Orbit (Kepler) and growth (compounding) |
 
@@ -107,7 +109,7 @@ anything fails.
 ```
 SKILL.md                  the skill: what to build and why
 references/               spec reference, Canvas embedding, design notes, prompt packs
-examples/                 four worked examples, and their built output
+examples/                 eight worked examples, and their built output
 tools/
   bin/learnviz.js         the CLI
   src/spec.js             the schema and validator
@@ -117,7 +119,7 @@ tools/
   src/emble.js            Canvas and Emble embed markup
   src/png.js              PNG cropping, for the Chromium screenshot bug
   src/raster.js           PNG and video rendering
-  src/renderers/          the eight static types
+  src/renderers/          the ten static types
   src/interactive/        the two interactive types
-  test/                   85 tests
+  test/                   104 tests
 ```

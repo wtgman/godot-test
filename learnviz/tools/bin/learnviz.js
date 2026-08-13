@@ -281,6 +281,8 @@ function cmdTypes() {
     hierarchy: 'A tree. How a whole breaks into parts.',
     chart: 'Quantities, as grouped bars or lines. How much, and which way it is moving.',
     labelled: 'A subject with its parts named, pinned to a supplied image.',
+    stat: 'Big-number callouts. The infographic register, for figures that should land as figures.',
+    waffle: 'Part to whole, as countable squares. Use instead of a pie chart.',
     sequencer: 'INTERACTIVE. Learner predicts the timing of each item, then checks against the model.',
     simulation: 'INTERACTIVE. A model with sliders. Engines: orbit (Kepler) and growth (compounding).',
   };
