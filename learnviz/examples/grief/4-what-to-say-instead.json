@@ -1,0 +1,27 @@
+{
+  "kind": "learning-object",
+  "pattern": "cards",
+  "title": "What to say instead",
+  "lede": "Each card has something kind people often say to someone who is grieving. Before you turn it, think of what you could say instead.",
+  "intent": "Learners can replace common, well-meant phrases that close a conversation with ones that keep it open.",
+  "goal": "replace common, well-meant phrases that close a conversation with ones that keep it open.",
+  "placement": "after",
+  "prompt": "What could you say instead?",
+  "frontLabel": "Instead of",
+  "backLabel": "Try",
+  "cards": [
+    { "front": "\"You need to accept this.\"", "back": "\"This is a lot to take in.\" It acknowledges the shock without telling them what they should be feeling." },
+    { "front": "\"At least he had a long life.\"", "back": "\"Tell me about him.\" Any sentence that starts with \"at least\" measures their loss for them." },
+    { "front": "\"I know how you feel.\"", "back": "\"I can't imagine what this is like for you.\" Nobody knows exactly, and saying so invites them to tell you." },
+    { "front": "\"Everything happens for a reason.\"", "back": "\"I'm so sorry.\" Simple is almost always better than an explanation." },
+    { "front": "\"You should be over this by now.\"", "back": "\"How are you going with it all?\" Grief keeps no timetable, and a check-in is better than a deadline." },
+    { "front": "\"Stay strong for the family.\"", "back": "\"It's alright not to be okay.\" Asking someone to be strong asks them to hide." },
+    { "front": "\"There's no point getting angry.\"", "back": "\"I can hear how angry you are.\" Naming the anger lets it be said, which usually lowers it." }
+  ],
+  "teach": {
+    "watchFor": "Learners memorising the replacement lines as scripts. The point is the principle behind each one, so ask them to write a third option of their own."
+  },
+  "sources": [
+    { "label": "Phrases written for this activity", "kind": "constructed", "status": "to-check", "note": "Check the replacement phrases suit the tone and cultural context of your placement sites." }
+  ]
+}

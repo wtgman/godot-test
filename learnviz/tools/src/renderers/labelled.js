@@ -13,7 +13,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, esc, n, roundRect, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const PIN_R = 13;
 const STAGE_RATIO = 0.62; // Image height as a fraction of its width.
@@ -71,11 +71,11 @@ export function render(spec, width = PAGE.width) {
     const colour = series(i);
 
     // A white ring keeps the pin visible over any photograph.
-    body += el.circle({ cx: px, cy: py, r: PIN_R + 2.5, fill: BRAND.paper });
-    body += el.circle({ cx: px, cy: py, r: PIN_R, fill: colour.fill });
-    body += text(String(i + 1), {
-      x: px, y: py + 4.5, size: TYPE.small, weight: 'bold', fill: colour.on, anchor: 'middle',
-    });
+    body += unit(i, el.circle({ cx: px, cy: py, r: PIN_R + 2.5, fill: BRAND.paper })
+      + el.circle({ cx: px, cy: py, r: PIN_R, fill: colour.fill })
+      + text(String(i + 1), {
+        x: px, y: py + 4.5, size: TYPE.small, weight: 'bold', fill: colour.on, anchor: 'middle',
+      }));
   }
 
   // Key, to the right of the stage.
@@ -90,11 +90,11 @@ export function render(spec, width = PAGE.width) {
     const block = textBlock(line, {
       x: keyX + indent, y: ky + TYPE.label, width: keyW - indent, size: TYPE.label, fill: BRAND.ink,
     });
-    body += el.circle({ cx: keyX + 9, cy: ky + TYPE.label - 4.5, r: 9, fill: colour.fill });
-    body += text(String(i + 1), {
-      x: keyX + 9, y: ky + TYPE.label - 1, size: TYPE.small, weight: 'bold', fill: colour.on, anchor: 'middle',
-    });
-    body += block.svg;
+    body += unit(i, el.circle({ cx: keyX + 9, cy: ky + TYPE.label - 4.5, r: 9, fill: colour.fill })
+      + text(String(i + 1), {
+        x: keyX + 9, y: ky + TYPE.label - 1, size: TYPE.small, weight: 'bold', fill: colour.on, anchor: 'middle',
+      })
+      + block.svg);
     ky += block.height + 8;
   }
 

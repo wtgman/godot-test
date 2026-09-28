@@ -10,7 +10,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, n, roundRect, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const NODE_W = 150;
 const NODE_PAD = 10;
@@ -67,7 +67,11 @@ export function render(spec, width = PAGE.width) {
     const p1 = `${n(px + tx * size)},${n(py + ty * size)}`;
     const p2 = `${n(px - tx * size * 0.4 + ty * size * 0.7)},${n(py - ty * size * 0.4 - tx * size * 0.7)}`;
     const p3 = `${n(px - tx * size * 0.4 - ty * size * 0.7)},${n(py - ty * size * 0.4 + tx * size * 0.7)}`;
-    body += el.polygon({ points: `${p1} ${p2} ${p3}`, fill: series(1).fill });
+    // The arrow after stage i leads into stage i + 1, so it appears with that
+    // stage. The last arrow closes the loop and appears with the last stage,
+    // which is the moment the learner sees that the end feeds the beginning.
+    const owner = i < stages.length - 1 ? i + 1 : i;
+    body += unit(owner, el.polygon({ points: `${p1} ${p2} ${p3}`, fill: series(1).fill }));
   }
 
   // Centre label, when the cycle has a name worth repeating in the middle.
@@ -87,19 +91,20 @@ export function render(spec, width = PAGE.width) {
     const y = p.y - nd.height / 2;
     const colour = series(i);
 
-    body += `<path d="${roundRect(x, y, NODE_W, nd.height, 7)}" fill="${BRAND.paper}" stroke="${colour.fill}" stroke-width="2"/>`;
+    let part = `<path d="${roundRect(x, y, NODE_W, nd.height, 7)}" fill="${BRAND.paper}" stroke="${colour.fill}" stroke-width="2"/>`;
 
     // Number badge overlapping the top-left corner ties the node to the key.
-    body += el.circle({ cx: x + 2, cy: y + 2, r: 12, fill: colour.fill });
-    body += text(String(i + 1), {
+    part += el.circle({ cx: x + 2, cy: y + 2, r: 12, fill: colour.fill });
+    part += text(String(i + 1), {
       x: x + 2, y: y + 6.5, size: TYPE.small, weight: 'bold', fill: colour.on, anchor: 'middle',
     });
 
-    body += textBlock(nd.stage.label, {
-      x: cx > p.x ? p.x : p.x, y: y + NODE_PAD + TYPE.label,
+    part += textBlock(nd.stage.label, {
+      x: p.x, y: y + NODE_PAD + TYPE.label,
       width: NODE_W - NODE_PAD * 2, size: TYPE.label, weight: 'bold',
       fill: BRAND.ink, anchor: 'middle',
     }).svg;
+    body += unit(i, part);
   }
 
   let cursor = cy + radius + maxNodeH / 2 + RING_GAP;
@@ -120,12 +125,12 @@ export function render(spec, width = PAGE.width) {
       const block = textBlock(line, {
         x: keyX + indent, y: cursor + TYPE.label, width: keyW - indent, size: TYPE.label, fill: BRAND.ink,
       });
-      body += el.circle({ cx: keyX + 9, cy: cursor + TYPE.label - 4.5, r: 9, fill: colour.fill });
-      body += text(String(i + 1), {
-        x: keyX + 9, y: cursor + TYPE.label - 1, size: TYPE.small, weight: 'bold',
-        fill: colour.on, anchor: 'middle',
-      });
-      body += block.svg;
+      body += unit(i, el.circle({ cx: keyX + 9, cy: cursor + TYPE.label - 4.5, r: 9, fill: colour.fill })
+        + text(String(i + 1), {
+          x: keyX + 9, y: cursor + TYPE.label - 1, size: TYPE.small, weight: 'bold',
+          fill: colour.on, anchor: 'middle',
+        })
+        + block.svg);
       cursor += block.height + 8;
     }
     cursor += 8;

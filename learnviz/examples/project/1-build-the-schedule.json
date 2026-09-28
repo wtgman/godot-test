@@ -1,0 +1,43 @@
+{
+  "kind": "learning-object",
+  "pattern": "stepthrough",
+  "title": "Building a twelve week schedule",
+  "lede": "Three workstreams, one deadline. Watch the schedule build and look for what everything else waits on.",
+  "intent": "Learners can read a schedule for parallel work and identify which tasks sit on the critical path.",
+  "goal": "read a schedule for parallel work and find the tasks everything else waits on.",
+  "placement": "during",
+  "intro": "The deadlines are already on the chart: site work cannot start before week 6, and handover is at week 12. Watch what has to fit between them.",
+  "figure": {
+    "type": "gantt",
+    "timeUnit": "weeks from project start",
+    "tasks": [
+      { "label": "Council permit", "start": 0, "duration": 6, "track": "Approvals" },
+      { "label": "Soil testing", "start": 1, "duration": 2, "track": "Approvals" },
+      { "label": "Recruit volunteers", "start": 2, "duration": 4, "track": "People" },
+      { "label": "Volunteer induction", "start": 6, "duration": 1, "track": "People" },
+      { "label": "Clear the ground", "start": 6, "duration": 2, "track": "Site" },
+      { "label": "Build raised beds", "start": 8, "duration": 3, "track": "Site" },
+      { "label": "Install irrigation", "start": 9, "duration": 2, "track": "Site" },
+      { "label": "Lay paths", "start": 10, "duration": 2, "track": "Site" },
+      { "label": "Planting day", "start": 11, "duration": 1, "track": "People" }
+    ],
+    "milestones": [
+      { "at": 6, "label": "Permit granted, site work can start" },
+      { "at": 12, "label": "Handover to the volunteer committee" }
+    ]
+  },
+  "steps": [
+    { "say": "The council permit takes six weeks, and nothing on site can start without it. This is the critical path. Everything else is arranged around it." },
+    { "say": "Soil testing runs inside the permit window. It does not hold anything up, so it has slack." },
+    { "say": "Volunteer recruitment also runs in parallel, finishing exactly as the permit arrives." },
+    { "say": "Induction cannot start until recruitment closes, and must finish before anyone is on site." },
+    { "say": "Site clearing starts the day the permit lands. Any delay to the permit pushes this, and everything after it." },
+    { "say": "The raised beds follow the clearing." },
+    { "say": "Irrigation overlaps the bed build on purpose: the plumber is only available in week 9." },
+    { "say": "Paths go down while the beds are finished." },
+    { "say": "Planting day lands in week 11, one week before handover. Ask the room: which single task, if it slipped by a week, would push the handover?" }
+  ],
+  "sources": [
+    { "label": "Schedule written for this activity", "kind": "constructed", "status": "to-check" }
+  ]
+}

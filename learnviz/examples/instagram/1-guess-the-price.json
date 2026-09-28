@@ -1,0 +1,46 @@
+{
+  "kind": "learning-object",
+  "pattern": "estimate",
+  "title": "What was Instagram worth?",
+  "lede": "Three of these deals are shown. Two are hidden. Guess the announced price of each hidden deal before you reveal it.",
+  "intent": "Learners can place an acquisition price in context, and explain why an announced price is not the same as the value paid or the value gained.",
+  "goal": "place an acquisition price in context, and explain why the announced price is not the whole story.",
+  "placement": "before",
+  "question": "How much did Facebook announce it would pay for Instagram in 2012, and for WhatsApp in 2014?",
+  "unit": "billion US dollars, announced",
+  "prefix": "US$",
+  "max": 30,
+  "bars": [
+    { "label": "YouTube", "note": "Google, 2006", "value": 1.65 },
+    { "label": "Instagram", "note": "Facebook, 2012", "value": 1, "hidden": true },
+    { "label": "Tumblr", "note": "Yahoo, 2013", "value": 1.1 },
+    { "label": "WhatsApp", "note": "Facebook, 2014", "value": 19, "hidden": true },
+    { "label": "LinkedIn", "note": "Microsoft, 2016", "value": 26.2 }
+  ],
+  "reveal": {
+    "heading": "A price is only readable next to other prices",
+    "explanation": "Instagram was announced at about US$1 billion, less than YouTube six years earlier, for a company with 13 staff and no revenue. Two years later WhatsApp was announced at nineteen times that. And Tumblr, bought for almost exactly Instagram's price, went the other way entirely.",
+    "points": [
+      "Announced prices are headlines. The Instagram deal was mostly Facebook shares, which fell after Facebook's float, so it was worth about US$715 million by the time it closed.",
+      "WhatsApp went the opposite way: US$19 billion announced, about US$22 billion by the close.",
+      "Yahoo later wrote off most of what it paid for Tumblr, and it was reportedly sold in 2019 for about US$3 million. Same price as Instagram, opposite outcome."
+    ]
+  },
+  "teach": {
+    "watchFor": "Learners concluding that Facebook was obviously clever. Put Tumblr beside Instagram: same price, opposite result. It was a bet, and at the time it looked like one.",
+    "ask": [
+      "Who guessed highest for Instagram? What were you assuming?",
+      "Why would a company pay anything for a business with no revenue?"
+    ]
+  },
+  "sources": [
+    { "label": "Facebook newsroom, Facebook to acquire Instagram (2012)", "url": "https://about.fb.com/news/2012/04/facebook-to-acquire-instagram/", "kind": "research", "status": "to-check" },
+    { "label": "Forbes, Facebook officially closes Instagram deal (2012)", "url": "https://www.forbes.com/sites/tomiogeron/2012/09/06/facebook-officially-closes-instagram-deal/", "note": "Source for the US$715 million closing value.", "kind": "research", "status": "to-check" },
+    { "label": "Google release on YouTube, via SEC (2006)", "url": "https://www.sec.gov/Archives/edgar/data/1288776/000119312506206884/dex991.htm", "kind": "research", "status": "to-check" },
+    { "label": "CNN Money, Yahoo buys Tumblr (2013)", "url": "https://money.cnn.com/2013/05/20/technology/yahoo-buys-tumblr/index.html", "kind": "research", "status": "to-check" },
+    { "label": "Facebook release on WhatsApp, via SEC (2014)", "url": "https://www.sec.gov/Archives/edgar/data/0001326801/000132680114000010/exhibit991_pressrelease219.htm", "kind": "research", "status": "to-check" },
+    { "label": "Time, WhatsApp deal value at close (2014)", "url": "https://time.com/3477028/facebook-whatsapp-19-billion-dollar-deal/", "note": "Source for the roughly US$22 billion closing value. Medium confidence.", "kind": "research", "status": "to-check" },
+    { "label": "LinkedIn 8-K on the Microsoft deal, via SEC (2016)", "url": "https://www.sec.gov/Archives/edgar/data/0001271024/000110465916126712/a16-13234_1ex99d1.htm", "kind": "research", "status": "to-check" },
+    { "label": "Axios, Tumblr sold to Automattic (2019)", "url": "https://www.axios.com/2019/08/13/tumblr-verizon-sale-automattic-wordpress", "note": "The US$3 million figure is reported from unnamed sources, never officially disclosed.", "kind": "research", "status": "to-check" }
+  ]
+}

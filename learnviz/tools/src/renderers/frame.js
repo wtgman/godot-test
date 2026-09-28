@@ -22,6 +22,10 @@ export const contentWidth = (width = PAGE.width) => width - PAGE.margin * 2;
  * Subtitle is optional and wraps.
  */
 export function header(spec, width = PAGE.width) {
+  // A bare figure sits inside an activity that already has its own heading,
+  // so repeating the title inside the drawing would say it twice.
+  if (spec._bare) return { svg: '', height: 18 };
+
   const x = PAGE.margin;
   const w = contentWidth(width);
   let y = PAGE.margin + TYPE.title;
@@ -50,6 +54,8 @@ export function header(spec, width = PAGE.width) {
  * Returns `{ svg, height }` where height is the space consumed below `y`.
  */
 export function footer(spec, y, width = PAGE.width) {
+  if (spec._bare) return { svg: '', height: 0 };
+
   const x = PAGE.margin;
   const w = contentWidth(width);
   let cursor = y;
@@ -72,6 +78,19 @@ export function footer(spec, y, width = PAGE.width) {
   }
 
   return { svg, height: cursor - y };
+}
+
+/**
+ * Mark a piece of a figure as one reveal unit.
+ *
+ * A step-through shows a figure one unit at a time, and presenter mode lets a
+ * teacher build it up while they talk. Each renderer wraps the markup for one
+ * unit (a timeline event, a process step, a table row) in a group carrying its
+ * index. The skeleton, meaning axes, rings, spines and headers, stays outside
+ * any group so the learner can see the shape of what is coming.
+ */
+export function unit(index, svg) {
+  return `<g data-item="${index}">${svg}</g>`;
 }
 
 /**

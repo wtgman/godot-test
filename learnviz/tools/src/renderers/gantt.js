@@ -9,7 +9,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, measure, ellipsize, roundRect, n, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth, legend } from './frame.js';
+import { PAGE, header, footer, contentWidth, legend, unit } from './frame.js';
 
 const ROW_H = 30;
 const ROW_GAP = 6;
@@ -112,13 +112,13 @@ export function render(spec, width = PAGE.width) {
       });
     }
 
-    body += text(ellipsize(task.label, labelW - LABEL_PAD, TYPE.label, 'bold'), {
+    let part = text(ellipsize(task.label, labelW - LABEL_PAD, TYPE.label, 'bold'), {
       x: PAGE.margin, y: y + ROW_H / 2 + 4.5, size: TYPE.label, weight: 'bold', fill: BRAND.ink,
     });
 
-    body += `<path d="${roundRect(x1, barY, w, BAR_H, 4)}" fill="${colour.fill}"/>`;
+    part += `<path d="${roundRect(x1, barY, w, BAR_H, 4)}" fill="${colour.fill}"/>`;
     if (colour.pattern && colour.pattern !== 'solid') {
-      body += `<path d="${roundRect(x1, barY, w, BAR_H, 4)}" fill="url(#lv-${colour.pattern})"/>`;
+      part += `<path d="${roundRect(x1, barY, w, BAR_H, 4)}" fill="url(#lv-${colour.pattern})"/>`;
     }
 
     // The timing is the lesson, so it is printed rather than left to be read
@@ -126,14 +126,15 @@ export function render(spec, width = PAGE.width) {
     const stamp = `${fmt(task.start)} to ${fmt(task.start + task.duration)}`;
     const stampW = measure(stamp, TYPE.small, 'bold');
     if (stampW + 14 < w) {
-      body += text(stamp, {
+      part += text(stamp, {
         x: x1 + 7, y: barY + BAR_H / 2 + 4, size: TYPE.small, weight: 'bold', fill: colour.on,
       });
     } else if (x2 + stampW + 8 < PAGE.margin + contentWidth(width)) {
-      body += text(stamp, {
+      part += text(stamp, {
         x: x2 + 6, y: barY + BAR_H / 2 + 4, size: TYPE.small, fill: BRAND.ink, opacity: 0.8,
       });
     }
+    body += unit(i, part);
   }
 
   let cursor = top + plotH + 10;
@@ -146,7 +147,8 @@ export function render(spec, width = PAGE.width) {
       stroke: series(2).fill, 'stroke-width': 2, 'stroke-dasharray': '5 4',
     });
     body += el.polygon({
-      points: `${n(mx)},${n(top - 5)} ${n(mx - 5)},${n(top - 13)} ${n(mx + 5)},${n(top - 13)}`,
+      // Sits between the tick numbers and the plot, so it never covers a number.
+      points: `${n(mx)},${n(top - 1)} ${n(mx - 5)},${n(top - 8)} ${n(mx + 5)},${n(top - 8)}`,
       fill: series(2).fill,
     });
   }
@@ -181,10 +183,11 @@ export function render(spec, width = PAGE.width) {
   if (noted.length) {
     cursor += 8;
     for (const t of noted) {
+      const owner = tasks.indexOf(t);
       const block = textBlock(`${t.label}: ${t.note}`, {
         x: PAGE.margin, y: cursor + TYPE.small, width: contentWidth(width), size: TYPE.small, fill: BRAND.ink,
       });
-      body += `<g opacity="0.85">${block.svg}</g>`;
+      body += unit(owner, `<g opacity="0.85">${block.svg}</g>`);
       cursor += block.height + 4;
     }
   }

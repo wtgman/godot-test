@@ -17,7 +17,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, roundRect, n, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const CELL_GAP = 3;
 const MAX_CELL = 24;
@@ -70,6 +70,7 @@ export function render(spec, width = PAGE.width) {
 
   const top = head.height;
   let body = head.svg;
+  const fills = spec.categories.map(() => '');
 
   for (let idx = 0; idx < total; idx += 1) {
     const col = idx % cols;
@@ -78,21 +79,25 @@ export function render(spec, width = PAGE.width) {
     const y = top + row * (cell + CELL_GAP);
     const catIndex = assigned[idx];
 
-    if (catIndex === undefined) {
-      // Unaccounted squares are drawn as an empty outline, never silently
-      // filled, so a spec whose parts do not reach the whole shows the gap.
-      body += `<path class="lv-cell" d="${roundRect(x, y, cell, cell, 2)}" fill="${BRAND.paper}" stroke="${BRAND.rule}" stroke-width="1.2"/>`;
-      continue;
-    }
+    // Every square is first drawn as an empty outline. That is the skeleton:
+    // the whole is visible before any part is, so in a step-through the grid
+    // fills in category by category. Unaccounted squares simply stay empty,
+    // never silently filled, so a spec whose parts do not reach the whole
+    // shows the gap.
+    // Each cell carries a class so a count of squares can be asserted rather
+    // than inferred from path data.
+    body += `<path class="lv-cell" d="${roundRect(x, y, cell, cell, 2)}" fill="${BRAND.paper}" stroke="${BRAND.rule}" stroke-width="1.2"/>`;
+    if (catIndex === undefined) continue;
 
     const colour = series(catIndex);
-    // Each cell carries a class so it is identifiable in the output, and so a
-    // count of squares can be asserted rather than inferred from path data.
-    body += `<path class="lv-cell" d="${roundRect(x, y, cell, cell, 2)}" fill="${colour.fill}"/>`;
+    let fill = `<path d="${roundRect(x, y, cell, cell, 2)}" fill="${colour.fill}"/>`;
     if (colour.pattern && colour.pattern !== 'solid') {
-      body += `<path d="${roundRect(x, y, cell, cell, 2)}" fill="url(#lv-${colour.pattern})"/>`;
+      fill += `<path d="${roundRect(x, y, cell, cell, 2)}" fill="url(#lv-${colour.pattern})"/>`;
     }
+    fills[catIndex] += fill;
   }
+  // One reveal unit per category, drawn over the empty grid.
+  fills.forEach((f, i) => { body += unit(i, f); });
 
   // Key. Each entry carries the count and the share as a number, so the
   // proportion never has to be estimated off the picture.
@@ -108,9 +113,9 @@ export function render(spec, width = PAGE.width) {
     const swatch = 14;
     const indent = swatch + 10;
 
-    body += el.rect({ x: keyX, y: ky, width: swatch, height: swatch, rx: 2, fill: colour.fill });
+    let part = el.rect({ x: keyX, y: ky, width: swatch, height: swatch, rx: 2, fill: colour.fill });
     if (colour.pattern && colour.pattern !== 'solid') {
-      body += el.rect({ x: keyX, y: ky, width: swatch, height: swatch, rx: 2, fill: `url(#lv-${colour.pattern})` });
+      part += el.rect({ x: keyX, y: ky, width: swatch, height: swatch, rx: 2, fill: `url(#lv-${colour.pattern})` });
     }
 
     const headline = `${c.label}: ${c.value} of ${total} (${share}%)`;
@@ -118,16 +123,17 @@ export function render(spec, width = PAGE.width) {
       x: keyX + indent, y: ky + TYPE.label - 1, width: keyW - indent,
       size: TYPE.label, weight: 'bold', fill: BRAND.ink,
     });
-    body += block.svg;
+    part += block.svg;
     ky += Math.max(swatch, block.height) + 3;
 
     if (c.detail) {
       const d = textBlock(c.detail, {
         x: keyX + indent, y: ky + TYPE.small, width: keyW - indent, size: TYPE.small, fill: BRAND.ink,
       });
-      body += `<g opacity="0.85">${d.svg}</g>`;
+      part += `<g opacity="0.85">${d.svg}</g>`;
       ky += d.height + 3;
     }
+    body += unit(i, part);
     ky += 8;
   }
 
@@ -155,6 +161,11 @@ export function render(spec, width = PAGE.width) {
   cursor += foot.height;
 
   return { body, width, height: cursor + PAGE.margin };
+}
+
+/** Reveal units: one per category. The empty grid is the skeleton. */
+export function units(spec) {
+  return spec.categories.map((c) => c.label);
 }
 
 export function describe(spec) {

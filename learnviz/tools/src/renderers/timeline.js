@@ -10,7 +10,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, n, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const SPINE_X = PAGE.margin + 8;
 const DOT_R = 7;
@@ -59,42 +59,43 @@ export function render(spec, width = PAGE.width) {
   });
 
   for (const [i, row] of rows.entries()) {
+    let part = '';
     const { event } = row;
     const dotY = row.y + TYPE.small * 0.6;
     const colour = event.emphasis ? series(2) : { fill: BRAND.ink };
     const r = event.emphasis ? EMPHASIS_R : DOT_R;
 
     // A halo keeps the dot legible where it crosses the spine.
-    body += el.circle({ cx: SPINE_X, cy: dotY, r: r + 3, fill: BRAND.paper });
-    body += el.circle({ cx: SPINE_X, cy: dotY, r, fill: colour.fill });
+    part += el.circle({ cx: SPINE_X, cy: dotY, r: r + 3, fill: BRAND.paper });
+    part += el.circle({ cx: SPINE_X, cy: dotY, r, fill: colour.fill });
 
     if (event.emphasis) {
       // Emphasis is carried by size and a ring as well as hue, so it survives
       // greyscale printing and colour vision deficiency.
-      body += el.circle({
+      part += el.circle({
         cx: SPINE_X, cy: dotY, r: r + 4.5,
         fill: 'none', stroke: colour.fill, 'stroke-width': 1.5, opacity: 0.5,
       });
     }
 
     let ty = row.y + TYPE.small;
-    body += text(event.date, {
+    part += text(event.date, {
       x: TEXT_X, y: ty, size: TYPE.small, weight: 'bold', fill: series(1).fill,
     });
     ty += row.dateH;
 
-    body += textBlock(event.label, {
+    part += textBlock(event.label, {
       x: TEXT_X, y: ty, width: row.textWidth, size: TYPE.body, weight: 'bold', fill: BRAND.ink,
     }).svg;
     ty += row.labelH;
 
     if (row.detailLines) {
-      body += textBlock(event.detail, {
-        x: TEXT_X, y: ty + 4 + TYPE.label - TYPE.label, width: row.textWidth, size: TYPE.label, fill: BRAND.ink,
+      part += textBlock(event.detail, {
+        x: TEXT_X, y: ty + 4, width: row.textWidth, size: TYPE.label, fill: BRAND.ink,
       }).svg;
     }
 
-    void i;
+    body += unit(i, part);
   }
 
   let cursor = lastRow.y + lastRow.height + 18;

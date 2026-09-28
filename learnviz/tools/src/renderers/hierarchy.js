@@ -10,7 +10,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, textBlock, n, roundRect, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const ROW_GAP = 12;
 const COL_GAP = 34;
@@ -31,6 +31,9 @@ function depthOf(node) {
 function layout(root, colW, innerW) {
   const nodes = [];
   let cursorY = 0;
+  // Pre-order index: a parent before its children, matching describe(), so a
+  // step-through reveals the tree top down and the narration lines up.
+  let order = 0;
 
   const walk = (node, depth) => {
     const block = textBlock(node.label, { width: innerW, size: TYPE.label, weight: depth === 0 ? 'bold' : 'normal' });
@@ -40,7 +43,7 @@ function layout(root, colW, innerW) {
     const h = block.height + (detail ? detail.height + 4 : 0) + PAD_Y * 2;
 
     const record = {
-      node, depth, block, detail,
+      node, depth, block, detail, order: order++,
       x: depth * (colW + COL_GAP),
       w: colW, h,
       y: 0, cy: 0,
@@ -91,7 +94,7 @@ export function render(spec, width = PAGE.width) {
     for (const child of rec.children) {
       const cy = top + child.cy;
       const path = `M${n(startX)},${n(top + rec.cy)} H${n(midX)} V${n(cy)} H${n(x0 + child.x)}`;
-      body += el.path({ d: path, fill: 'none', stroke: colour.fill, 'stroke-width': 1.8, opacity: 0.6 });
+      body += unit(child.order, el.path({ d: path, fill: 'none', stroke: colour.fill, 'stroke-width': 1.8, opacity: 0.6 }));
     }
   }
 
@@ -102,22 +105,23 @@ export function render(spec, width = PAGE.width) {
     const x = x0 + rec.x;
     const y = top + rec.y;
 
-    body += `<path d="${roundRect(x, y, rec.w, rec.h, 6)}" fill="${rec.depth === 0 ? colour.fill : BRAND.panel}"/>`;
-    body += el.rect({ x, y: y + 4, width: 4, height: rec.h - 8, rx: 2, fill: rec.depth === 0 ? colour.on : colour.fill });
+    let part = `<path d="${roundRect(x, y, rec.w, rec.h, 6)}" fill="${rec.depth === 0 ? colour.fill : BRAND.panel}"/>`;
+    part += el.rect({ x, y: y + 4, width: 4, height: rec.h - 8, rx: 2, fill: rec.depth === 0 ? colour.on : colour.fill });
 
     const fg = rec.depth === 0 ? colour.on : BRAND.ink;
     let ty = y + PAD_Y + TYPE.label;
-    body += textBlock(rec.node.label, {
+    part += textBlock(rec.node.label, {
       x: x + PAD_X, y: ty, width: innerW, size: TYPE.label,
       weight: rec.depth === 0 ? 'bold' : 'normal', fill: fg,
     }).svg;
     ty += rec.block.height;
 
     if (rec.detail) {
-      body += `<g opacity="0.85">${textBlock(rec.node.detail, {
+      part += `<g opacity="0.85">${textBlock(rec.node.detail, {
         x: x + PAD_X, y: ty + 4, width: innerW, size: TYPE.small, fill: fg,
       }).svg}</g>`;
     }
+    body += unit(rec.order, part);
   }
 
   let cursor = top + height + 20;

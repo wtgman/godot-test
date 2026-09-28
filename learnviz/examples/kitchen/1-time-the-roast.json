@@ -1,0 +1,26 @@
+{
+  "kind": "learning-object",
+  "pattern": "order",
+  "mode": "timing",
+  "title": "Timing a roast dinner",
+  "lede": "Everything has to reach the table hot at the same moment. Work out when each thing starts.",
+  "intent": "Learners can work backwards from a serving time to decide when each part of a multi-part meal must start.",
+  "goal": "work backwards from a serving time to decide when each part of a meal must start.",
+  "placement": "after",
+  "prompt": "Dinner is served 105 minutes after you start. At what minute should each task begin?",
+  "timeUnit": "minutes from the start",
+  "items": [
+    { "label": "Lamb into the oven", "at": 0, "duration": 90, "why": "A 1.5 kg leg needs about 90 minutes, then 15 minutes resting. That rest is why it goes in first." },
+    { "label": "Parboil the potatoes", "at": 45, "duration": 12, "why": "About twelve minutes in boiling water, then a few minutes to steam dry before they hit the fat." },
+    { "label": "Potatoes into the oven", "at": 60, "duration": 45, "why": "About 45 minutes to crisp. They share the oven with the lamb for its last half hour." },
+    { "label": "Lamb out to rest", "at": 90, "duration": 15, "why": "Resting lets the juices settle back through the meat. Carve straight away and they run onto the board." },
+    { "label": "Make the gravy", "at": 92, "duration": 10, "why": "Made in the roasting tin from the pan juices, so it cannot start until the lamb comes out." },
+    { "label": "Steam the beans", "at": 95, "duration": 8, "why": "Green vegetables go on last. They lose colour and bite within minutes of being cooked." }
+  ],
+  "teach": {
+    "watchFor": "Learners timing forwards from the start instead of backwards from service. Ask them to begin with the last thing on the plate."
+  },
+  "sources": [
+    { "label": "Cooking times written for this activity", "kind": "constructed", "status": "to-check", "note": "Check the times against your kitchen's recipes and equipment." }
+  ]
+}

@@ -10,7 +10,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, roundRect, n, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth, arrow } from './frame.js';
+import { PAGE, header, footer, contentWidth, arrow, unit } from './frame.js';
 
 const ROW_LIMIT = 5;
 const GAP = 18;
@@ -50,26 +50,31 @@ function renderRow(spec, width) {
 
   for (const [i, l] of laid.entries()) {
     const x = PAGE.margin + i * (boxW + GAP);
+    let part = '';
 
-    body += `<path d="${roundRect(x, top, boxW, boxH, 8)}" fill="${BRAND.panel}"/>`;
-    body += badge(x + PAD + BADGE_R, top, i + 1);
+    // The arrow leading into a step belongs to that step, so in a step-through
+    // it appears with the box it points at rather than before it.
+    if (i > 0) {
+      const ax = x - GAP + 3;
+      part += arrow(ax, top + boxH / 2, ax + GAP - 6, top + boxH / 2);
+    }
+
+    part += `<path d="${roundRect(x, top, boxW, boxH, 8)}" fill="${BRAND.panel}"/>`;
+    part += badge(x + PAD + BADGE_R, top, i + 1);
 
     let ty = top + BADGE_R + 14 + TYPE.body;
-    body += textBlock(l.step.label, {
+    part += textBlock(l.step.label, {
       x: x + PAD, y: ty, width: innerW, size: TYPE.body, weight: 'bold', fill: BRAND.ink,
     }).svg;
     ty += l.label.height;
 
     if (l.detail.height) {
-      body += textBlock(l.step.detail, {
+      part += textBlock(l.step.detail, {
         x: x + PAD, y: ty + 6, width: innerW, size: TYPE.label, fill: BRAND.ink,
       }).svg;
     }
 
-    if (i < laid.length - 1) {
-      const ax = x + boxW + 3;
-      body += arrow(ax, top + boxH / 2, ax + GAP - 6, top + boxH / 2);
-    }
+    body += unit(i, part);
   }
 
   let cursor = top + boxH + 20;
@@ -97,20 +102,21 @@ function renderStack(spec, width) {
     const blockH = label.height + (detail ? detail.height + 5 : 0);
     const boxH = blockH + PAD * 2;
 
-    body += `<path d="${roundRect(x, y, total, boxH, 8)}" fill="${BRAND.panel}"/>`;
-    body += badge(x + PAD + BADGE_R, y + boxH / 2, i + 1);
+    let part = `<path d="${roundRect(x, y, total, boxH, 8)}" fill="${BRAND.panel}"/>`;
+    part += badge(x + PAD + BADGE_R, y + boxH / 2, i + 1);
 
     let ty = y + PAD + TYPE.body;
-    body += textBlock(step.label, {
+    part += textBlock(step.label, {
       x: textX, y: ty, width: innerW, size: TYPE.body, weight: 'bold', fill: BRAND.ink,
     }).svg;
     ty += label.height;
 
     if (detail) {
-      body += textBlock(step.detail, {
+      part += textBlock(step.detail, {
         x: textX, y: ty + 5, width: innerW, size: TYPE.label, fill: BRAND.ink,
       }).svg;
     }
+    body += unit(i, part);
 
     centres.push({ top: y, bottom: y + boxH });
     y += boxH + 26;
@@ -119,7 +125,7 @@ function renderStack(spec, width) {
   // Down arrows in the gaps between boxes.
   for (let i = 0; i < centres.length - 1; i += 1) {
     const ax = x + PAD + BADGE_R;
-    body += arrow(ax, centres[i].bottom + 4, ax, centres[i + 1].top - 4);
+    body += unit(i + 1, arrow(ax, centres[i].bottom + 4, ax, centres[i + 1].top - 4));
   }
 
   let cursor = centres[centres.length - 1].bottom + 20;

@@ -18,7 +18,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, measure, roundRect, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const GAP = 18;
 const PAD = 20;
@@ -74,30 +74,31 @@ export function render(spec, width = PAGE.width) {
     const y = top + row * (tileH + GAP);
     const colour = series(i);
 
-    body += `<path d="${roundRect(x, y, tileW, tileH, 8)}" fill="${BRAND.panel}"/>`;
+    let part = `<path d="${roundRect(x, y, tileW, tileH, 8)}" fill="${BRAND.panel}"/>`;
 
     // A colour bar across the top of each tile. The tiles are told apart by
     // position and by their own label, so the colour is emphasis rather than
     // encoding, and nothing is lost if it cannot be seen.
-    body += `<path d="${roundRect(x, y, tileW, RULE_H * 2, 8)}" fill="${colour.fill}"/>`;
-    body += el.rect({ x, y: y + RULE_H, width: tileW, height: RULE_H, fill: BRAND.panel });
+    part += `<path d="${roundRect(x, y, tileW, RULE_H * 2, 8)}" fill="${colour.fill}"/>`;
+    part += el.rect({ x, y: y + RULE_H, width: tileW, height: RULE_H, fill: BRAND.panel });
 
     let ty = y + RULE_H + PAD + valueSize * 0.78;
-    body += text(l.stat.value, {
+    part += text(l.stat.value, {
       x: x + PAD, y: ty, size: valueSize, weight: 'bold', fill: colour.fill,
     });
     ty += valueSize * 0.22 + 12;
 
-    body += textBlock(l.stat.label, {
+    part += textBlock(l.stat.label, {
       x: x + PAD, y: ty, width: innerW, size: TYPE.label, weight: 'bold', fill: BRAND.ink,
     }).svg;
     ty += l.label.height;
 
     if (l.detail.height) {
-      body += `<g opacity="0.85">${textBlock(l.stat.detail, {
+      part += `<g opacity="0.85">${textBlock(l.stat.detail, {
         x: x + PAD, y: ty + 7, width: innerW, size: TYPE.small, fill: BRAND.ink,
       }).svg}</g>`;
     }
+    body += unit(i, part);
   }
 
   let cursor = top + rows * tileH + (rows - 1) * GAP + 20;

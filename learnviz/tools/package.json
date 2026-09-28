@@ -11,5 +11,8 @@
     "examples": "node bin/learnviz.js build ../examples/*.json --out ../examples/out"
   },
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
+  }
 }

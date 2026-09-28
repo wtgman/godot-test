@@ -9,7 +9,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, measure, n, roundRect, sentences } from '../svg.js';
-import { PAGE, header, footer, contentWidth } from './frame.js';
+import { PAGE, header, footer, contentWidth, unit } from './frame.js';
 
 const CELL_PAD = 11;
 const MIN_ROW_H = 34;
@@ -78,7 +78,9 @@ export function render(spec, width = PAGE.width) {
       body += el.rect({ x: x0, y, width: total, height: row.height, fill: BRAND.panel });
     }
 
-    body += textBlock(row.criterion, {
+    // The row's banding and hairlines stay as skeleton, so in a step-through
+    // the empty table is visible from the start and fills in row by row.
+    let part = textBlock(row.criterion, {
       x: x0 + CELL_PAD, y: y + (row.height - row.critBlock.height) / 2 + TYPE.label,
       width: critW - CELL_PAD * 2, size: TYPE.label, weight: 'bold', fill: BRAND.ink,
     }).svg;
@@ -92,11 +94,12 @@ export function render(spec, width = PAGE.width) {
           stroke: BRAND.rule, 'stroke-width': 1,
         });
       }
-      body += textBlock(String(item.values[r]), {
+      part += textBlock(String(item.values[r]), {
         x: cx + CELL_PAD, y: y + (row.height - row.cells[c].height) / 2 + TYPE.label,
         width: colW - CELL_PAD * 2, size: TYPE.label, fill: BRAND.ink,
       }).svg;
     }
+    body += unit(r, part);
 
     y += row.height;
   }

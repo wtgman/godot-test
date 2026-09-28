@@ -1,0 +1,20 @@
+{
+  "kind": "learning-object",
+  "pattern": "order",
+  "title": "Handling a complaint",
+  "lede": "These five steps are shuffled. Put them in the order you would use them with an unhappy customer.",
+  "intent": "Learners can carry out the steps of handling a customer complaint in an order that resolves it rather than escalating it.",
+  "goal": "handle a customer complaint in an order that settles it rather than escalating it.",
+  "placement": "after",
+  "prompt": "In what order should you handle a customer complaint?",
+  "items": [
+    { "label": "Listen without interrupting", "why": "People need to be heard before they can hear you. Jumping in with a fix usually makes it take longer." },
+    { "label": "Acknowledge it and apologise for the experience", "why": "Apologising for how it felt is not admitting fault. It puts you on their side of the problem." },
+    { "label": "Ask what would put it right", "why": "The fix you assume they want is often not the one they do." },
+    { "label": "Agree what you will do, and by when", "why": "A specific action and a time is what turns an apology into a plan." },
+    { "label": "Follow up afterwards", "why": "Checking back is what customers remember, and it catches the fixes that did not work." }
+  ],
+  "sources": [
+    { "label": "Steps written for this activity", "kind": "constructed", "status": "to-check", "note": "Check against your workplace's complaints procedure." }
+  ]
+}

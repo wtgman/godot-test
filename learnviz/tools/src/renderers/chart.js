@@ -11,7 +11,7 @@
 
 import { BRAND, TYPE, series } from '../theme.js';
 import { el, text, textBlock, measure, n, roundRect } from '../svg.js';
-import { PAGE, header, footer, contentWidth, legend } from './frame.js';
+import { PAGE, header, footer, contentWidth, legend, unit } from './frame.js';
 
 const PLOT_H = 300;
 const AXIS_PAD = 12;
@@ -98,17 +98,20 @@ export function render(spec, width = PAGE.width) {
         const yBase = yOf(0);
         const h = Math.abs(yBase - yTop);
         if (h < 0.5) continue;
-        body += `<path d="${roundRect(bx + 1, Math.min(yTop, yBase), barW - 2, h, 3)}" fill="${colour.fill}"/>`;
+        let part = `<path d="${roundRect(bx + 1, Math.min(yTop, yBase), barW - 2, h, 3)}" fill="${colour.fill}"/>`;
         if (colour.pattern !== 'solid') {
-          body += `<path d="${roundRect(bx + 1, Math.min(yTop, yBase), barW - 2, h, 3)}" fill="url(#lv-${colour.pattern})"/>`;
+          part += `<path d="${roundRect(bx + 1, Math.min(yTop, yBase), barW - 2, h, 3)}" fill="url(#lv-${colour.pattern})"/>`;
         }
         // Value on top of the bar when the group is not too crowded.
         if (spec.series.length <= 2 && barW > 26) {
-          body += text(fmt(value), {
+          part += text(fmt(value), {
             x: bx + barW / 2, y: Math.min(yTop, yBase) - 5,
             size: TYPE.small, fill: BRAND.ink, anchor: 'middle',
           });
         }
+        // A bar chart builds category by category: all the bars for 2023,
+        // then all the bars for 2024, which is how a teacher talks through it.
+        body += unit(ci, part);
       }
     }
   } else {
@@ -119,23 +122,25 @@ export function render(spec, width = PAGE.width) {
         y: yOf(v),
       }));
       const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${n(p.x)},${n(p.y)}`).join(' ');
-      body += el.path({
+      let part = el.path({
         d, fill: 'none', stroke: colour.fill, 'stroke-width': 2.6,
         'stroke-linejoin': 'round', 'stroke-linecap': 'round',
       });
       // Distinct marker per series: another non-colour channel.
       for (const p of points) {
-        body += si % 2 === 0
+        part += si % 2 === 0
           ? el.circle({ cx: p.x, cy: p.y, r: 4, fill: BRAND.paper, stroke: colour.fill, 'stroke-width': 2.2 })
           : el.rect({ x: p.x - 3.6, y: p.y - 3.6, width: 7.2, height: 7.2, fill: BRAND.paper, stroke: colour.fill, 'stroke-width': 2.2 });
       }
       // Direct labelling at the end of the line beats a legend when it fits.
       const last = points[points.length - 1];
       if (measure(se.label, TYPE.small, 'bold') + last.x + 10 < PAGE.margin + contentWidth(width)) {
-        body += text(se.label, {
+        part += text(se.label, {
           x: last.x + 9, y: last.y + 4, size: TYPE.small, weight: 'bold', fill: colour.fill,
         });
       }
+      // A line chart builds one whole series at a time.
+      body += unit(si, part);
     }
   }
 
@@ -186,6 +191,13 @@ export function render(spec, width = PAGE.width) {
   cursor += foot.height;
 
   return { body, width, height: cursor + PAGE.margin };
+}
+
+/** Reveal units: categories for bars, whole series for lines. */
+export function units(spec) {
+  return spec.mode === 'bar'
+    ? spec.categories.map((c) => String(c))
+    : spec.series.map((se) => se.label);
 }
 
 export function describe(spec) {
