@@ -74,6 +74,11 @@ function niceStep(range) {
   return mag * 10;
 }
 
+/** Slider settings a challenge insists on, each met to within half a slider step. */
+function givenMet(c, state) {
+  return (c.givenList || []).every((g) => Math.abs(state[g.key] - g.value) <= g.tol);
+}
+
 function meets(c, v) {
   if (typeof v !== 'number' || !Number.isFinite(v)) return false;
   if (c.target !== undefined) return Math.abs(v - c.target) <= c.tolerance;
@@ -97,7 +102,7 @@ function achievable(s, c, run) {
   for (let k = 0; k < total; k += 1) {
     const state = {};
     axes.forEach((a, i) => { state[a.p.key] = Math.min(a.p.max, a.p.min + idx[i] * a.step); });
-    if (meets(c, run(state)[c.key])) return true;
+    if (givenMet(c, state) && meets(c, run(state)[c.key])) return true;
     for (let i = 0; i < idx.length; i += 1) {
       idx[i] += 1;
       if (idx[i] < axes[i].n) break;
@@ -196,6 +201,19 @@ export function validate(s, h) {
     }
     const out = { ...c };
     if (c.target !== undefined && c.tolerance === undefined) out.tolerance = Math.max(Math.abs(c.target) * 0.01, 1e-9);
+    // "given": slider settings the challenge depends on, so "at $11 and 30 per
+    // cent, what is the price?" is not met by some other pair that happens to
+    // give the same price.
+    if (c.given !== undefined) {
+      if (!c.given || typeof c.given !== 'object' || Array.isArray(c.given)) h.fail(`challenges[${i}].given`, 'must be an object of slider keys and values, like { "cost": 11 }');
+      out.givenList = Object.entries(c.given).map(([key, value]) => {
+        const p = s.parameters.find((q) => q.key === key);
+        if (!p) h.fail(`challenges[${i}].given.${key}`, `is not a slider. Sliders are: ${s.parameters.map((q) => q.key).join(', ')}`);
+        h.num(value, `challenges[${i}].given.${key}`);
+        if (value < p.min || value > p.max) h.fail(`challenges[${i}].given.${key}`, `is ${value}, outside the slider range ${p.min} to ${p.max}`);
+        return { key, value, tol: stepOf(p) / 2 + 1e-9 };
+      });
+    }
     const ok = achievable(s, out, run);
     if (ok === false) {
       h.fail(`challenges[${i}]`, `cannot be met anywhere inside the slider ranges. Every combination of slider positions was tried. Widen a range, change the target, or loosen the tolerance.`);
@@ -212,7 +230,7 @@ export function validate(s, h) {
 function fmtVal(v, o = {}) {
   if (!Number.isFinite(v)) return 'not defined';
   const dp = o.decimals ?? (Math.abs(v) < 10 ? 2 : Math.abs(v) < 100 ? 1 : 0);
-  return `${o.prefix || ''}${v.toLocaleString('en-AU', { minimumFractionDigits: dp, maximumFractionDigits: dp })}${o.unit ? ` ${o.unit}` : ''}`;
+  return `${o.prefix || ''}${v.toLocaleString('en-AU', { minimumFractionDigits: dp, maximumFractionDigits: dp })}${o.unit ? `${o.unit === '%' ? '' : ' '}${o.unit}` : ''}`;
 }
 
 /** A handful of worked rows, computed at build time, for the text and native versions. */
@@ -325,7 +343,23 @@ function client(D) {
 
   function fmtWith(v, o) {
     if (typeof v !== 'number' || !isFinite(v)) return 'not defined';
-    return (o.prefix || '') + LV.fmt(v, o.decimals) + (o.unit ? ' ' + o.unit : '');
+    return (o.prefix || '') + LV.fmt(v, o.decimals) + (o.unit ? (o.unit === '%' ? '' : ' ') + o.unit : '');
+  }
+
+  // Round tick values (1, 2, 2.5 or 5 times a power of ten) so every axis label is exact.
+  function niceTicks(lo, hi, n) {
+    var rough = (hi - lo) / n;
+    var mag = Math.pow(10, Math.floor(Math.log10(rough)));
+    var step = mag * 10;
+    [1, 2, 2.5, 5, 10].some(function (m) { if (mag * m >= rough - 1e-12) { step = mag * m; return true; } return false; });
+    var ticks = [];
+    for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + step * 1e-6; v += step) ticks.push(Number(v.toPrecision(12)));
+    var st = Number(step.toPrecision(12));
+    return { step: step, ticks: ticks, dp: st % 1 === 0 ? 0 : String(st).split('.')[1].length };
+  }
+  function axisName(o) {
+    var u = o.unit || (o.prefix ? o.prefix.trim() : '');
+    return o.label + (u ? ' (' + u + ')' : '');
   }
 
   /* ----- sliders ----- */
@@ -356,7 +390,7 @@ function client(D) {
     var svg = $('lv-x-plot');
     var xp = D.params.filter(function (p) { return p.key === D.plot.x; })[0];
     var yo = D.outs.filter(function (o) { return o.key === D.plot.y; })[0];
-    var W = 560, H = 300, L = 62, R = 16, T = 16, B = 44;
+    var W = 760, H = 330, L = 70, R = 20, T = 40, B = 52;
     var pts = [];
     for (var i = 0; i <= 60; i += 1) {
       var saved = state[xp.key];
@@ -371,23 +405,23 @@ function client(D) {
     var lo = Math.min(0, Math.min.apply(null, ys));
     var hi = Math.max.apply(null, ys);
     if (hi === lo) hi = lo + 1;
-    var mag = Math.pow(10, Math.floor(Math.log10((hi - lo) / 4)));
-    var step = mag;
-    [1, 2, 2.5, 5, 10].some(function (m) { if (mag * m >= (hi - lo) / 4) { step = mag * m; return true; } return false; });
-    hi = Math.ceil(hi / step) * step;
-    lo = Math.floor(lo / step) * step;
+    var yt = niceTicks(lo, hi, 4);
+    hi = Math.ceil(hi / yt.step - 1e-9) * yt.step;
+    lo = Math.floor(lo / yt.step + 1e-9) * yt.step;
+    yt = niceTicks(lo, hi, 4);
     var x = function (v) { return L + (v - xp.min) / (xp.max - xp.min) * (W - L - R); };
     var y = function (v) { return T + (1 - (v - lo) / (hi - lo)) * (H - T - B); };
-    var s = '';
-    for (var g = lo; g <= hi + 1e-9; g += step) {
+    var s = '<text x="' + L + '" y="18" font-size="14" font-weight="bold" fill="#000054">' + LV.esc(axisName(yo)) + '</text>';
+    yt.ticks.forEach(function (g) {
       s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="' + (Math.abs(g) < 1e-9 ? '#000054' : '#d9d9e6') + '"/>';
-      s += '<text x="' + (L - 8) + '" y="' + (y(g) + 4) + '" font-size="12" text-anchor="end" fill="#000054">' + LV.fmt(g, step < 1 ? 1 : 0) + '</text>';
-    }
-    for (var t = 0; t <= 4; t += 1) {
-      var xv = xp.min + (xp.max - xp.min) * t / 4;
-      s += '<text x="' + x(xv) + '" y="' + (H - B + 18) + '" font-size="12" text-anchor="middle" fill="#000054">' + LV.fmt(xv, xp.decimals) + '</text>';
-    }
-    s += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 6) + '" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#000054">' + LV.esc(xp.label + (xp.unit ? ' (' + xp.unit + ')' : '')) + '</text>';
+      s += '<text x="' + (L - 10) + '" y="' + (y(g) + 5) + '" font-size="14" text-anchor="end" fill="#000054">' + LV.fmt(g, yt.dp) + '</text>';
+    });
+    var xt = niceTicks(xp.min, xp.max, 5);
+    xt.ticks.forEach(function (xv) {
+      s += '<line x1="' + x(xv) + '" x2="' + x(xv) + '" y1="' + (H - B) + '" y2="' + (H - B + 5) + '" stroke="#000054"/>';
+      s += '<text x="' + x(xv) + '" y="' + (H - B + 22) + '" font-size="14" text-anchor="middle" fill="#000054">' + LV.fmt(xv, xt.dp) + '</text>';
+    });
+    s += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 6) + '" font-size="14" font-weight="bold" text-anchor="middle" fill="#000054">' + LV.esc(axisName(xp)) + '</text>';
     var d = '';
     var pen = false;
     pts.forEach(function (q) {
@@ -399,7 +433,11 @@ function client(D) {
     var cy = model(state)[yo.key];
     if (isFinite(cy)) {
       s += '<line x1="' + x(state[xp.key]) + '" x2="' + x(state[xp.key]) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="#fac800" stroke-width="2"/>';
-      s += '<circle cx="' + x(state[xp.key]) + '" cy="' + y(cy) + '" r="7" fill="#00706b" stroke="#fff" stroke-width="3"/>';
+      s += '<circle cx="' + x(state[xp.key]) + '" cy="' + y(cy) + '" r="8" fill="#00706b" stroke="#fff" stroke-width="3"/>';
+      var right = x(state[xp.key]) > W - 180;
+      // Above the point, unless that would run into the axis title.
+      var ly = y(cy) - 12 < T + 6 ? y(cy) + 28 : y(cy) - 12;
+      s += '<text x="' + (x(state[xp.key]) + (right ? -14 : 14)) + '" y="' + ly + '" font-size="15" font-weight="bold" fill="#00706b" text-anchor="' + (right ? 'end' : 'start') + '" paint-order="stroke" stroke="#fff" stroke-width="4">' + LV.esc(fmtWith(cy, yo)) + '</text>';
     }
     svg.innerHTML = s;
     svg.setAttribute('aria-label', yo.label + ' across the range of ' + xp.label + '. At ' + fmtWith(state[xp.key], xp) + ', ' + yo.label + ' is ' + fmtWith(cy, yo) + '.');
@@ -457,22 +495,28 @@ function client(D) {
   /* ----- growth ----- */
   function renderGrowth(sc) {
     var svg = $('lv-x-growth');
-    var W = 560, H = 300, L = 62, R = 16, T = 16, B = 40;
+    var W = 760, H = 330, L = 80, R = 20, T = 24, B = 52;
     var n = Math.round(state.periods);
     var vals = [];
     for (var i = 0; i <= n; i += 1) vals.push(state.initial * Math.pow(1 + state.rate / 100, i));
-    var hi = Math.max.apply(null, vals) * 1.05 || 1;
+    var yt = niceTicks(0, Math.max.apply(null, vals) || 1, 4);
+    var hi = yt.ticks[yt.ticks.length - 1] < Math.max.apply(null, vals) ? yt.ticks[yt.ticks.length - 1] + yt.step : yt.ticks[yt.ticks.length - 1];
+    yt = niceTicks(0, hi, 4);
     var x = function (i) { return L + (n ? i / n : 0) * (W - L - R); };
     var y = function (v) { return T + (1 - v / hi) * (H - T - B); };
     var s = '';
-    for (var g = 0; g <= 4; g += 1) {
-      var gv = hi * g / 4;
-      s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(gv) + '" y2="' + y(gv) + '" stroke="#d9d9e6"/><text x="' + (L - 8) + '" y="' + (y(gv) + 4) + '" font-size="12" text-anchor="end" fill="#000054">' + LV.fmt(gv, 0) + '</text>';
-    }
+    yt.ticks.forEach(function (gv) {
+      s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(gv) + '" y2="' + y(gv) + '" stroke="' + (gv === 0 ? '#000054' : '#d9d9e6') + '"/><text x="' + (L - 10) + '" y="' + (y(gv) + 5) + '" font-size="14" text-anchor="end" fill="#000054">' + LV.fmt(gv, yt.dp) + '</text>';
+    });
+    var xt = niceTicks(0, Math.max(n, 1), 5);
+    xt.ticks.forEach(function (tv) {
+      if (tv % 1 !== 0) return;
+      s += '<text x="' + x(tv) + '" y="' + (H - B + 22) + '" font-size="14" text-anchor="middle" fill="#000054">' + tv + '</text>';
+    });
     s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(state.initial) + '" y2="' + y(state.initial) + '" stroke="#a4177c" stroke-dasharray="5 4" stroke-width="1.5"/>';
-    s += '<text x="' + (W - R) + '" y="' + (y(state.initial) - 6) + '" font-size="11.5" fill="#a4177c" text-anchor="end">Starting value</text>';
+    s += '<text x="' + (W - R) + '" y="' + (y(state.initial) - 7) + '" font-size="13" fill="#a4177c" text-anchor="end">Starting value</text>';
     s += '<path d="' + vals.map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); }).join(' ') + '" fill="none" stroke="#000054" stroke-width="3"/>';
-    s += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 6) + '" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#000054">Periods elapsed</text>';
+    s += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 6) + '" font-size="14" font-weight="bold" text-anchor="middle" fill="#000054">Periods elapsed</text>';
     svg.innerHTML = s;
     svg.setAttribute('aria-label', 'Value over ' + n + ' periods. It ends at ' + LV.fmt(sc.final, 2) + '.');
   }
@@ -483,6 +527,8 @@ function client(D) {
   var list = $('lv-x-chal');
   function meets(c, v) {
     if (typeof v !== 'number' || !isFinite(v)) return false;
+    var given = c.givenList || [];
+    for (var g = 0; g < given.length; g += 1) if (Math.abs(state[given[g].key] - given[g].value) > given[g].tol) return false;
     if (typeof c.target === 'number') return Math.abs(v - c.target) <= c.tolerance;
     return (typeof c.min !== 'number' || v >= c.min) && (typeof c.max !== 'number' || v <= c.max);
   }
@@ -552,6 +598,9 @@ const CSS = `
 .lv-x-out.is-key { background: var(--ink); color: var(--paper); }
 .lv-x-out.is-key .lv-x-out-e { color: #d6d6f0; }
 .lv-x-svg { display: block; width: 100%; height: auto; }
+.lv-x-stage { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.lv-x-orbit { max-width: 600px; margin: 0 auto; }
+.lv-x-orbit-ctl { justify-content: center; margin-top: 8px; }
 .lv-x-table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 10px; }
 .lv-x-table th, .lv-x-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
 .lv-x-table thead th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
@@ -577,20 +626,23 @@ export function interactive(s, ctx) {
       <input class="lv-range" type="range" id="lv-x-r-${p.key}" min="${p.min}" max="${p.max}" step="${stepOf(p)}" value="${p.value}">
     </div>`).join('');
 
-  let visual = '';
+  // Controls on the left, the numbers they drive on the right, and the
+  // picture at full width underneath, where its labels can be read.
+  let numbers = '';
+  let stage = '';
   if (s.engine === 'formula') {
-    visual = `<div class="lv-x-outs">${s.outputs.map((o, i) => `
+    numbers = `<div class="lv-x-outs">${s.outputs.map((o, i) => `
       <div class="lv-x-out${i === 0 ? ' is-key' : ''}"><p class="lv-x-out-l">${esc(o.label)}</p><p class="lv-x-out-v" id="lv-x-v-${o.key}"></p>${o.explain ? `<p class="lv-x-out-e">${esc(o.explain)}</p>` : ''}</div>`).join('')}
-    </div>
-    ${s.plot ? '<svg class="lv-x-svg" id="lv-x-plot" viewBox="0 0 560 300" role="img" aria-label=""></svg>' : ''}`;
+    </div>`;
+    stage = s.plot ? '<svg class="lv-x-svg" id="lv-x-plot" viewBox="0 0 760 330" role="img" aria-label=""></svg>' : '';
   } else if (s.engine === 'orbit') {
-    visual = `<svg class="lv-x-svg" id="lv-x-orbit" viewBox="0 0 560 420" role="img" aria-label="Planets orbiting a star. The table below gives each orbital period at the current star mass."></svg>
-    <div class="lv-actions" style="margin-top:8px"><button type="button" class="lv-btn is-secondary" id="lv-x-play" aria-pressed="false">Pause</button></div>
-    <table class="lv-x-table"><thead><tr><th scope="col">Planet</th><th scope="col">Distance (AU)</th><th scope="col">Orbital period</th></tr></thead>
-    <tbody>${s.bodies.map((b) => `<tr><th scope="row">${esc(b.label)}</th><td>${b.distance}</td><td id="lv-x-v-period_${idFor(b.label)}"></td></tr>`).join('')}</tbody></table>`;
+    numbers = `<table class="lv-x-table"><thead><tr><th scope="col">Planet</th><th scope="col">Distance (AU)</th><th scope="col">Orbital period</th></tr></thead>
+    <tbody>${s.bodies.map((b) => `<tr><th scope="row">${esc(b.label)}</th><td>${Number(b.distance).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td><td id="lv-x-v-period_${idFor(b.label)}"></td></tr>`).join('')}</tbody></table>`;
+    stage = `<svg class="lv-x-svg lv-x-orbit" id="lv-x-orbit" viewBox="0 0 560 420" role="img" aria-label="Planets orbiting a star. The table gives each orbital period at the current star mass."></svg>
+    <div class="lv-actions lv-x-orbit-ctl"><button type="button" class="lv-btn is-secondary" id="lv-x-play" aria-pressed="false">Pause</button></div>`;
   } else {
-    visual = `<div class="lv-x-outs">${outs.map((o, i) => `<div class="lv-x-out${i === 0 ? ' is-key' : ''}"><p class="lv-x-out-l">${esc(o.label)}</p><p class="lv-x-out-v" id="lv-x-v-${o.key}"></p></div>`).join('')}</div>
-    <svg class="lv-x-svg" id="lv-x-growth" viewBox="0 0 560 300" role="img" aria-label=""></svg>`;
+    numbers = `<div class="lv-x-outs">${outs.map((o, i) => `<div class="lv-x-out${i === 0 ? ' is-key' : ''}"><p class="lv-x-out-l">${esc(o.label)}</p><p class="lv-x-out-v" id="lv-x-v-${o.key}"></p></div>`).join('')}</div>`;
+    stage = '<svg class="lv-x-svg" id="lv-x-growth" viewBox="0 0 760 330" role="img" aria-label=""></svg>';
   }
 
   const challenges = s.challenges.length ? `
@@ -606,8 +658,9 @@ export function interactive(s, ctx) {
     <div>${sliders}
       <div class="lv-actions"><button type="button" class="lv-btn is-ghost" id="lv-x-reset">Reset the sliders</button></div>
     </div>
-    <div>${visual}</div>
+    <div>${numbers}</div>
   </div>
+  ${stage ? `<div class="lv-x-stage">${stage}</div>` : ''}
 </div>
 ${challenges}`;
 

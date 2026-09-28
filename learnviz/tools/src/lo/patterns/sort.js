@@ -66,11 +66,20 @@ function client(D) {
   var $ = function (id) { return document.getElementById(id); };
   var cards = document.querySelectorAll('.lv-sort-card');
   var summary = $('lv-sort-summary');
-  var current = 0;
+  var current = -1;
+  // Misses per card. The first miss gets a nudge, the second gets the answer:
+  // showing the answer straight away would turn "try again" into copying.
+  var misses = [];
+  for (var m0 = 0; m0 < cards.length; m0 += 1) misses.push(0);
 
   function chosen(i) {
     var c = document.querySelector('input[name="lv-sort-' + i + '"]:checked');
     return c ? c.value : null;
+  }
+
+  function lower(t) {
+    t = String(t).replace(/\.$/, '');
+    return t ? t.charAt(0).toLowerCase() + t.slice(1) + '.' : '';
   }
 
   function mark(i, reveal) {
@@ -79,10 +88,20 @@ function client(D) {
     var pick = chosen(i);
     var ok = pick === item.category;
     var fb = card.querySelector('.lv-feedback');
+    if (!reveal && !ok && pick) misses[i] += 1;
+    var nudge = !reveal && !ok && pick && misses[i] === 1;
     var cls = reveal ? 'is-part' : ok ? 'is-ok' : 'is-miss';
     var word = reveal ? 'Answer' : ok ? '&#10003; Right' : pick ? '&#10007; Not quite' : 'Not answered';
     fb.className = 'lv-feedback ' + cls;
-    fb.innerHTML = '<span class="lv-mark">' + word + '</span><div><p><strong>' + LV.esc(D.labels[item.category]) + '.</strong> ' + LV.esc(item.why) + '</p></div>';
+    fb.innerHTML = '<span class="lv-mark">' + word + '</span><div><p>'
+      + (nudge
+        ? (D.hints[pick]
+          ? '<strong>' + LV.esc(D.labels[pick]) + '</strong> means ' + LV.esc(lower(D.hints[pick])) + ' Is that what this shows? Look again.'
+          : 'Is <strong>' + LV.esc(D.labels[pick]) + '</strong> really what this shows? Look again.')
+        : !pick && !reveal
+          ? 'Choose one, then check again.'
+          : '<strong>' + LV.esc(D.labels[item.category]) + '.</strong> ' + LV.esc(item.why))
+      + '</p></div>';
     fb.hidden = false;
     card.classList.remove('is-ok', 'is-miss');
     if (!reveal) card.classList.add(ok ? 'is-ok' : 'is-miss');
@@ -101,7 +120,7 @@ function client(D) {
     summary.innerHTML = '<span class="lv-mark">' + right + ' of ' + cards.length + '</span><div><p>'
       + (all ? 'All sorted correctly. Read the reasons anyway: they are the cues you will use on the job.'
         : (answered < cards.length ? (cards.length - answered) + ' not answered. ' : '')
-          + 'Read the reason on each one you missed, then try those again.')
+          + 'Look again at the ones marked, then try those again.')
       + '</p></div>';
     summary.hidden = false;
     $('lv-sort-retry').hidden = all;
@@ -133,6 +152,7 @@ function client(D) {
     for (var i = 0; i < cards.length; i += 1) {
       var c = document.querySelector('input[name="lv-sort-' + i + '"]:checked');
       if (c) c.checked = false;
+      misses[i] = 0;
       cards[i].classList.remove('is-ok', 'is-miss', 'is-current');
       cards[i].querySelector('.lv-feedback').hidden = true;
     }
@@ -151,7 +171,7 @@ function client(D) {
   LV.presenter.on({
     next: function () { focusCard(current + 1); },
     prev: function () { focusCard(current - 1); },
-    reveal: function () { mark(current, true); },
+    reveal: function () { if (current < 0) focusCard(0); mark(current, true); },
   });
   if (LV.presenter.active()) focusCard(0);
 
@@ -206,7 +226,8 @@ export function interactive(s, ctx) {
   </div>
 </div>`;
 
-  const data = { order, items: s.items, labels };
+  const hints = Object.fromEntries(s.categories.map((c) => [c.key, c.hint || '']));
+  const data = { order, items: s.items, labels, hints };
   return { body, css: CSS, script: `(${client.toString()})(${ctx.safeJson(data)});` };
 }
 

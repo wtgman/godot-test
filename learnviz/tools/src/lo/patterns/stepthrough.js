@@ -113,7 +113,7 @@ function client(D) {
     count.textContent = at < 0 ? 'Before we start' : 'Step ' + (at + 1) + ' of ' + total;
     bar.style.width = (at < 0 ? 0 : ((at + 1) / total) * 100) + '%';
     prev.disabled = at <= first;
-    next.textContent = at === total - 1 ? 'Replay' : (at < 0 ? 'Start' : 'Next');
+    next.innerHTML = (at === total - 1 ? 'Replay' : (at < 0 ? 'Start' : 'Next')) + (at === total - 1 ? '' : '<span class="lv-key">&#8594;</span>');
     var btns = dots.querySelectorAll('.lv-dotbtn');
     for (var d = 0; d < btns.length; d += 1) {
       btns[d].classList.toggle('is-on', d <= at);

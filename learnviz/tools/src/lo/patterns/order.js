@@ -33,7 +33,15 @@ export function validate(s, h) {
   h.str(s.prompt, 'prompt', { max: 300 });
   const mode = s.mode ?? 'order';
   h.oneOf(mode, 'mode', ['order', 'timing'], { what: 'mode' });
-  if (mode === 'timing') h.str(s.timeUnit, 'timeUnit', { max: 40 });
+  if (mode === 'timing') {
+    h.str(s.timeUnit, 'timeUnit', { max: 40 });
+    // The moment everything is working towards, such as "Dinner is served".
+    if (s.deadline !== undefined) {
+      if (!s.deadline || typeof s.deadline !== 'object') h.fail('deadline', 'must be an object like { "at": 105, "label": "Dinner is served" }');
+      h.num(s.deadline.at, 'deadline.at');
+      h.str(s.deadline.label, 'deadline.label', { max: 40 });
+    }
+  }
   h.arr(s.items, 'items', { min: 3, max: 12 }).forEach((it, i) => {
     h.str(it.label, `items[${i}].label`, { max: 120 });
     h.str(it.why, `items[${i}].why`, { max: 420 });
@@ -90,6 +98,9 @@ function orderClient(D) {
   var $ = function (id) { return document.getElementById(id); };
   var order = D.shown.slice();
   var checked = false;
+  // Once the model has been shown, later checks still give feedback but no
+  // longer raise the score sent to Canvas: the answer has been seen.
+  var modelSeen = false;
   var listEl = $('lv-o-list');
 
   function render(focusPos, dir) {
@@ -133,28 +144,31 @@ function orderClient(D) {
     LV.announce(D.items[order[to]].label + ' is now number ' + (to + 1) + ' of ' + order.length + '.');
   });
 
-  function check() {
+  function check(asModel) {
     checked = true;
     render();
     var right = order.filter(function (itemIdx, pos) { return itemIdx === pos; }).length;
     var all = right === order.length;
     var res = $('lv-o-result');
-    res.className = 'lv-feedback ' + (all ? 'is-ok' : 'is-part');
-    res.innerHTML = '<span class="lv-mark">' + right + ' of ' + order.length + '</span><div><p>'
-      + (all ? 'Every step is in the right place.' : 'in the right place. Read why each marked step goes where it does, move them, and check again.')
-      + '</p></div>';
+    res.className = 'lv-feedback ' + (asModel ? 'is-part' : all ? 'is-ok' : 'is-part');
+    res.innerHTML = asModel
+      ? '<span class="lv-mark">The model order</span><div><p>Read why each step goes where it does. Start again when you are ready to try it from memory.</p></div>'
+      : '<span class="lv-mark">' + right + ' of ' + order.length + '</span><div><p>'
+        + (all ? 'Every step is in the right place.' : 'in the right place. Read why each marked step goes where it does, move them, and check again.')
+        + '</p></div>';
     res.hidden = false;
-    LV.report({ complete: true, score: right / order.length });
-    LV.announce(right + ' of ' + order.length + ' in the right place.');
+    LV.report({ complete: true, score: asModel || modelSeen ? null : right / order.length });
+    LV.announce(asModel ? 'Showing the model order.' : right + ' of ' + order.length + ' in the right place.');
     res.focus();
   }
 
   function showModel() {
+    modelSeen = true;
     order = D.items.map(function (_, i) { return i; });
-    check();
+    check(true);
   }
 
-  $('lv-o-check').addEventListener('click', check);
+  $('lv-o-check').addEventListener('click', function () { check(false); });
   $('lv-o-model').addEventListener('click', showModel);
   $('lv-o-reset').addEventListener('click', function () {
     order = D.shown.slice(); checked = false; $('lv-o-result').hidden = true; render();
@@ -171,6 +185,7 @@ function timingClient(D) {
   var LV = window.LV;
   var $ = function (id) { return document.getElementById(id); };
   var checked = false;
+  var modelSeen = false;
   var chart = $('lv-t-chart');
 
   function answer(i) {
@@ -179,39 +194,62 @@ function timingClient(D) {
   }
 
   function axisMax() {
-    var given = D.items.map(function (_, i) { return answer(i); }).filter(function (v) { return v !== null && isFinite(v); });
-    return Math.max(D.max, given.length ? Math.max.apply(null, given) : 0) * 1.08 + 1;
+    var ends = [D.max, D.deadline ? D.deadline.at : 0];
+    D.items.forEach(function (it, i) {
+      var a = answer(i);
+      if (a !== null && isFinite(a)) ends.push(a + (it.duration || 0));
+      ends.push(it.at + (it.duration || 0));
+    });
+    return Math.max.apply(null, ends) * 1.04 + 1;
   }
 
+  // Bars when the steps have durations, so the learner sees what overlaps and
+  // what finishes late. Dots when they are moments.
+  var bars = D.items.every(function (it) { return typeof it.duration === 'number'; });
+
   function draw() {
-    var W = 720, L = 170, R = 16, top = 34, rowH = 26;
-    var H = top + D.items.length * rowH + 34;
+    var W = 760, L = 200, R = 24, top = 52, rowH = 36;
+    var H = top + D.items.length * rowH + 44;
     var max = axisMax();
-    var x = function (v) { return L + (v / max) * (W - L - R); };
+    var x = function (v) { return L + (Math.max(0, v) / max) * (W - L - R); };
     var step = Math.pow(10, Math.floor(Math.log10(max / 5)));
     [1, 2, 2.5, 5, 10].some(function (m) { if (step * m >= max / 5) { step *= m; return true; } return false; });
-    var s = '<text x="' + L + '" y="14" font-size="12" font-weight="bold" fill="#000054">' + LV.esc(D.unit) + '</text>';
+    var s = '<text x="' + L + '" y="16" font-size="14" font-weight="bold" fill="#000054">' + LV.esc(D.unit) + '</text>';
     for (var v = 0; v <= max; v += step) {
       s += '<line x1="' + x(v) + '" y1="' + top + '" x2="' + x(v) + '" y2="' + (top + D.items.length * rowH) + '" stroke="#d9d9e6"/>';
-      s += '<text x="' + x(v) + '" y="' + (top - 6) + '" font-size="11" fill="#000054" text-anchor="middle">' + Math.round(v * 100) / 100 + '</text>';
+      s += '<text x="' + x(v) + '" y="' + (top - 8) + '" font-size="13" fill="#000054" text-anchor="middle">' + Math.round(v * 100) / 100 + '</text>';
+    }
+    if (D.deadline) {
+      var dx = x(D.deadline.at);
+      s += '<line x1="' + dx + '" y1="' + (top - 4) + '" x2="' + dx + '" y2="' + (top + D.items.length * rowH + 4) + '" stroke="#a4177c" stroke-width="2.5" stroke-dasharray="6 4"/>';
+      s += '<text x="' + (dx - 6) + '" y="' + (top + D.items.length * rowH + 22) + '" font-size="13" font-weight="bold" fill="#a4177c" text-anchor="end">' + LV.esc(D.deadline.label) + '</text>';
     }
     D.items.forEach(function (it, i) {
       var y = top + i * rowH + rowH / 2;
-      var label = it.label.length > 26 ? it.label.slice(0, 25) + '…' : it.label;
-      s += '<text x="8" y="' + (y + 4) + '" font-size="12" font-weight="bold" fill="#000054">' + LV.esc(label) + '</text>';
+      var label = it.label.length > 24 ? it.label.slice(0, 23) + '…' : it.label;
+      s += '<text x="6" y="' + (y + 5) + '" font-size="14" font-weight="bold" fill="#000054">' + LV.esc(label) + '</text>';
       var a = answer(i);
-      if (a !== null && isFinite(a) && a >= 0) {
-        s += '<circle cx="' + x(a) + '" cy="' + y + '" r="6" fill="#fff" stroke="#000054" stroke-width="2.5"/>';
-      }
-      if (checked) {
-        var m = x(it.at);
-        if (a !== null && isFinite(a)) s += '<line x1="' + x(a) + '" y1="' + y + '" x2="' + m + '" y2="' + y + '" stroke="#a4177c" stroke-width="1.5" stroke-dasharray="3 3"/>';
-        s += '<polygon points="' + m + ',' + (y - 6) + ' ' + (m + 6) + ',' + y + ' ' + m + ',' + (y + 6) + ' ' + (m - 6) + ',' + y + '" fill="#00706b"/>';
+      var has = a !== null && isFinite(a) && a >= 0;
+      if (bars) {
+        if (has) s += '<rect x="' + x(a) + '" y="' + (y - 12) + '" width="' + Math.max(3, x(a + it.duration) - x(a)) + '" height="11" rx="3" fill="#000054"/>';
+        if (checked) s += '<rect x="' + x(it.at) + '" y="' + (y + 2) + '" width="' + Math.max(3, x(it.at + it.duration) - x(it.at)) + '" height="11" rx="3" fill="#00706b"/>';
+      } else {
+        if (has) s += '<circle cx="' + x(a) + '" cy="' + y + '" r="7" fill="#fff" stroke="#000054" stroke-width="2.5"/>';
+        if (checked) {
+          var m = x(it.at);
+          if (has) s += '<line x1="' + x(a) + '" y1="' + y + '" x2="' + m + '" y2="' + y + '" stroke="#a4177c" stroke-width="1.5" stroke-dasharray="3 3"/>';
+          s += '<polygon points="' + m + ',' + (y - 7) + ' ' + (m + 7) + ',' + y + ' ' + m + ',' + (y + 7) + ' ' + (m - 7) + ',' + y + '" fill="#00706b"/>';
+        }
       }
     });
     var ly = H - 10;
-    s += '<circle cx="14" cy="' + (ly - 4) + '" r="5" fill="#fff" stroke="#000054" stroke-width="2.5"/><text x="26" y="' + ly + '" font-size="12" fill="#000054">Your answer</text>';
-    if (checked) s += '<polygon points="140,' + (ly - 10) + ' 146,' + (ly - 4) + ' 140,' + (ly + 2) + ' 134,' + (ly - 4) + '" fill="#00706b"/><text x="152" y="' + ly + '" font-size="12" fill="#000054">Model timing</text>';
+    if (bars) {
+      s += '<rect x="6" y="' + (ly - 11) + '" width="22" height="11" rx="3" fill="#000054"/><text x="36" y="' + ly + '" font-size="13.5" fill="#000054">Your plan</text>';
+      if (checked) s += '<rect x="130" y="' + (ly - 11) + '" width="22" height="11" rx="3" fill="#00706b"/><text x="160" y="' + ly + '" font-size="13.5" fill="#000054">Model plan</text>';
+    } else {
+      s += '<circle cx="14" cy="' + (ly - 5) + '" r="6" fill="#fff" stroke="#000054" stroke-width="2.5"/><text x="28" y="' + ly + '" font-size="13.5" fill="#000054">Your answer</text>';
+      if (checked) s += '<polygon points="150,' + (ly - 12) + ' 157,' + (ly - 5) + ' 150,' + (ly + 2) + ' 143,' + (ly - 5) + '" fill="#00706b"/><text x="165" y="' + ly + '" font-size="13.5" fill="#000054">Model timing</text>';
+    }
     chart.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     chart.innerHTML = s;
     LV.reportHeight();
@@ -235,28 +273,33 @@ function timingClient(D) {
     return ok;
   }
 
-  function check() {
+  function check(asModel) {
     checked = true;
     var right = 0;
     D.items.forEach(function (_, i) { if (verdict(i, answer(i))) right += 1; });
     var res = $('lv-t-result');
     var all = right === D.items.length;
-    res.className = 'lv-feedback ' + (all ? 'is-ok' : 'is-part');
-    res.innerHTML = '<span class="lv-mark">' + right + ' of ' + D.items.length + '</span><div><p>' + (all ? 'Every step is timed within range.' : 'within range. Read the reason on each one you missed, adjust, and check again.') + '</p></div>';
+    res.className = 'lv-feedback ' + (!asModel && all ? 'is-ok' : 'is-part');
+    res.innerHTML = asModel
+      ? '<span class="lv-mark">The model timings</span><div><p>Read the reason for each one. Start again when you are ready to try it from memory.</p></div>'
+      : '<span class="lv-mark">' + right + ' of ' + D.items.length + '</span><div><p>' + (all ? 'Every step is timed within range.' : 'within range. Read the reason on each one you missed, adjust, and check again.') + '</p></div>';
     res.hidden = false;
     draw();
-    LV.report({ complete: true, score: right / D.items.length });
-    LV.announce(right + ' of ' + D.items.length + ' within range.');
+    LV.report({ complete: true, score: asModel || modelSeen ? null : right / D.items.length });
+    LV.announce(asModel ? 'Showing the model timings.' : right + ' of ' + D.items.length + ' within range.');
     res.focus();
   }
 
   function model() {
+    modelSeen = true;
     D.items.forEach(function (it, i) { $('lv-t-in-' + i).value = it.at; });
-    check();
+    check(true);
   }
 
-  $('lv-t-form').addEventListener('input', function () { if (!checked) draw(); });
-  $('lv-t-check').addEventListener('click', check);
+  // The plan redraws as the learner types, before and after checking: the
+  // model stays on the chart as a target once it has been shown.
+  $('lv-t-form').addEventListener('input', draw);
+  $('lv-t-check').addEventListener('click', function () { check(false); });
   $('lv-t-model').addEventListener('click', model);
   $('lv-t-reset').addEventListener('click', function () {
     checked = false;
@@ -275,12 +318,13 @@ const CSS = `
 .lv-t-row label { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; font-weight: 700; }
 .lv-t-row .lv-feedback { margin-top: 8px; }
 .lv-t-unit { font-weight: 400; color: var(--ink-soft); font-size: 14px; }
-.lv-t-chart { display: block; width: 100%; height: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; }
+.lv-t-chart { display: block; width: 100%; height: auto; margin: 4px 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
 `;
 
 export function interactive(s, ctx) {
   if (s.mode === 'timing') {
     const max = Math.max(...s.items.map((it) => it.at));
+    const bars = s.items.every((it) => typeof it.duration === 'number');
     const tolerance = Math.max(1, Math.round(max * 0.05));
     const rows = s.items.map((it, i) => `
       <li class="lv-t-row">
@@ -292,6 +336,8 @@ export function interactive(s, ctx) {
     const body = `
 <form class="lv-card" id="lv-t-form" onsubmit="return false">
   <p class="lv-prompt">${esc(s.prompt)}</p>
+  <svg class="lv-t-chart" id="lv-t-chart" role="img" aria-label="${bars ? 'Your plan drawn as bars on a time axis, one per step. The model plan is added after you check.' : 'Your timings plotted on a time axis, with the model timings shown after you check.'}"></svg>
+  <p class="lv-hint">Type a start time for each step. The chart above updates as you go.</p>
   <ol class="lv-t-rows">${rows}</ol>
   <div class="lv-feedback" id="lv-t-result" hidden tabindex="-1"></div>
   <div class="lv-actions">
@@ -299,9 +345,8 @@ export function interactive(s, ctx) {
     <button type="button" class="lv-btn is-secondary" id="lv-t-model">Show the model</button>
     <button type="button" class="lv-btn is-ghost" id="lv-t-reset">Start again</button>
   </div>
-  <svg class="lv-t-chart" id="lv-t-chart" role="img" aria-label="Your timings plotted on a time axis, with the model timings shown after you check."></svg>
 </form>`;
-    const data = { items: s.items, unit: s.timeUnit, max, tolerance };
+    const data = { items: s.items, unit: s.timeUnit, max, tolerance, deadline: s.deadline || null };
     return { body, css: CSS, script: `(${timingClient.toString()})(${ctx.safeJson(data)});` };
   }
 

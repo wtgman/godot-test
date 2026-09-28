@@ -32,6 +32,7 @@ export function validate(s, h) {
   h.str(s.question, 'question', { max: 300 });
   h.str(s.unit, 'unit', { max: 40 });
   h.str(s.prefix, 'prefix', { required: false, max: 6 });
+  h.str(s.suffix, 'suffix', { required: false, max: 8 });
   h.num(s.decimals, 'decimals', { required: false });
   const bars = h.arr(s.bars, 'bars', { min: 2, max: 8 });
   bars.forEach((b, i) => {
@@ -52,9 +53,27 @@ export function validate(s, h) {
   return {};
 }
 
+/**
+ * Fixed decimals when the spec sets them. Otherwise up to two decimals below
+ * ten and one above, with no trailing zeros: 1.65, 1.1, 26.2, 19.
+ */
 function fmt(s, v) {
-  const dp = s.decimals ?? (Math.abs(v) < 10 && v % 1 !== 0 ? 2 : 0);
-  return `${s.prefix || ''}${Number(v).toLocaleString('en-AU', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  const max = s.decimals ?? (Math.abs(v) < 10 ? 2 : 1);
+  const min = s.decimals ?? 0;
+  return `${s.prefix || ''}${Number(v).toLocaleString('en-AU', { minimumFractionDigits: min, maximumFractionDigits: max })}${s.suffix || ''}`;
+}
+
+/** Round gridline steps (1, 2, 2.5 or 5 times a power of ten), so every axis label is exact. */
+function axis(max) {
+  const rough = max / 4;
+  const mag = 10 ** Math.floor(Math.log10(rough));
+  let step = mag * 10;
+  for (const m of [1, 2, 2.5, 5, 10]) if (mag * m >= rough - 1e-12) { step = mag * m; break; }
+  const top = Math.ceil(max / step - 1e-9) * step;
+  const ticks = [];
+  for (let v = 0; v <= top + step / 1000; v += step) ticks.push(Number(v.toPrecision(12)));
+  const dp = Number.isInteger(Number(step.toPrecision(12))) ? 0 : String(Number(step.toPrecision(12))).split('.')[1].length;
+  return { top, step, ticks, dp };
 }
 
 /** A round scale maximum a little above the largest value, so no bar touches the edge. */
@@ -95,19 +114,31 @@ function client(D) {
   var revealed = false;
 
   function fmt(v) {
-    return (D.prefix || '') + LV.fmt(v, typeof D.decimals === 'number' ? D.decimals : (Math.abs(v) < 10 && v % 1 !== 0 ? 2 : 0));
+    var fixed = typeof D.decimals === 'number';
+    return (D.prefix || '') + v.toLocaleString('en-AU', { minimumFractionDigits: fixed ? D.decimals : 0, maximumFractionDigits: fixed ? D.decimals : (Math.abs(v) < 10 ? 2 : 1) }) + (D.suffix || '');
   }
   function pct(v) { return Math.max(0, Math.min(100, (v / D.max) * 100)); }
+  // The value sits just past the end of its bar, or inside a nearly full one.
+  function place(el, v, solid) {
+    var p = pct(v);
+    var inside = p > D.inside;
+    el.classList.toggle('is-inside', inside && solid);
+    el.style.left = inside ? 'auto' : 'calc(' + p + '% + 8px)';
+    el.style.right = inside ? 'calc(' + (100 - p) + '% + 6px)' : 'auto';
+  }
 
   D.bars.forEach(function (b, i) {
     if (!b.hidden) return;
     var r = $('lv-e-r-' + i);
     var out = $('lv-e-o-' + i);
     var ghost = $('lv-e-g-' + i);
+    var pill = out.parentNode;
     var sync = function () {
       out.textContent = fmt(Number(r.value));
+      place(pill, Number(r.value), false);
       ghost.style.width = pct(Number(r.value)) + '%';
-      r.setAttribute('aria-valuetext', fmt(Number(r.value)) + ' ' + D.unit);
+      // Spoken as the number and the unit in words, without the symbols: "20 billion US dollars".
+      r.setAttribute('aria-valuetext', Number(r.value).toLocaleString('en-AU', { maximumFractionDigits: 2 }) + ' ' + D.unit);
     };
     r.addEventListener('input', sync);
     sync();
@@ -127,16 +158,27 @@ function client(D) {
       var fill = $('lv-e-f-' + i);
       fill.style.width = pct(b.value) + '%';
       // The pill showed the guess; now it shows the truth.
-      row.querySelector('.lv-e-value').textContent = fmt(b.value);
+      var pill = row.querySelector('.lv-e-value');
+      pill.textContent = fmt(b.value);
+      place(pill, b.value, true);
       var tick = $('lv-e-t-' + i);
       if (!room) {
         tick.style.left = pct(guess) + '%';
+        // Near the right edge the label sits to the left of the line, so it stays inside the card.
+        tick.classList.toggle('is-right', pct(guess) > 72);
         tick.hidden = false;
         var gap = b.value ? Math.round(Math.abs(guess - b.value) / b.value * 100) : 0;
-        var dir = guess < b.value ? 'under' : 'over';
         var close = gap <= 10;
+        // Percentages stop meaning much past double. "About 8 times" is how
+        // people actually talk about a guess that far out.
+        var times = function (r) { return LV.fmt(r, r < 10 ? 1 : 0) + ' times'; };
+        var how = close ? '&#10003; Close'
+          : guess >= b.value * 2 ? '&#8776; ' + times(guess / b.value) + ' too high'
+            : guess > 0 && guess <= b.value / 2 ? '&#8776; ' + times(b.value / guess) + ' too low'
+              : guess <= 0 ? 'Too low'
+                : '&#8776; ' + gap + '% too ' + (guess < b.value ? 'low' : 'high');
         var fb = $('lv-e-fb-' + i);
-        fb.innerHTML = '<span class="lv-tag ' + (close ? 'is-ok' : 'is-part') + '">' + (close ? '&#10003; Close' : '&#8776; ' + gap + '% ' + dir) + '</span> You said ' + fmt(guess) + '.';
+        fb.innerHTML = '<span class="lv-tag ' + (close ? 'is-ok' : 'is-part') + '">' + how + '</span> You said ' + fmt(guess) + '.';
         fb.hidden = false;
         lines.push(b.label + ': you said ' + fmt(guess) + ', the real value is ' + fmt(b.value) + '.');
       } else {
@@ -163,34 +205,45 @@ const CSS = `
 .lv-e-row { display: grid; grid-template-columns: minmax(110px, 26%) 1fr; gap: 12px; align-items: center; }
 .lv-e-label { font-weight: 700; line-height: 1.25; }
 .lv-e-label small { display: block; font-weight: 400; font-size: 13px; color: var(--ink-soft); }
-.lv-e-track { position: relative; height: 34px; border-radius: 8px; background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--line) calc(25% - 1px) 25%); }
+.lv-e-track { position: relative; height: 34px; border-radius: 8px; background: repeating-linear-gradient(90deg, transparent 0 calc(var(--lv-grid) - 1px), var(--line) calc(var(--lv-grid) - 1px) var(--lv-grid)); }
 .lv-e-fill { position: absolute; left: 0; top: 4px; bottom: 4px; border-radius: 6px; background: var(--ink); transition: width 900ms cubic-bezier(.2, .8, .2, 1); }
 .lv-e-row.is-hidden .lv-e-fill { width: 0; background: var(--ok); }
 .lv-e-ghost { position: absolute; left: 0; top: 4px; bottom: 4px; border-radius: 6px; background: repeating-linear-gradient(135deg, rgba(0,0,84,.18) 0 6px, rgba(0,0,84,.08) 6px 12px); border: 2px dashed var(--ink); pointer-events: none; }
 .lv-e-row.is-revealed .lv-e-ghost { opacity: .0; }
-.lv-e-value { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-weight: 800; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.85); padding: 0 6px; border-radius: 6px; }
+.lv-e-value { position: absolute; top: 50%; transform: translateY(-50%); font-weight: 800; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.9); padding: 0 6px; border-radius: 6px; white-space: nowrap; pointer-events: none; transition: left 900ms cubic-bezier(.2, .8, .2, 1); }
+.lv-e-value.is-inside { background: transparent; color: #fff; }
 .lv-e-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
 .lv-e-range:focus-visible + .lv-e-focus { outline: 3px solid var(--focus); outline-offset: 3px; }
 .lv-e-focus { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; }
 .lv-e-tick { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 3px solid var(--miss); }
 .lv-e-tick::after { content: "Your guess"; position: absolute; top: -18px; left: 4px; font-size: 11.5px; font-weight: 800; color: var(--miss); white-space: nowrap; }
+.lv-e-tick.is-right::after { left: auto; right: 7px; }
 .lv-e-fb { grid-column: 2; font-size: 14px; margin: -6px 0 0; }
 .lv-e-hint { font-size: 14px; color: var(--ink-soft); margin: 0 0 12px; }
-.lv-e-axis { display: flex; justify-content: space-between; margin-left: calc(26% + 12px); font-size: 12px; color: var(--ink-soft); }
-@media (max-width: 520px) { .lv-e-row { grid-template-columns: 1fr; gap: 4px; } .lv-e-fb { grid-column: 1; } .lv-e-axis { margin-left: 0; } }
+.lv-e-axis { display: grid; grid-template-columns: minmax(110px, 26%) 1fr; gap: 12px; font-size: 12px; color: var(--ink-soft); }
+.lv-e-axis-scale { position: relative; height: 1.4em; }
+.lv-e-axis-scale span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.lv-e-axis-scale span:first-child { transform: none; }
+.lv-e-axis-scale span:last-child { transform: translateX(-100%); }
+@media (max-width: 520px) { .lv-e-row, .lv-e-axis { grid-template-columns: 1fr; gap: 4px; } .lv-e-fb { grid-column: 1; } .lv-e-axis > span:first-child { display: none; } }
 html.lv-present .lv-e-track { height: 46px; }
 html.lv-present .lv-e-value { font-size: 18px; }
 `;
 
+/** Past this share of the track, a value label goes inside its bar rather than after it. */
+const INSIDE = 75;
+
 export function interactive(s, ctx) {
-  const max = scaleMax(s);
-  const step = max / 400;
+  const ax = axis(scaleMax(s));
+  const max = ax.top;
+  // Twenty slider positions per gridline: fine enough to guess with, round enough to read.
+  const step = Number((ax.step / 20).toPrecision(6));
   const rows = s.bars.map((b, i) => {
     const w = (b.value / max) * 100;
     if (!b.hidden) {
       return `<div class="lv-e-row" id="lv-e-row-${i}">
         <div class="lv-e-label">${esc(b.label)}${b.note ? `<small>${esc(b.note)}</small>` : ''}</div>
-        <div class="lv-e-track"><div class="lv-e-fill" style="width:${w.toFixed(2)}%"></div><span class="lv-e-value">${esc(fmt(s, b.value))}</span></div>
+        <div class="lv-e-track"><div class="lv-e-fill" style="width:${w.toFixed(2)}%"></div><span class="lv-e-value${w > INSIDE ? ' is-inside' : ''}" style="${w > INSIDE ? `right:calc(${(100 - w).toFixed(2)}% + 6px)` : `left:calc(${w.toFixed(2)}% + 8px)`}">${esc(fmt(s, b.value))}</span></div>
       </div>`;
     }
     const start = Math.round((max * 0.25) / step) * step;
@@ -208,14 +261,15 @@ export function interactive(s, ctx) {
       </div>`;
   }).join('');
 
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => `<span>${esc(fmt(s, max * f))}</span>`).join('');
+  const tickFmt = { prefix: s.prefix, suffix: s.suffix, decimals: ax.dp };
+  const ticks = ax.ticks.map((v) => `<span style="left:${((v / max) * 100).toFixed(3)}%">${esc(fmt(tickFmt, v))}</span>`).join('');
 
   const body = `
 <div class="lv-card">
   <p class="lv-prompt">${esc(s.question)}</p>
   <p class="lv-e-hint">Drag each dashed bar to your guess, or focus it and use the arrow keys. Values are in ${esc(s.unit)}.</p>
-  <div class="lv-e-chart">${rows}</div>
-  <div class="lv-e-axis" aria-hidden="true">${ticks}</div>
+  <div class="lv-e-chart" style="--lv-grid:${((ax.step / max) * 100).toFixed(4)}%">${rows}</div>
+  <div class="lv-e-axis" aria-hidden="true"><span></span><div class="lv-e-axis-scale">${ticks}</div></div>
   <div class="lv-actions"><button type="button" class="lv-btn" id="lv-e-go">Reveal the real values<span class="lv-key">R</span></button></div>
 </div>
 <section class="lv-card" id="lv-e-reveal" hidden aria-labelledby="lv-e-reveal-h">
@@ -224,7 +278,7 @@ export function interactive(s, ctx) {
   ${s.reveal.points ? `<ul>${s.reveal.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
 </section>`;
 
-  const data = { bars: s.bars, max, unit: s.unit, prefix: s.prefix || '', decimals: s.decimals };
+  const data = { inside: INSIDE, bars: s.bars, max, unit: s.unit, prefix: s.prefix || '', suffix: s.suffix || '', decimals: s.decimals };
   return { body, css: CSS, script: `(${client.toString()})(${ctx.safeJson(data)});` };
 }
 
