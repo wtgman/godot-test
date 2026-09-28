@@ -1,0 +1,17 @@
+Building a twelve week schedule
+===============================
+
+What this shows: A step-by-step walkthrough of a diagram, in 9 steps.
+How it is arranged: The parts appear in this order: Council permit, Soil testing, Recruit volunteers, Volunteer induction, Clear the ground, Build raised beds, Install irrigation, Lay paths, Planting day.
+
+Contents:
+  - Before the first step: The deadlines are already on the chart: site work cannot start before week 6, and handover is at week 12. Watch what has to fit between them.
+  - Step 1: The council permit takes six weeks, and nothing on site can start without it. This is the critical path. Everything else is arranged around it.
+  - Step 2: Soil testing runs inside the permit window. It does not hold anything up, so it has slack.
+  - Step 3: Volunteer recruitment also runs in parallel, finishing exactly as the permit arrives.
+  - Step 4: Induction cannot start until recruitment closes, and must finish before anyone is on site.
+  - Step 5: Site clearing starts the day the permit lands. Any delay to the permit pushes this, and everything after it.
+  - Step 6: The raised beds follow the clearing.
+  - Step 7: Irrigation overlaps the bed build on purpose: the plumber is only available in week 9.
+  - Step 8: Paths go down while the beds are finished.
+  - Step 9: Planting day lands in week 11, one week before handover. Ask the room: which single task, if it slipped by a week, would push the handover?

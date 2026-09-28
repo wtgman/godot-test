@@ -155,7 +155,7 @@ footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--line);
  *
  * items: [{ group, slug, b, files }]
  */
-export function dashboard(items, { title = 'Learning activities' } = {}) {
+export function dashboard(items, { title = 'Learning activities', proposals = [] } = {}) {
   const groups = [];
   for (const it of items) {
     let g = groups.find((x) => x.name === it.group);
@@ -214,6 +214,7 @@ export function dashboard(items, { title = 'Learning activities' } = {}) {
 <h1>${esc(title)}</h1>
 <p class="lede">${items.length} activit${items.length === 1 ? 'y' : 'ies'}${drafts ? `, ${drafts} still in draft` : ''}. Open one to try it as a learner, use presenter view at the front of the room, and check the review sheet before release.</p>
 <div class="rule"></div>
+${proposals.length ? `<section class="proposals"><h2>Proposals</h2><p class="group-note">The options each set of activities was chosen from, with every sketch ready to try.</p><ul class="links">${proposals.map((pr) => `<li><a href="${encodeURIComponent(pr.file)}">${esc(pr.topic)}</a></li>`).join('')}</ul></section>` : ''}
 ${sections}
 <footer>Each folder also holds a paste-ready Canvas page, an iframe block, the text version and the spec it was built from.</footer>
 </main></body>

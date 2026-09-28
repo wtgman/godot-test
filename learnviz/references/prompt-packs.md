@@ -24,9 +24,55 @@ every model is to produce something.
 
 ---
 
-## Pack 1: Get a spec back for this toolkit
+## Pack 1: Get an activity spec back for this toolkit
 
-The most useful one. Produces JSON that `learnviz build` can consume.
+The most useful one, for handing the writing of a learning object to another
+model once the pattern has been chosen. Produces JSON that `learnviz build`
+consumes.
+
+```
+You are writing a learning activity for a vocational course. The pattern
+has already been chosen: [PATTERN, for example "sort"].
+
+Here is the source content, verbatim:
+
+---
+[PASTE THE CONTENT]
+---
+
+Here is the field list for the pattern, and a working example:
+
+---
+[PASTE THE PATTERN'S SECTION OF spec-reference.md AND ONE EXAMPLE SPEC]
+---
+
+Return ONLY a JSON object with "kind": "learning-object", the pattern,
+a title, an "intent" starting "Learners can ...", a "goal" written to the
+learner without "they" or "their", and the pattern's fields.
+
+Rules:
+- Every fact must come from the content above. Invent nothing, especially
+  no numbers, dates, quotations or citations.
+- List every source in "sources", each with "status": "to-check". Anything
+  you wrote yourself, such as example sentences or a scenario, is a source
+  with "kind": "constructed".
+- Fill every reasoning field: why, feedback, explain, the reveal. They are
+  where the teaching happens. Marking right and wrong without the reason
+  is a quiz, not a lesson.
+- Australian English. No em dashes, no en dashes, no semicolons. Use "to"
+  for ranges.
+- Return the JSON and nothing else. No commentary, no code fence.
+```
+
+Run `learnviz validate` on what comes back. Its errors name the field and say
+what to fix, so they can go straight back to the model.
+
+---
+
+## Pack 1b: Get a figure spec back for this toolkit
+
+For a static figure on its own. Produces JSON that `learnviz build` can
+consume.
 
 ```
 You are preparing a learning visual for a vocational course.
@@ -209,5 +255,6 @@ Do not write a visual yet. Answer these four questions only:
 Answer in under 200 words total. Do not propose a diagram.
 ```
 
-Question 3 maps onto the visual types. Question 4 decides static versus
-interactive: know means show it, be able to work out means make them predict it.
+Question 3 maps onto the figure types. Question 4 points at the patterns: know
+suits predict, step-through and cards, be able to work out suits sort, order,
+scenario and explore. See `patterns.md`.

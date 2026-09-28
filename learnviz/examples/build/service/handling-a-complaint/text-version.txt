@@ -1,0 +1,12 @@
+Handling a complaint
+====================
+
+What this shows: An ordering activity: put 5 steps in the right order, then check.
+How it is arranged: In what order should you handle a customer complaint?
+
+Contents:
+  - Step 1: Listen without interrupting. People need to be heard before they can hear you. Jumping in with a fix usually makes it take longer.
+  - Step 2: Acknowledge it and apologise for the experience. Apologising for how it felt is not admitting fault. It puts you on their side of the problem.
+  - Step 3: Ask what would put it right. The fix you assume they want is often not the one they do.
+  - Step 4: Agree what you will do, and by when. A specific action and a time is what turns an apology into a plan.
+  - Step 5: Follow up afterwards. Checking back is what customers remember, and it catches the fixes that did not work.

@@ -1,0 +1,12 @@
+What was Instagram worth?
+=========================
+
+What this shows: An estimation chart with 5 bars, 2 of them hidden until the learner has guessed.
+How it is arranged: How much did Facebook announce it would pay for Instagram in 2012, and for WhatsApp in 2014? Values are in billion US dollars, announced.
+
+Contents:
+  - YouTube: US$1.65bn billion US dollars, announced. Google, 2006.
+  - Instagram: US$1bn billion US dollars, announced (hidden until the reveal). Facebook, 2012.
+  - Tumblr: US$1.1bn billion US dollars, announced. Yahoo, 2013.
+  - WhatsApp: US$19bn billion US dollars, announced (hidden until the reveal). Facebook, 2014.
+  - LinkedIn: US$26.2bn billion US dollars, announced. Microsoft, 2016.

@@ -307,7 +307,16 @@ async function writeDashboard(out) {
       if (await isDir(join(p, m))) await take(join(p, m), n);
     }
   }
-  await writeFile(join(out, 'index.html'), dashboard(items));
+  // Proposal galleries written to the same folder are linked from the top.
+  const proposals = [];
+  for (const n of (await readdir(out)).sort()) {
+    if (!n.endsWith('.gallery.html')) continue;
+    const html = await readFile(join(out, n), 'utf8');
+    const topic = (html.match(/<h1>([^<]*)<\/h1>/) || [])[1];
+    const plain = (t) => t.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+    proposals.push({ file: n, topic: topic ? plain(topic) : n });
+  }
+  await writeFile(join(out, 'index.html'), dashboard(items, { proposals }));
   return items.length;
 }
 

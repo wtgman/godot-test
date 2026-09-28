@@ -1,0 +1,13 @@
+The five responses, one at a time
+=================================
+
+What this shows: A step-by-step walkthrough of a diagram, in 5 steps.
+How it is arranged: The parts appear in this order: Denial, Anger, Bargaining, Depression, Acceptance.
+
+Contents:
+  - Before the first step: Three columns: what you might hear, what the person may need, and what not to say. The rows fill in one at a time. The order of the rows is the order Kübler-Ross listed them in, and nothing more.
+  - Step 1: Denial. The information itself is pushed away. What helps is time: offer it again later rather than pressing it now.
+  - Step 2: Anger. Often aimed at whoever is in the room, which on placement may be you. It is rarely about you, so let it be heard rather than defending anyone.
+  - Step 3: Bargaining. If I do this, then that, or if only. It sounds hopeful and practical, which is why it is easy to miss. Be honest without taking the hope away.
+  - Step 4: Depression. Withdrawal and loss of meaning. Be present rather than trying to fix it, and this is the one where you watch for risk and tell your supervisor.
+  - Step 5: Acceptance. Not happiness, but planning around what is real. Support the person to act on their own decisions. And remember: these five can come in any order, and come back.

@@ -1,0 +1,30 @@
+{
+  "kind": "learning-object",
+  "pattern": "stepthrough",
+  "title": "How Instagram grew",
+  "lede": "Each turning point is a response to a competitor or to a change in how people used their phones.",
+  "intent": "Learners can place Instagram's major changes in order and say what pressure each one answered.",
+  "goal": "place Instagram's major changes in order and say what pressure each one answered.",
+  "placement": "during",
+  "figure": {
+    "type": "timeline",
+    "events": [
+      { "date": "October 2010", "label": "Launch, iPhone only", "detail": "Photo sharing with filters, built for slow mobile connections." },
+      { "date": "April 2012", "label": "Facebook agrees to buy it for about US$1 billion", "detail": "Thirteen staff and no revenue. Worth about US$715 million by the close.", "emphasis": true },
+      { "date": "June 2013", "label": "Video arrives", "detail": "Fifteen second clips, a direct answer to Vine." },
+      { "date": "August 2016", "label": "Stories launches", "detail": "Twenty four hour posts, copied openly from Snapchat.", "emphasis": true },
+      { "date": "August 2020", "label": "Reels launches", "detail": "Short vertical video, answering TikTok. The feed shifts toward what the algorithm picks.", "emphasis": true }
+    ]
+  },
+  "steps": [
+    { "say": "October 2010. Instagram launches on iPhone only. Filters made phone photos look good on slow connections, which is what people needed at the time." },
+    { "say": "April 2012. Eighteen months later, Facebook agrees to buy it. Notice the gap: eighteen months from launch to a billion-dollar deal." },
+    { "say": "June 2013. Video arrives, a direct response to Vine. This is the first of three times Instagram answers a competitor by adding the competitor's feature." },
+    { "say": "August 2016. Stories, copied openly from Snapchat. The second time." },
+    { "say": "August 2020. Reels, answering TikTok. The third time. Ask the room: what does that pattern tell you about how platforms compete?" }
+  ],
+  "sources": [
+    { "label": "Company announcements for each date", "kind": "research", "status": "to-check", "note": "Dates for video, Stories and Reels have not yet been checked against primary sources." },
+    { "label": "Forbes, Facebook officially closes Instagram deal (2012)", "url": "https://www.forbes.com/sites/tomiogeron/2012/09/06/facebook-officially-closes-instagram-deal/", "kind": "research", "status": "to-check" }
+  ]
+}

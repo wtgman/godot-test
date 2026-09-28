@@ -1,257 +1,225 @@
 ---
 name: learnviz
-description: Turns a piece of learner content into visual and interactive learning objects for Canvas LMS. Takes pasted text, a document or a link, works out what shapes are latent in it, and proposes a menu of candidate visuals with the questions worth answering first, rather than building immediately. Once a candidate is chosen it builds the artefact along with the alt text, the five-part image description, the plain text equivalent and the paste-ready Canvas block. Use it to generate ideas for turning content into visuals as much as to produce them. Use this skill whenever someone hands over course content and wants a diagram, timeline, schedule, process flow, cycle, comparison, chart, labelled diagram, simulation, animation or interactive built from it, or asks how to get an interactive into Canvas. Also use for auditing an existing visual against accessibility and Canvas embedding rules. Pairs with cove-canvas-page, which builds the page this drops into.
+description: Turns a piece of course content into learning activities for Canvas LMS, things a learner does rather than pictures they look at. Reads pasted text, a document or a link, works out what matters and what learners get wrong, and proposes a short menu of activities (predict, estimate, step-through, sort, order or timing, branching scenario, explorable model, recall cards), each with a working sketch to try in a gallery before anything is built. Once chosen, it builds each activity as a self-contained page with a presenter view for class, a SCORM package that reports to the Canvas gradebook, a script-free Canvas page, a teacher guide and a review sheet, plus figures, alt text and text versions. Use it whenever someone hands over course content and wants it made more engaging, interactive or visual, wants ideas for how to teach it, or asks how to get an interactive, simulation, animation, timeline, chart or diagram into Canvas. Pairs with cove-canvas-page, which builds the page these drop into.
 ---
 
-# Learning visual builder
+# Learning activity builder
 
-Turns content into a learning object. Not a picture of the content, a thing a
-learner does something with.
+Turns content into something a learner does. Not a picture of the content: an
+activity where the learner commits to an answer, gets told why, and comes away
+able to do something they could not do before.
 
-**Propose before you build.** The default output of this skill is a menu of
-candidate visuals, not an artefact. The first visual that comes to mind is
-almost always the one the prose already states, so it teaches nothing, and once
-it exists people edit it rather than ask whether it was the right thing to
-build. Choosing is the decision worth spending time on, and it is far cheaper to
-change your mind about a line in a menu than about a finished page.
-
-Build only what gets chosen. Then the output is a bundle: the visual, its text
-equivalent, and the markup to paste into Canvas. Never just an image.
-
-## What this is for, and what it is not for
-
-This skill exists because `cove-canvas-page` reaches its Visual Element section
-and can only write a brief for a human to draw something in Napkin or Canva.
-This builds the actual thing.
-
-**Do not use this** to decorate a page. A visual that adds no information a
-learner could not get from the prose is worse than no visual: it costs load
-time, it costs a screen reader user a detour, and it teaches the learner that
-the graphics on this course can be skipped. If the content does not have a
-shape, say so and move on.
+**Propose before you build.** The first output is a menu, never an artefact. The
+first idea is usually the one the prose already states, and once something is
+built people edit it rather than ask whether it was the right thing. Choosing is
+the decision worth spending time on.
 
 ---
 
-## Stage 0: Read the content and find the shape
+## Who it is for
 
-**Do this before choosing anything.** The commonest failure is picking a chart
-type because it looks good and then bending the content to fit.
+Three people use what this skill produces, and each needs something different.
 
-Read the supplied content and answer one question: **what is the relationship
-in here that a learner has to hold in their head?**
+- **The learning designer** needs ideas, and a way to judge them. The proposal
+  gallery gives them options they had not thought of, each tried as a learner
+  before choosing. The dashboard lays the chosen activities across the week and
+  shows the gaps. The review sheet tells a subject expert exactly what to check.
+- **The teacher** needs to explain a concept at the front of a room. Every
+  activity has a presenter view (add `#present` to the address) with large text
+  and keyboard control, and a teacher guide with what to say, what to ask and
+  what to listen for, before, during and after class.
+- **The student** needs a reason to think. Every pattern asks for a commitment
+  before it explains, gives feedback that says why, makes failing safe and
+  retrying worthwhile, and works on a phone and from the keyboard.
 
-| The content is really about... | Build |
+---
+
+## The process
+
+### 1. Diagnose the content
+
+Before any idea, answer these from the content. They go into the proposal's
+`analysis`, and the validator requires them.
+
+- **Key ideas.** The one to six things a learner would be lost without.
+- **The threshold idea.** The one that, once grasped, changes how the rest
+  looks. Usually not what the content spends longest on.
+- **Misconceptions.** What learners arrive believing that is wrong. It never
+  appears in the source, because the source was written by someone who does
+  not hold it. Write each as the belief and what is actually the case.
+- **Know or do.** What learners need to know, and what they need to be able to
+  do. Knowing points to predict, step-through and cards. Doing points to sort,
+  order, scenario and explore.
+
+### 2. Find the angles
+
+Read `references/ideation.md`. It has the ten moves for finding an angle (compared
+to what, the misconception to pre-empt, the decision the learner will face, the
+counterfactual and six more) and which pattern each one leads to. Aim for two or
+three options the teacher had not thought of. A menu of the obvious is not
+worth reading.
+
+### 3. Choose patterns
+
+Read `references/patterns.md` for how each works, why, and how it is used in
+class. In short:
+
+| The learner needs to... | Pattern |
 |---|---|
-| When things happened, in order | `timeline` |
-| How something is done, first to last | `process` |
-| Something that repeats with no start or end | `cycle` |
-| What runs at the same time as what | `gantt` |
-| How options differ across the same criteria | `comparison` |
-| How a whole breaks into named parts and sub-parts | `hierarchy` |
-| How much, and which way it is moving | `chart` |
-| What the parts of a thing are called | `labelled` |
-| A handful of figures that should land as figures | `stat` |
-| What share of a whole each part takes | `waffle` |
-| Getting the timing right, as a skill to practise | `sequencer` (interactive) |
-| A relationship the learner should push on and test | `simulation` (interactive) |
+| Confront something they already believe | `predict` |
+| Get a feel for how big something is | `estimate` |
+| Follow an explanation built one piece at a time | `stepthrough` |
+| Tell similar things apart | `sort` |
+| Get a sequence, or the timing of overlapping steps, right | `order` (`"mode": "timing"` for timing) |
+| Make judgements in a conversation or situation | `scenario` |
+| See how a relationship behaves when they push on it | `explore` |
+| Make facts, terms or phrases automatic | `cards` |
 
-Two rules that resolve most of the hard cases.
+A static figure (timeline, process, cycle, gantt, comparison, hierarchy, chart,
+labelled, stat, waffle) is a component, not an activity. It sits inside a
+predict reveal or drives a step-through, and it can still be built on its own
+when a figure is all that is needed. `learnviz types` lists them.
 
-- **Share versus amount.** If the point is what fraction of the whole something is, that is a `waffle`. If the point is how big it is, or which way it is moving, that is a `chart`. Never a pie: people read angles badly, and a learner cannot check a wedge the way they can count squares.
-- **Sequence versus schedule.** If the steps happen one after another, that is a
-  `process`. If they overlap, it is a `gantt`. A recipe with one pan is a
-  process. A roast dinner is a gantt, because the whole difficulty is that the
-  potatoes go in while the lamb is still cooking.
-- **Show versus practise.** If the learner needs to *know* the timing, build the
-  `gantt` and they read it. If they need to be *able to work it out*, build the
-  `sequencer` and they predict it first. Prefer the sequencer whenever timing is
-  an assessable skill rather than a fact.
+Plan an arc, not a single object: something before class that makes learners
+want to know, something during class for the teacher to explain with, and
+something after class to practise with.
 
-If the content carries more than one shape, build more than one object. Do not
-compress two relationships into one diagram.
+### 4. Propose, then stop
 
-### When to build nothing
-
-Say so plainly, and say why, if:
-
-- the content is a list of unrelated facts, which is a bold lead-in list, not a diagram
-- the content is a single idea, which is a sentence
-- there is no data, and inventing plausible numbers would be fabrication
-- the only honest visual would need a photograph of real equipment that you do not have. Use `labelled` with no image, which produces a placed and numbered pin overlay plus a brief for the photograph.
-
----
-
-## Stage 1: Find the angles
-
-**Read `references/proposing.md`.** It carries the ten moves for finding an
-angle, the six questions that actually change a build, and the data provenance
-rules.
-
-The short version: never ask "how do I illustrate this paragraph". Ask **"what
-is true about this content that you cannot see from reading it?"** The moves
-that pay off most often are:
-
-- **Compared to what.** A number alone means nothing. One billion dollars against what?
-- **The misconception to pre-empt.** What do learners arrive already believing that is wrong? This never appears in the source, because the source was written by someone who does not hold the misconception.
-- **The decision the learner will actually face.** Content describes; practice decides.
-- **The ratio nobody computed.** Two figures in the source imply a third that is more striking than either.
-
-Aim for two or three candidates the teacher had not thought of. That is the
-value of this step. A menu of the obvious is not worth reading.
-
----
-
-## Stage 2: Propose, then stop
-
-Write a proposal and hand it over. **Do not build anything yet.**
+Write a proposal (`kind: "proposal"`, fields in `references/spec-reference.md`)
+and give each strong candidate a **sketch**: a real learning-object spec, marked
+`"sketch": true` or with its sources still to check, so it builds as a draft.
+Point at it with `"sketchFile"` or put it inline.
 
 ```
-node bin/learnviz.js propose options.json --out build
+node bin/learnviz.js propose ../examples/grief/proposal.json --out build
 ```
 
-The proposal is JSON with `kind: "proposal"`. Its shape is validated, and the
-validator enforces the two things that make a menu useful:
+This writes `<topic>.gallery.html`, where every sketch runs live, and
+`<topic>.options.md`. The teacher tries the sketches, ticks what they want and
+copies a one-line reply ("Please build 1, 3 and 4."). **Build nothing until they
+choose.** If their answers to the questions change the menu, revise the menu.
 
-- **Every candidate declares where its data comes from.** One of `none-needed`, `in-source`, `needs-teacher`, `needs-research`, `unavailable`. A blocking status must also say what specifically is missing, because "needs figures" is not something a teacher can act on.
-- **One or two candidates are recommended.** Not none, which pushes the decision back onto the teacher. Not all of them, which is the same thing in disguise.
+The validator enforces what makes a menu useful: an analysis, one to three
+recommendations (not none, not most), a data status on every candidate that says
+what is missing when something is, and sketches that can never pass as finished.
+Fill in `rejected` too. It records why the obvious idea was not built, so nobody
+proposes it again next term.
 
-Also fill in `rejected`. On well-known content this is often the most useful
-part of the brief: it records why the obvious visual was not built, so nobody
-proposes it again next term. Give the reason in terms of what it would teach.
+Skip straight to building only when the person has named the activity they want
+and the content is in hand. Even then, say in one line what else it would
+support.
 
-Present the rendered brief, and say plainly that nothing will be built until
-they pick. If they answer the questions in a way that changes the menu, revise
-the menu rather than pressing on.
+### 5. Source everything
 
-### When to skip straight to building
+Read `references/sources-and-review.md`. Every fact, figure, date and quotation
+in an activity gets an entry in `sources`, with its `kind` and a `status` of
+`to-check`. Only a person who has opened the source can make it `verified`.
+Content written for the activity, such as a scenario or example sentences, is
+`kind: "constructed"`, checked for realism rather than accuracy.
 
-Only when the person has already named the visual they want, in their own words,
-and the data is in hand. "Make me a gantt of this schedule" is an instruction,
-not a request for options. Even then, say in one line what else the content
-would have supported.
+**Never state a figure from memory as fact.** When research is needed, record
+what you found and where in a `research.md` beside the specs, with a confidence
+level, as `examples/instagram/research.md` does. If the figure does not exist,
+say so, and propose the honest version instead.
 
----
-
-## Stage 3: Write the learning intent first
-
-Every spec requires an `intent`, and the builder refuses to run without one. It
-is one sentence, and it starts with what the learner can do afterwards.
-
-- Good: "Learners can work backwards from a serving time to decide when each component must start."
-- Bad: "This shows the timing of a roast dinner."
-
-The second one describes the picture. The first one describes a capability, and
-it is the only test of whether the visual earned its place. Write it before the
-data. If you cannot write it, go back to Stage 0.
-
----
-
-## Stage 4: Write the spec
-
-Specs are JSON. Run `learnviz types` for the list, and read
-`references/spec-reference.md` for every field of every type.
-
-Content rules that apply to all of them.
-
-- **Never invent data.** If the content says enrolments rose, do not make up the numbers. Ask, or pick a type that does not need them.
-- **Carry the reasoning across.** Fields like `detail`, `note` and `because` are where the teaching lives. A gantt bar that says "Rest the meat, 15 minutes" is a schedule. One that adds "carve straight away and the juices run out onto the board" teaches. Fill these in from the source content.
-- **Respect the item limits.** The validator caps each type, and the caps are pedagogical rather than technical. Fourteen events on a timeline is the point at which it stops being a timeline and becomes a list. If you are over, split it.
-- **Australian English, and the house punctuation rules.** No em dashes, no en dashes, no semicolons. Use "to" for ranges. These match `cove-canvas-page`.
-
----
-
-## Stage 5: Build
+### 6. Build
 
 ```
 cd learnviz/tools
-node bin/learnviz.js doctor                              # once, to see what this machine can do
-node bin/learnviz.js validate my-spec.json               # catches spec errors with a readable message
-node bin/learnviz.js build my-spec.json --out build      # writes the bundle
-node bin/learnviz.js build my-spec.json --out build --video   # also record an interactive as video
+node bin/learnviz.js doctor                                  # what this machine can do
+node bin/learnviz.js validate ../examples/grief/*.json       # readable errors, nothing written
+node bin/learnviz.js build ../examples/grief/*.json --out build
+node bin/learnviz.js build spec.json --out build --video     # also record a moving model
 ```
 
-A static build writes `.svg`, `.png`, `.canvas.html`, `.generic.html`, `.txt`
-and `.notes.md`. An interactive writes `.html`, `.canvas.html`, `.txt` and
-`.notes.md`.
+Each learning object becomes a folder, `build/<group>/<slug>/`, holding
+`index.html` (the activity), `<slug>.scorm.zip`, `canvas-page.html`,
+`canvas-embed.html`, the figure as SVG and PNG with its block, `text-version.txt`,
+`spec.json`, and the teacher guide and review sheet in HTML and Markdown. The
+output folder gets an `index.html` dashboard.
 
-**Read the `.notes.md` before handing anything over.** It carries the alt text,
-the five-part image description, the embed steps, and the result of the
-automated accessibility checks. If any check is unresolved, the build prints
-`CHECK` rather than `OK` and the notes list the problem. Fix the spec and build
-again. Do not hand over a bundle with an unresolved check.
+The build prints `OK`, `DRAFT` or `CHECK`. `CHECK` means an accessibility or
+content check failed: fix the spec and build again. Never hand over a `CHECK`.
+`DRAFT` is expected until a person has reviewed it.
+
+Write the `intent` first, as a capability ("Learners can work backwards from a
+serving time to decide when each part of a meal must start"), and the `goal` as
+the learner-facing version ("work backwards from a serving time..."). If you
+cannot write the intent, go back to step 1.
+
+Fill the reasoning fields: `why` on sort and order items, `feedback` on scenario
+choices, `explain` on explore outputs, the reveal on predict and estimate. That
+is where the teaching lives. An activity that marks answers without saying why
+is a quiz, not a lesson.
+
+### 7. Review and release
+
+A subject expert works through `review-sheet.html`: every source, every answer,
+the constructed content, and the accessibility checks. Then set each source's
+`status` to `verified` and `"status": "release"` in the spec, and build with
+`--release`. The build refuses anything still in draft, and the draft banner
+disappears.
+
+### 8. Deliver
+
+Read `references/canvas-delivery.md` before promising anything. The routes, best
+first:
+
+1. **SCORM** through the Canvas SCORM tool, where the institution has it on. The
+   activity runs inside Canvas and reports completion, and a score for scored
+   patterns, to the gradebook.
+2. **Canvas page.** Paste `canvas-page.html` into the HTML editor. No scripts, so
+   it survives the editor and works in the mobile app. The interaction becomes
+   "answer, then open the box".
+3. **Embedded page.** Publish `index.html` on a web host and paste
+   `canvas-embed.html`. Never upload it to Course Files: Canvas will not run its
+   scripts there.
+4. **In class.** Open `index.html#present` from the teacher's own computer.
+
+Where a URL, file id or H5P UUID is needed and not known, the blocks carry the
+house placeholder highlight `#fdf223`. Never invent one.
+
+### 9. Teach
+
+The teacher guide carries it. Point the teacher at presenter view and at the
+questions to ask, and remind them that the reveal is where the talking happens.
 
 ---
 
-## Stage 6: Get it into Canvas
+## Rules that are not negotiable
 
-**Read `references/canvas-embedding.md` before promising anyone anything.**
-
-The short version, because this is where the effort gets wasted:
-
-- **Canvas will not run your JavaScript.** The Rich Content Editor strips `<script>` and every `on*` handler when the page is saved.
-- **An HTML file uploaded to Course Files will not run its JavaScript either.** Canvas previews it in a sandboxed iframe that usually withholds `allow-scripts`. The page loads and does nothing. There is no workaround from inside the file.
-- **So a static image is the default**, and it is what the Emble component library already expects. It always works.
-- **An interactive needs a host**: somewhere that serves it as an ordinary web page, then an `<iframe>` pointing at it. Or rebuild it as an H5P activity through the tool already in Canvas, which is the only route that also puts a mark in the gradebook.
-
-The `.canvas.html` file is written for the right rung automatically. Where a URL
-or file id is needed and not known, it emits the house placeholder highlight
-`#fdf223` rather than inventing one, exactly as `cove-canvas-page` requires.
-
----
-
-## Stage 7: Pair it with a retrieval check
-
-A visual a learner looks at is worth much less than a visual a learner is asked
-a question about. Every object this skill produces should be followed on the
-page by something that makes them use it.
-
-- Interactive types already contain their own check.
-- Static types need one alongside. Choose an H5P type from the taxonomy in `cove-canvas-page/references/h5p-library.md`, and write a question that cannot be answered without reading the graphic. "According to the schedule, what is already in the oven when the potatoes go in?" beats "What temperature is the lamb roasted at?"
-
----
-
-## Accessibility is not a later step
-
-It is generated from the same spec that draws the picture, so it cannot drift,
-and it is not optional.
-
-- **Short alt** goes in `alt`. One sentence, names the graphic, carries no data.
-- **Full alt** goes in `data-ally-user-updated-alt`. This is what Ally reports against.
-- **Five-part image description** goes in the `<details>` accordion, using the exact house labels in the exact house order. Under Visible text, every word that appears in the graphic is listed.
-- **Plain text equivalent** ships as a `.txt` and inside every interactive.
-
-The build enforces, and the test suite pins:
-
-- every colour pair meets WCAG 2.2 AA contrast
-- no two series colours are perceptually close, measured as Lab distance
-- nothing is encoded by colour alone. Every coloured element also carries a number, a label or a texture
-- a bar chart of non-negative values always includes zero on its axis
-- no drag and drop anywhere, because it excludes keyboard and switch users
-- every iframe has a title
-
-If you are asked to override one of these, do not. Say which one and why it is
-there.
+- **No invented data, dates, figures, quotations or citations.** Ask, research
+  with sources, or choose a pattern that does not need them.
+- **Nothing reaches students as fact until a person has checked it.** Sources
+  start `to-check`. Placeholder content is `"sketch": true`.
+- **Every activity explains itself.** Feedback says why, not just right or wrong.
+- **Showing the answer never earns marks.** Model answers report completion,
+  never a score. The score kept is the best attempt.
+- **Accessible by construction.** No drag and drop, every control works from the
+  keyboard with a 24px target or larger, nothing is carried by colour alone,
+  contrast meets WCAG 2.2 AA, motion respects reduced-motion settings, and every
+  activity ships a text version. If asked to override one, do not. Say which
+  one and why it is there.
+- **House style.** Australian English. No em dashes, en dashes or semicolons.
+  Placeholder highlight `#fdf223`, brand accent `#fac800`, never swapped.
+- **No fabricated Canvas file ids, course ids or H5P UUIDs.**
 
 ---
 
 ## Pre-flight
 
-Run every line before handing over. Fix and rebuild on any failure.
-
 ```
-[ ] A proposal was presented and a candidate chosen, or the person named the visual themselves
-[ ] Every candidate declared its data provenance, and nothing marked needs-research was built from memory
-[ ] Learning intent written as a capability, not a description
-[ ] Visual type chosen from the content shape, not from preference
-[ ] No invented data, dates, figures or citations
-[ ] Reasoning fields filled from the source, not left bare
-[ ] Build reports OK, not CHECK, for every spec
-[ ] Notes file read, alt text sensible when read aloud
-[ ] Visible text list covers every label in the graphic
-[ ] Correct embed rung chosen, and the teacher told what hosting it needs
-[ ] Placeholder highlights are #fdf223, brand accent #fac800, neither swapped
-[ ] No fabricated Canvas file ids, course ids or H5P UUIDs
-[ ] A retrieval check accompanies every static visual
+[ ] Analysis written: key ideas, threshold idea, misconceptions, know or do
+[ ] Proposal presented with sketches, and options chosen by the teacher
+[ ] Every fact has a source entry. Nothing from memory marked verified
+[ ] Intent written as a capability, goal written for the learner
+[ ] Reasoning fields filled: why, feedback, explain, reveal
+[ ] Every build reports OK or DRAFT, never CHECK
+[ ] Teacher guide read: placement, questions and answer key make sense
+[ ] Review sheet handed to a subject expert, or the draft status explained
+[ ] Delivery route chosen, and the teacher told what it needs
+[ ] Placeholders #fdf223, accent #fac800, no invented ids or URLs
 [ ] Australian English, no em dashes, en dashes or semicolons
 ```
 
@@ -259,8 +227,10 @@ Run every line before handing over. Fix and rebuild on any failure.
 
 ## Reference files
 
-- **`references/proposing.md`.** The ten moves for finding an angle, the questions worth asking, data provenance, how to recommend. Read at Stage 1.
-- **`references/spec-reference.md`.** Every type, every field, worked examples. Read before writing a spec.
-- **`references/canvas-embedding.md`.** The embedding ladder, what Canvas strips, hosting options, and the exact markup for each. Read before promising an interactive.
-- **`references/visual-design.md`.** Why each type is drawn the way it is, the accessibility rules, and how to extend the toolkit with a new type.
-- **`references/prompt-packs.md`.** Prompt templates for handing a spec to another LLM, for when a visual is needed that this toolkit does not build.
+- **`references/ideation.md`.** The analysis, the ten moves for finding an angle, questions worth asking, recommending an arc, recording what was ruled out. Read at steps 1 and 2.
+- **`references/patterns.md`.** Each pattern: what the learner does, why it works, how a teacher uses it, what Canvas receives, and the traps. Read at step 3.
+- **`references/spec-reference.md`.** Every field of every learning-object pattern, the proposal, and the figure types. Read before writing any spec.
+- **`references/sources-and-review.md`.** Source kinds and statuses, research notes, drafts, the review sheet and release. Read at step 5.
+- **`references/canvas-delivery.md`.** What Canvas strips, the delivery routes including SCORM, hosting, and how to check an embed worked. Read before promising anything.
+- **`references/visual-design.md`.** How figures are drawn and checked, and how to add a figure type or a pattern.
+- **`references/prompt-packs.md`.** Prompts for handing work to another model, for when something is needed that this toolkit does not build.

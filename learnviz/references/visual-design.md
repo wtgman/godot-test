@@ -13,7 +13,7 @@ rather than aesthetic.
 Every coloured element carries a second channel: a number, a label, or a
 texture. Bars get patterns. Line series get distinct marker shapes and a label
 at the end of the line. Cycle stages and diagram pins get numbers that tie them
-to a key. Right and wrong in an interactive get a word and a symbol, not just
+to a key. Right and wrong in an activity get a word and a symbol, not just
 green and magenta.
 
 This is WCAG 1.4.1, and it is also just better teaching: a learner reading a
@@ -54,9 +54,10 @@ inside a course has no reason to distrust it.
 ### No drag and drop
 
 Anywhere. It excludes keyboard users, switch users, and anyone on a phone with
-imprecise touch. There is always a better control: the sequencer uses number
-inputs, which are operable by every input method and record a more precise
-answer than a dropped tile.
+imprecise touch. There is always a better control: ordering uses up and down
+buttons that keep focus on the moved item, timing uses number inputs, and
+estimating uses a real range input laid over the bar. Every one is operable by
+every input method.
 
 ---
 
@@ -131,22 +132,33 @@ equality.
 4. **Add a fixture** to `FIXTURES` in `test/learnviz.test.js`. The whole static suite runs over every fixture automatically, so a new type immediately inherits the determinism, escaping, balance, audit and text-equivalent checks.
 5. **Add a line** to `cmdTypes()` in `bin/learnviz.js` and to `references/spec-reference.md`.
 
-Interactive types follow the same shape in `src/interactive/`, exporting
-`build(spec, a11y)` and `describe(spec)`, and registering in
-`src/interactive/index.js`. Build the page with `page()` from
-`interactive/shell.js` so it inherits the styling, the focus handling, the
-height reporting and the text equivalent.
+A renderer should also wrap each part a learner would meet in turn in
+`unit(index, svg)` from `frame.js`, which marks it `<g data-item>`. That is what
+lets a step-through reveal the figure one part at a time. Anything that is
+structure rather than content (axes, gridlines, the title) stays outside the
+units, so the layout never shifts as parts appear.
 
-An interactive that animates should expose `window.lvSeek(t)` for `t` from 0 to
-1, rendering synchronously. That is what lets it be captured as a deterministic
-video.
+## Adding a pattern
+
+Patterns live in `src/lo/patterns/`, one module each, and are registered in
+`src/lo/index.js`. `references/patterns.md` lists what a module exports. The
+page shell, styling, presenter view, SCORM reporting and text version come
+from `src/lo/shell.js` and `src/runtime/client.js`, so a new pattern inherits
+them.
+
+A pattern that animates should expose `window.lvSeek(t)` for `t` from 0 to 1,
+rendering synchronously, and a `recording()` export describing the page to
+record. That is what lets `build --video` capture it frame by frame, the same
+every time.
 
 ---
 
 ## Determinism
 
-Same spec in, byte-identical SVG out. No timestamps, no random ids, no
-unrounded floats: every emitted number goes through `n()`.
+Same spec in, byte-identical output out: SVG, pages and SCORM packages alike.
+No timestamps, no random ids, no unrounded floats: every emitted number goes
+through `n()`. Shuffles are seeded from the activity's title, and zip entries
+carry a fixed date.
 
 This matters because these files get committed, reviewed and diffed by
 teachers. A diff that shows only the change you made is reviewable. One that

@@ -1,0 +1,106 @@
+{
+  "kind": "learning-object",
+  "pattern": "explore",
+  "engine": "formula",
+  "title": "Pricing a dish from its food cost",
+  "lede": "The menu price has to cover the cost of the ingredients several times over. Move the sliders and watch what happens to the price.",
+  "intent": "Learners can calculate a menu price from a portion cost and a target food cost percentage, and explain how a change in cost affects price.",
+  "goal": "calculate a menu price from a portion cost and a target food cost percentage.",
+  "placement": "during",
+  "parameters": [
+    {
+      "key": "cost",
+      "label": "Portion cost",
+      "min": 2,
+      "max": 20,
+      "value": 9,
+      "step": 0.5,
+      "prefix": "$",
+      "decimals": 2
+    },
+    {
+      "key": "target",
+      "label": "Target food cost",
+      "min": 20,
+      "max": 45,
+      "value": 30,
+      "step": 1,
+      "unit": "%",
+      "decimals": 0
+    }
+  ],
+  "outputs": [
+    {
+      "key": "price",
+      "label": "Menu price before GST",
+      "expr": "cost / (target / 100)",
+      "prefix": "$",
+      "decimals": 2,
+      "explain": "Portion cost divided by the target food cost percentage."
+    },
+    {
+      "key": "price_gst",
+      "label": "Price the customer pays",
+      "expr": "price * 1.1",
+      "prefix": "$",
+      "decimals": 2,
+      "explain": "The menu price with 10 per cent GST added."
+    },
+    {
+      "key": "margin",
+      "label": "Gross profit per plate",
+      "expr": "price - cost",
+      "prefix": "$",
+      "decimals": 2,
+      "explain": "What is left of the price before GST once the ingredients are paid for."
+    }
+  ],
+  "plot": {
+    "x": "target",
+    "y": "price"
+  },
+  "challenges": [
+    {
+      "prompt": "Your supplier puts the portion cost up to $11. Keep food cost at 30 per cent. What does the menu price before GST need to be?",
+      "key": "price",
+      "given": {
+        "cost": 11,
+        "target": 30
+      },
+      "target": 36.67,
+      "tolerance": 0.2,
+      "hint": "Set the portion cost to $11 and the target back to 30 per cent.",
+      "success": "About $36.67. A $2 rise in cost needs a price rise of about $6.67 to hold the same percentage, because the price has to cover the cost more than three times over."
+    },
+    {
+      "prompt": "A competitor sells the same dish for $32 before GST. At a portion cost of $11, roughly what food cost percentage would you be running if you matched them?",
+      "key": "price",
+      "given": {
+        "cost": 11
+      },
+      "target": 32,
+      "tolerance": 0.6,
+      "hint": "Leave the cost at $11 and move the target until the price is close to $32.",
+      "success": "About 34 per cent. Matching the competitor's price costs you around four points of margin on every plate."
+    },
+    {
+      "prompt": "Find a portion cost and a target that give a price before GST of exactly $40. What does the customer pay?",
+      "key": "price_gst",
+      "target": 44,
+      "tolerance": 0.05,
+      "hint": "Try $12 at 30 per cent, or $10 at 25 per cent.",
+      "success": "$44. GST goes on top of the price you set, so work the price out first and then add 10 per cent."
+    }
+  ],
+  "teach": {
+    "watchFor": "Learners adding the target percentage to the cost (a markup) instead of dividing by it. Ask them to check: at a 30 per cent food cost, is the cost 30 per cent of the price?"
+  },
+  "sources": [
+    {
+      "label": "Food cost percentage, standard hospitality costing: cost divided by sale price excluding GST",
+      "kind": "general",
+      "status": "to-check",
+      "note": "Check the convention and the GST treatment against your unit's costing guide."
+    }
+  ]
+}

@@ -1,0 +1,2130 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Options: The Instagram acquisition</title>
+<style>
+:root { color-scheme: light; --ink: #000054; --soft: #3a3a6e; --line: #d9d9e6; --wash: #f5f5fa; --accent: #fac800; --ok: #00706b; --miss: #a4177c; --part: #8a5a00; --focus: #1a56c4; --draft: #fdf223; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #ffffff; color: var(--ink); font: 16px/1.55 Helvetica, Arial, sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 28px 16px 120px; }
+.kicker { font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ok); margin: 0 0 6px; }
+h1 { font-size: 32px; line-height: 1.15; margin: 0 0 10px; }
+h2 { font-size: 22px; margin: 36px 0 10px; }
+h3 { font-size: 18px; margin: 0 0 6px; line-height: 1.3; }
+p { margin: 0 0 10px; }
+.lede { font-size: 18px; max-width: 70ch; }
+.muted { color: var(--soft); }
+.rule { width: 56px; height: 4px; background: var(--accent); border-radius: 2px; margin: 16px 0 8px; }
+.panel { background: var(--wash); border-radius: 14px; padding: 16px 18px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.threshold { border-left: 5px solid var(--accent); background: #fffbe6; padding: 12px 16px; border-radius: 0 12px 12px 0; margin: 12px 0 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 12.5px; letter-spacing: .05em; text-transform: uppercase; }
+.q { border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 0 0 10px; }
+.q ul { margin: 6px 0 0; }
+.arc { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.arc-col { border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.arc-col h3 { font-size: 13px; letter-spacing: .07em; text-transform: uppercase; color: var(--ok); }
+.arc-col a { color: var(--ink); font-weight: 700; }
+.opt { border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin: 0 0 16px; box-shadow: 0 1px 2px rgba(0,0,84,.06); scroll-margin-top: 16px; }
+.opt.is-rec { border: 2px solid var(--ink); }
+.opt-head { display: flex; gap: 14px; align-items: flex-start; }
+.num { flex: 0 0 38px; height: 38px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 17px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; padding: 0; list-style: none; }
+.chip { display: inline-flex; gap: 5px; align-items: center; font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--wash); }
+.chip.pattern { color: var(--ok); }
+.chip.rec { background: var(--ink); color: #fff; }
+.chip.block { background: #fbeaf3; color: var(--miss); }
+.chip.ok { background: #e3f2f1; color: var(--ok); }
+.opt dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0 0 10px; }
+.opt dt { font-weight: 800; }
+.opt dd { margin: 0; }
+@media (max-width: 560px) { .opt dl { grid-template-columns: 1fr; } .opt dd { margin-bottom: 6px; } }
+.choose { display: inline-flex; gap: 10px; align-items: center; font-weight: 800; border: 2px solid var(--ink); border-radius: 10px; padding: 8px 14px; cursor: pointer; margin-top: 6px; min-height: 44px; }
+.choose input { width: 20px; height: 20px; accent-color: var(--ink); margin: 0; }
+.choose:has(input:checked) { background: var(--ink); color: #fff; }
+.choose:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+details.try { margin-top: 12px; }
+details.try summary { cursor: pointer; font-weight: 800; color: var(--focus); min-height: 32px; }
+details.try summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+.frame { width: 100%; height: 640px; border: 1px solid var(--line); border-radius: 12px; margin-top: 8px; background: #fff; display: block; }
+.nopreview { margin-top: 12px; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 12px; color: var(--soft); font-size: 14.5px; }
+.ruled li { margin-bottom: 8px; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; background: #ffffff; border-top: 2px solid var(--ink); padding: 10px 16px; box-shadow: 0 -4px 14px rgba(0,0,84,.08); }
+.bar-in { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.bar output { font-weight: 800; }
+.bar button { font: inherit; font-weight: 800; background: var(--ink); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; min-height: 44px; }
+.bar button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.bar button:disabled { opacity: .45; cursor: default; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body><main>
+<p class="kicker">Activity options</p>
+<h1>The Instagram acquisition</h1>
+<p class="lede">The source is a short history of Instagram: launched October 2010, bought by Facebook in April 2012 for a headline one billion US dollars, with thirteen staff and no revenue. The figures below come from contemporary reporting and filings, listed in research.md, and every one is marked to check until someone has opened the original.</p>
+<p class="muted"><strong>Who it is for.</strong> Social media and digital marketing learners meeting platform economics for the first time.</p>
+<div class="rule"></div>
+
+<h2>What matters here</h2>
+<ul><li>Facebook paid a headline US$1 billion for a company with thirteen staff and no revenue.</li><li>A price only means something next to other prices. Against later deals it looks small, against its revenue it looks absurd.</li><li>Big technology companies buy rivals to grow, and also to stop a rival growing.</li><li>Headline prices are not what was paid. Deals paid in shares change value before they close.</li></ul>
+<p class="threshold"><strong>The idea that unlocks the rest.</strong> Platforms were bought for users and attention, not for profit. Once learners see that, a billion dollars for a company with no revenue stops looking like a mistake and starts looking like a strategy.</p>
+<div class="two" style="margin-top:14px"><div class="panel"><strong>What learners need to know.</strong> What Facebook paid, what Instagram had at the time, and how that compares to other acquisitions of the period.</div><div class="panel"><strong>What they need to be able to do.</strong> Put an acquisition price in context and explain the strategic reason a company might pay it.</div></div>
+<h3 style="margin-top:18px">What learners often arrive believing</h3>
+<table><thead><tr><th scope="col">The belief</th><th scope="col">What is actually the case</th></tr></thead>
+<tbody><tr><td>Facebook bought Instagram because it was making money.</td><td>It had no revenue at all. Facebook was paying for its users and its growth.</td></tr><tr><td>The announced price is what was paid.</td><td>The deal was mostly Facebook shares, which fell before it closed, so it was worth roughly US$715 million by then.</td></tr><tr><td>A bigger price means a better deal.</td><td>Tumblr cost about the same as Instagram and was later sold for a tiny fraction of it.</td></tr></tbody></table>
+
+<h2>Questions that would change what I build</h2>
+<div class="q"><p><strong>1. Is the lesson about valuation, or about competitive strategy?</strong></p><p class="muted">The same billion dollars supports two different lessons. Valuation asks how you price something with no revenue. Strategy asks why you pay anything at all to stop a rival. Options 1 to 3 suit either. Option 4 is strategy.</p><ul><li>Valuation</li><li>Competitive strategy</li><li>Both, across the week</li></ul></div><div class="q"><p><strong>2. Do you want figures kept to 2012, or brought up to date?</strong></p><p class="muted">A 2012-only lesson is fully sourceable from the announcements. Bringing it to today means third-party estimates, because Meta has never published Instagram&apos;s revenue or profit separately. That is a teaching point in itself, but it changes what can be cited.</p><ul><li>2012 only, everything citable</li><li>Up to date, with estimates clearly labelled</li></ul></div>
+
+<h2>Recommended arc</h2>
+<p class="muted">How the recommended options fit across a week. Every option can be tried below before you choose.</p>
+<div class="arc"><div class="arc-col"><h3>Before class</h3><p><a href="#opt-1">1. What was Instagram worth?</a><br><span class="muted">Estimate, then compare</span></p></div><div class="arc-col"><h3>During class</h3><p><a href="#opt-2">2. How Instagram grew</a><br><span class="muted">Step by step</span></p></div><div class="arc-col"><h3>After class</h3><p><a href="#opt-3">3. Why buy a rival?</a><br><span class="muted">Sort it</span></p></div></div>
+
+<h2>The options</h2>
+<article class="opt is-rec" id="opt-1" aria-labelledby="opt-1-h">
+  <div class="opt-head"><span class="num" aria-hidden="true">1</span><div style="flex:1;min-width:0">
+  <h3 id="opt-1-h"><span class="sr">Option 1. </span>What was Instagram worth?</h3>
+  <ul class="chips">
+    <li class="chip rec">Recommended</li>
+    <li class="chip pattern"><svg class="lv-icon" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="3" width="9" height="3" rx="1" fill="currentColor"/><rect x="1.5" y="9.5" width="6" height="3" rx="1" fill="currentColor" opacity=".45"/><path d="M12.5 8v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12.5" cy="8" r="1.8" fill="currentColor"/></svg> Estimate, then compare</li>
+    <li class="chip">Before class</li>
+    <li class="chip block">Needs sourcing and checking</li>
+    <li class="chip">low effort</li>
+  </ul>
+  <dl>
+    <dt>The angle</dt><dd>YouTube, Tumblr and LinkedIn are shown. Instagram and WhatsApp are hidden. Learners drag each hidden bar to their guess, then see the real prices land against their guesses.</dd>
+    <dt>Afterwards</dt><dd>Place the Instagram price among the deals of its time, and say why the headline price is not the whole story.</dd>
+    <dt>Works on</dt><dd>The belief that the announced price is what was paid.</dd>
+    <dt>Why this format</dt><dd>Committing to a guess and then seeing the gap turns a figure into a felt sense of size, which reading the number never does.</dd>
+    <dt>What it needs</dt><dd>Eight prices from announcements, filings and reporting. Tumblr&apos;s 2019 sale price is reported, never disclosed.</dd>
+  </dl>
+  <label class="choose"><input type="checkbox" value="1"> Build option 1</label>
+  <details class="try" open><summary>Try the sketch as a learner</summary>
+  <iframe class="frame" title="Sketch of option 1: What was Instagram worth?" loading="lazy" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en-AU&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;learnviz&quot;&gt;
+&lt;title&gt;What was Instagram worth?&lt;/title&gt;
+&lt;style&gt;
+:root {
+  color-scheme: light;
+  --ink: #000054;
+  --ink-soft: #3a3a6e;
+  --paper: #ffffff;
+  --wash: #f5f5fa;
+  --line: #d9d9e6;
+  --line-strong: #b9b9cc;
+  --accent: #fac800;
+  --ok: #00706b;
+  --ok-wash: #e6f3f2;
+  --miss: #a4177c;
+  --miss-wash: #f8e8f3;
+  --part: #8a5a00;
+  --part-wash: #f7efe0;
+  --focus: #1a56c4;
+  --draft: #fdf223;
+  --radius: 14px;
+  --radius-s: 9px;
+  --shadow: 0 1px 2px rgba(0, 0, 84, .06), 0 6px 20px rgba(0, 0, 84, .07);
+  --font: &quot;Helvetica Neue&quot;, Helvetica, Arial, &quot;Liberation Sans&quot;, sans-serif;
+  --t: 180ms;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.55 var(--font);
+}
+.lv { max-width: 880px; margin: 0 auto; padding: 22px 18px 28px; }
+.lv-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Draft banner ---------- */
+.lv-draft {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--draft); color: var(--ink);
+  border-radius: var(--radius-s); padding: 10px 14px; margin: 0 0 18px;
+  font-size: 14px;
+}
+.lv-draft strong { white-space: nowrap; }
+
+/* ---------- Heading ---------- */
+.lv-head { margin: 0 0 20px; }
+.lv-kicker {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin: 0 0 10px; padding: 4px 10px 4px 8px;
+  border-radius: 999px; background: var(--wash);
+  color: var(--ok); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+.lv-icon { flex: none; }
+.lv h1 { font-size: clamp(22px, 3.4vw, 30px); line-height: 1.18; margin: 0 0 10px; letter-spacing: -.01em; }
+.lv-lede { font-size: 17.5px; margin: 0 0 12px; max-width: 66ch; color: var(--ink); }
+.lv-goal { margin: 0; font-size: 14.5px; color: var(--ink-soft); max-width: 70ch; }
+.lv-goal strong { color: var(--ink); }
+.lv-head::after { content: &quot;&quot;; display: block; width: 56px; height: 4px; background: var(--accent); border-radius: 2px; margin-top: 16px; }
+
+/* ---------- Surfaces ---------- */
+.lv-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px; margin: 0 0 16px;
+}
+.lv-card.is-quiet { box-shadow: none; background: var(--wash); border-color: transparent; }
+.lv-prompt { font-size: 18px; font-weight: 700; margin: 0 0 14px; line-height: 1.35; }
+.lv-hint { font-size: 14px; color: var(--ink-soft); margin: -6px 0 14px; }
+.lv h2 { font-size: 18px; margin: 0 0 10px; }
+.lv h3 { font-size: 16px; margin: 0 0 6px; }
+.lv p { margin: 0 0 10px; }
+.lv ul, .lv ol { margin: 0 0 10px; padding-left: 22px; }
+
+/* ---------- Buttons ---------- */
+.lv-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; align-items: center; }
+.lv-btn {
+  appearance: none; font: inherit; font-weight: 700; font-size: 15px;
+  min-height: 44px; padding: 10px 18px; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--ink); background: var(--ink); color: var(--paper);
+  transition: transform var(--t) ease, background var(--t) ease, opacity var(--t) ease;
+}
+.lv-btn:hover { background: #14146a; }
+.lv-btn:active { transform: translateY(1px); }
+.lv-btn.is-secondary { background: var(--paper); color: var(--ink); }
+.lv-btn.is-secondary:hover { background: var(--wash); }
+.lv-btn.is-ghost { background: transparent; border-color: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; padding-left: 6px; padding-right: 6px; }
+.lv-btn[disabled] { opacity: .45; cursor: not-allowed; }
+.lv-btn .lv-key { display: none; }
+
+/* Focus is never removed from controls, only made more visible. Headings that
+   the page moves focus to, so a screen reader lands on new content, are not
+   controls and do not need a ring. */
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+[tabindex=&quot;-1&quot;]:focus { outline: none; }
+
+/* ---------- Choice controls (real radio inputs, styled as cards) ---------- */
+.lv-options { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.lv-options legend { padding: 0; }
+.lv-option {
+  position: relative; display: flex; align-items: flex-start; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer;
+  background: var(--paper); transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-option:hover { border-color: var(--line-strong); }
+.lv-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-option .lv-dot {
+  flex: none; width: 20px; height: 20px; margin-top: 2px; border-radius: 50%;
+  border: 2px solid var(--line-strong); background: var(--paper);
+  transition: border-color var(--t) ease, box-shadow var(--t) ease;
+}
+.lv-option input:checked + .lv-dot { border-color: var(--ink); box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 10px var(--ink); }
+.lv-option:has(input:checked) { border-color: var(--ink); background: var(--wash); }
+.lv-option:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-option.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-option.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+
+/* Segmented choice, used where each item has the same small set of answers. */
+.lv-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; padding: 0; border: 0; }
+.lv-seg label {
+  position: relative; display: inline-flex; align-items: center; min-height: 40px;
+  padding: 7px 12px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer;
+  font-size: 14px; font-weight: 700; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease, color var(--t) ease;
+}
+.lv-seg label:hover { border-color: var(--line-strong); }
+.lv-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-seg label:has(input:checked) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.lv-seg label:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- Reorderable rows (move up and down with buttons, never drag) ---------- */
+.lv .lv-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lv-row {
+  display: flex; align-items: center; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 12px; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-row-n {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: var(--paper); font-weight: 800; font-size: 14px;
+}
+.lv-row-label { flex: 1; font-weight: 700; }
+.lv-row-why { display: block; font-weight: 400; font-size: 14.5px; color: var(--ink); margin-top: 3px; }
+.lv-row-move { display: flex; gap: 6px; flex: none; }
+.lv-move {
+  appearance: none; font: inherit; font-size: 18px; line-height: 1; width: 44px; height: 44px; border-radius: 10px;
+  border: 2px solid var(--line-strong); background: var(--paper); color: var(--ink); cursor: pointer;
+}
+.lv-move:hover:not([disabled]) { border-color: var(--ink); background: var(--wash); }
+.lv-move[disabled] { opacity: .3; cursor: default; }
+.lv-row.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-row.is-ok .lv-row-n { background: var(--ok); }
+.lv-row.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+.lv-row.is-miss .lv-row-n { background: var(--miss); }
+
+/* ---------- Big number readout, for sliders ---------- */
+.lv-readout { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 8px; }
+.lv-readout output { font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+.lv-range { width: 100%; accent-color: var(--ink); min-height: 32px; }
+.lv-number { font: inherit; font-size: 16px; width: 9em; min-height: 44px; padding: 8px 10px; border: 2px solid var(--line-strong); border-radius: 10px; color: var(--ink); }
+
+/* ---------- Feedback ---------- */
+.lv-feedback {
+  display: flex; gap: 10px; align-items: flex-start;
+  border-radius: 12px; padding: 12px 14px; margin: 12px 0 0;
+  border-left: 5px solid var(--line-strong); background: var(--wash);
+}
+.lv-feedback .lv-mark { flex: none; font-weight: 800; white-space: nowrap; }
+.lv-feedback p:last-child { margin-bottom: 0; }
+.lv-feedback.is-ok { border-left-color: var(--ok); background: var(--ok-wash); }
+.lv-feedback.is-ok .lv-mark { color: var(--ok); }
+.lv-feedback.is-miss { border-left-color: var(--miss); background: var(--miss-wash); }
+.lv-feedback.is-miss .lv-mark { color: var(--miss); }
+.lv-feedback.is-part { border-left-color: var(--part); background: var(--part-wash); }
+.lv-feedback.is-part .lv-mark { color: var(--part); }
+.lv-tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--wash); }
+.lv-tag.is-ok { background: var(--ok-wash); color: var(--ok); }
+.lv-tag.is-miss { background: var(--miss-wash); color: var(--miss); }
+.lv-tag.is-part { background: var(--part-wash); color: var(--part); }
+
+/* ---------- Progress ---------- */
+.lv-progress { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-soft); margin: 0 0 14px; }
+.lv-bar { flex: 1; height: 8px; background: var(--wash); border-radius: 999px; overflow: hidden; }
+.lv-bar &gt; span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 999px; transition: width 320ms ease; }
+
+/* ---------- Figures ---------- */
+.lv-figure { margin: 0; }
+.lv-figure svg { display: block; width: 100%; height: auto; }
+.lv-figure [data-item] { transition: opacity 260ms ease; }
+.lv-figure [data-item][visibility=&quot;hidden&quot;] { opacity: 0; }
+.lv-figure figcaption { font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+
+/* ---------- Reveal ---------- */
+.lv-reveal { animation: lv-rise 260ms ease both; }
+@keyframes lv-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+[hidden] { display: none !important; }
+
+/* ---------- Footer ---------- */
+.lv-foot { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 14.5px; }
+.lv-foot details { margin: 0 0 8px; }
+.lv-foot summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.lv-foot summary:hover { text-decoration: underline; }
+.lv-foot .lv-text { white-space: pre-wrap; font: inherit; margin: 6px 0 10px; color: var(--ink); background: var(--wash); padding: 12px 14px; border-radius: 10px; }
+.lv-foot ul { margin: 6px 0 10px; }
+.lv-foot-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-top: 8px; color: var(--ink-soft); }
+.lv-foot a { color: var(--ink); font-weight: 700; text-underline-offset: 3px; }
+.lv-keys { display: none; }
+
+/* ---------- Presenter view ---------- */
+html.lv-present body { font-size: 21px; background: var(--paper); }
+html.lv-present .lv { max-width: 1240px; padding: 26px 40px 70px; }
+html.lv-present .lv h1 { font-size: clamp(30px, 3.6vw, 46px); }
+html.lv-present .lv-lede { font-size: 24px; }
+html.lv-present .lv-goal,
+html.lv-present .lv-draft,
+html.lv-present .lv-foot details { display: none; }
+html.lv-present .lv-card { box-shadow: none; }
+html.lv-present .lv-prompt { font-size: 28px; }
+html.lv-present .lv h2 { font-size: 28px; }
+html.lv-present .lv h3 { font-size: 22px; }
+html.lv-present .lv-btn { font-size: 19px; min-height: 52px; padding: 12px 22px; }
+html.lv-present .lv-btn .lv-key { display: inline; opacity: .6; font-weight: 400; margin-left: 6px; }
+html.lv-present .lv-keys {
+  display: block; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  background: var(--ink); color: var(--paper); font-size: 14px; padding: 6px 14px; border-radius: 999px; opacity: .8;
+}
+html.lv-present .lv-foot { border: 0; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+  .lv { padding: 16px 14px 24px; }
+  .lv-card { padding: 16px; }
+  .lv-actions .lv-btn:not(.is-ghost) { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+@media print {
+  .lv-btn, .lv-actions, #lv-present-toggle { display: none !important; }
+  .lv-card { box-shadow: none; break-inside: avoid; }
+  [hidden] { display: block !important; }
+}
+
+.lv-e-chart { display: grid; gap: 14px; margin: 6px 0 4px; }
+.lv-e-row { display: grid; grid-template-columns: minmax(110px, 26%) 1fr; gap: 12px; align-items: center; }
+.lv-e-label { font-weight: 700; line-height: 1.25; }
+.lv-e-label small { display: block; font-weight: 400; font-size: 13px; color: var(--ink-soft); }
+.lv-e-track { position: relative; height: 34px; border-radius: 8px; background: repeating-linear-gradient(90deg, transparent 0 calc(var(--lv-grid) - 1px), var(--line) calc(var(--lv-grid) - 1px) var(--lv-grid)); }
+.lv-e-fill { position: absolute; left: 0; top: 4px; bottom: 4px; border-radius: 6px; background: var(--ink); transition: width 900ms cubic-bezier(.2, .8, .2, 1); }
+.lv-e-row.is-hidden .lv-e-fill { width: 0; background: var(--ok); }
+.lv-e-ghost { position: absolute; left: 0; top: 4px; bottom: 4px; border-radius: 6px; background: repeating-linear-gradient(135deg, rgba(0,0,84,.18) 0 6px, rgba(0,0,84,.08) 6px 12px); border: 2px dashed var(--ink); pointer-events: none; }
+.lv-e-row.is-revealed .lv-e-ghost { opacity: .0; }
+.lv-e-value { position: absolute; top: 50%; transform: translateY(-50%); font-weight: 800; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.9); padding: 0 6px; border-radius: 6px; white-space: nowrap; pointer-events: none; transition: left 900ms cubic-bezier(.2, .8, .2, 1); }
+.lv-e-value.is-inside { background: transparent; color: #fff; }
+.lv-e-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.lv-e-range:focus-visible + .lv-e-focus { outline: 3px solid var(--focus); outline-offset: 3px; }
+.lv-e-focus { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; }
+.lv-e-tick { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 3px solid var(--miss); }
+.lv-e-tick::after { content: &quot;Your guess&quot;; position: absolute; top: -18px; left: 4px; font-size: 11.5px; font-weight: 800; color: var(--miss); white-space: nowrap; }
+.lv-e-tick.is-right::after { left: auto; right: 7px; }
+.lv-e-fb { grid-column: 2; font-size: 14px; margin: -6px 0 0; }
+.lv-e-hint { font-size: 14px; color: var(--ink-soft); margin: 0 0 12px; }
+.lv-e-axis { display: grid; grid-template-columns: minmax(110px, 26%) 1fr; gap: 12px; font-size: 12px; color: var(--ink-soft); }
+.lv-e-axis-scale { position: relative; height: 1.4em; }
+.lv-e-axis-scale span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.lv-e-axis-scale span:first-child { transform: none; }
+.lv-e-axis-scale span:last-child { transform: translateX(-100%); }
+@media (max-width: 520px) { .lv-e-row, .lv-e-axis { grid-template-columns: 1fr; gap: 4px; } .lv-e-fb { grid-column: 1; } .lv-e-axis &gt; span:first-child { display: none; } }
+html.lv-present .lv-e-track { height: 46px; }
+html.lv-present .lv-e-value { font-size: 18px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class=&quot;lv&quot;&gt;
+&lt;div class=&quot;lv-draft&quot; role=&quot;note&quot;&gt;&lt;strong&gt;Draft for review.&lt;/strong&gt;&lt;span&gt;8 sources still to check. Not for students until a subject expert has checked it.&lt;/span&gt;&lt;/div&gt;
+&lt;header class=&quot;lv-head&quot;&gt;
+  &lt;p class=&quot;lv-kicker&quot;&gt;&lt;svg class=&quot;lv-icon&quot; width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot;&gt;&lt;rect x=&quot;1.5&quot; y=&quot;3&quot; width=&quot;9&quot; height=&quot;3&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;&lt;rect x=&quot;1.5&quot; y=&quot;9.5&quot; width=&quot;6&quot; height=&quot;3&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot; opacity=&quot;.45&quot;/&gt;&lt;path d=&quot;M12.5 8v6&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;circle cx=&quot;12.5&quot; cy=&quot;8&quot; r=&quot;1.8&quot; fill=&quot;currentColor&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Estimate, then compare&lt;/span&gt;&lt;/p&gt;
+  &lt;h1&gt;What was Instagram worth?&lt;/h1&gt;
+  &lt;p class=&quot;lv-lede&quot;&gt;Three of these deals are shown. Two are hidden. Guess the announced price of each hidden deal before you reveal it.&lt;/p&gt;
+  &lt;p class=&quot;lv-goal&quot;&gt;&lt;strong&gt;After this, you can&lt;/strong&gt; place an acquisition price in context, and explain why the announced price is not the whole story.&lt;/p&gt;
+&lt;/header&gt;
+&lt;section class=&quot;lv-activity&quot; aria-label=&quot;Activity&quot;&gt;
+
+&lt;div class=&quot;lv-card&quot;&gt;
+  &lt;p class=&quot;lv-prompt&quot;&gt;How much did Facebook announce it would pay for Instagram in 2012, and for WhatsApp in 2014?&lt;/p&gt;
+  &lt;p class=&quot;lv-e-hint&quot;&gt;Drag each dashed bar to your guess, or focus it and use the arrow keys. Values are in billion US dollars, announced.&lt;/p&gt;
+  &lt;div class=&quot;lv-e-chart&quot; style=&quot;--lv-grid:33.3333%&quot;&gt;&lt;div class=&quot;lv-e-row&quot; id=&quot;lv-e-row-0&quot;&gt;
+        &lt;div class=&quot;lv-e-label&quot;&gt;YouTube&lt;small&gt;Google, 2006&lt;/small&gt;&lt;/div&gt;
+        &lt;div class=&quot;lv-e-track&quot;&gt;&lt;div class=&quot;lv-e-fill&quot; style=&quot;width:5.50%&quot;&gt;&lt;/div&gt;&lt;span class=&quot;lv-e-value&quot; style=&quot;left:calc(5.50% + 8px)&quot;&gt;US$1.65bn&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;&lt;div class=&quot;lv-e-row is-hidden&quot; id=&quot;lv-e-row-1&quot;&gt;
+        &lt;label class=&quot;lv-e-label&quot; for=&quot;lv-e-r-1&quot;&gt;Instagram&lt;small&gt;Facebook, 2012&lt;/small&gt;&lt;/label&gt;
+        &lt;div class=&quot;lv-e-track&quot;&gt;
+          &lt;div class=&quot;lv-e-ghost&quot; id=&quot;lv-e-g-1&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;lv-e-fill&quot; id=&quot;lv-e-f-1&quot;&gt;&lt;/div&gt;
+          &lt;input class=&quot;lv-e-range&quot; type=&quot;range&quot; id=&quot;lv-e-r-1&quot; min=&quot;0&quot; max=&quot;30&quot; step=&quot;0.5&quot; value=&quot;7.5&quot;&gt;
+          &lt;span class=&quot;lv-e-focus&quot;&gt;&lt;/span&gt;
+          &lt;span class=&quot;lv-e-tick&quot; id=&quot;lv-e-t-1&quot; hidden&gt;&lt;/span&gt;
+          &lt;span class=&quot;lv-e-value&quot;&gt;&lt;span class=&quot;lv-sr&quot;&gt;Your guess: &lt;/span&gt;&lt;output id=&quot;lv-e-o-1&quot;&gt;&lt;/output&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;lv-e-fb&quot; id=&quot;lv-e-fb-1&quot; hidden&gt;&lt;/p&gt;
+      &lt;/div&gt;&lt;div class=&quot;lv-e-row&quot; id=&quot;lv-e-row-2&quot;&gt;
+        &lt;div class=&quot;lv-e-label&quot;&gt;Tumblr&lt;small&gt;Yahoo, 2013&lt;/small&gt;&lt;/div&gt;
+        &lt;div class=&quot;lv-e-track&quot;&gt;&lt;div class=&quot;lv-e-fill&quot; style=&quot;width:3.67%&quot;&gt;&lt;/div&gt;&lt;span class=&quot;lv-e-value&quot; style=&quot;left:calc(3.67% + 8px)&quot;&gt;US$1.1bn&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;&lt;div class=&quot;lv-e-row is-hidden&quot; id=&quot;lv-e-row-3&quot;&gt;
+        &lt;label class=&quot;lv-e-label&quot; for=&quot;lv-e-r-3&quot;&gt;WhatsApp&lt;small&gt;Facebook, 2014&lt;/small&gt;&lt;/label&gt;
+        &lt;div class=&quot;lv-e-track&quot;&gt;
+          &lt;div class=&quot;lv-e-ghost&quot; id=&quot;lv-e-g-3&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;lv-e-fill&quot; id=&quot;lv-e-f-3&quot;&gt;&lt;/div&gt;
+          &lt;input class=&quot;lv-e-range&quot; type=&quot;range&quot; id=&quot;lv-e-r-3&quot; min=&quot;0&quot; max=&quot;30&quot; step=&quot;0.5&quot; value=&quot;7.5&quot;&gt;
+          &lt;span class=&quot;lv-e-focus&quot;&gt;&lt;/span&gt;
+          &lt;span class=&quot;lv-e-tick&quot; id=&quot;lv-e-t-3&quot; hidden&gt;&lt;/span&gt;
+          &lt;span class=&quot;lv-e-value&quot;&gt;&lt;span class=&quot;lv-sr&quot;&gt;Your guess: &lt;/span&gt;&lt;output id=&quot;lv-e-o-3&quot;&gt;&lt;/output&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;lv-e-fb&quot; id=&quot;lv-e-fb-3&quot; hidden&gt;&lt;/p&gt;
+      &lt;/div&gt;&lt;div class=&quot;lv-e-row&quot; id=&quot;lv-e-row-4&quot;&gt;
+        &lt;div class=&quot;lv-e-label&quot;&gt;LinkedIn&lt;small&gt;Microsoft, 2016&lt;/small&gt;&lt;/div&gt;
+        &lt;div class=&quot;lv-e-track&quot;&gt;&lt;div class=&quot;lv-e-fill&quot; style=&quot;width:87.33%&quot;&gt;&lt;/div&gt;&lt;span class=&quot;lv-e-value is-inside&quot; style=&quot;right:calc(12.67% + 6px)&quot;&gt;US$26.2bn&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;lv-e-axis&quot; aria-hidden=&quot;true&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;div class=&quot;lv-e-axis-scale&quot;&gt;&lt;span style=&quot;left:0.000%&quot;&gt;US$0bn&lt;/span&gt;&lt;span style=&quot;left:33.333%&quot;&gt;US$10bn&lt;/span&gt;&lt;span style=&quot;left:66.667%&quot;&gt;US$20bn&lt;/span&gt;&lt;span style=&quot;left:100.000%&quot;&gt;US$30bn&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;lv-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;lv-btn&quot; id=&quot;lv-e-go&quot;&gt;Reveal the real values&lt;span class=&quot;lv-key&quot;&gt;R&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;section class=&quot;lv-card&quot; id=&quot;lv-e-reveal&quot; hidden aria-labelledby=&quot;lv-e-reveal-h&quot;&gt;
+  &lt;h2 id=&quot;lv-e-reveal-h&quot; tabindex=&quot;-1&quot;&gt;A price is only readable next to other prices&lt;/h2&gt;
+  &lt;p&gt;Instagram was announced at about US$1 billion, less than YouTube six years earlier, for a company with 13 staff and no revenue. Two years later WhatsApp was announced at nineteen times that. And Tumblr, bought for almost exactly Instagram&amp;apos;s price, went the other way entirely.&lt;/p&gt;
+  &lt;ul&gt;&lt;li&gt;Announced prices are headlines. The Instagram deal was mostly Facebook shares, which fell after Facebook&amp;apos;s float, so it was worth about US$715 million by the time it closed.&lt;/li&gt;&lt;li&gt;WhatsApp went the opposite way: US$19 billion announced, about US$22 billion by the close.&lt;/li&gt;&lt;li&gt;Yahoo later wrote off most of what it paid for Tumblr, and it was reportedly sold in 2019 for about US$3 million. Same price as Instagram, opposite outcome.&lt;/li&gt;&lt;/ul&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;footer class=&quot;lv-foot&quot;&gt;
+  &lt;details&gt;&lt;summary&gt;Text version of this activity&lt;/summary&gt;&lt;pre class=&quot;lv-text&quot;&gt;What was Instagram worth?
+=========================
+
+What this shows: An estimation chart with 5 bars, 2 of them hidden until the learner has guessed.
+How it is arranged: How much did Facebook announce it would pay for Instagram in 2012, and for WhatsApp in 2014? Values are in billion US dollars, announced.
+
+Contents:
+  - YouTube: US$1.65bn billion US dollars, announced. Google, 2006.
+  - Instagram: US$1bn billion US dollars, announced (hidden until the reveal). Facebook, 2012.
+  - Tumblr: US$1.1bn billion US dollars, announced. Yahoo, 2013.
+  - WhatsApp: US$19bn billion US dollars, announced (hidden until the reveal). Facebook, 2014.
+  - LinkedIn: US$26.2bn billion US dollars, announced. Microsoft, 2016.&lt;/pre&gt;&lt;/details&gt;
+  &lt;details&gt;&lt;summary&gt;Sources&lt;/summary&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://about.fb.com/news/2012/04/facebook-to-acquire-instagram/&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Facebook newsroom, Facebook to acquire Instagram (2012)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.forbes.com/sites/tomiogeron/2012/09/06/facebook-officially-closes-instagram-deal/&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Forbes, Facebook officially closes Instagram deal (2012)&lt;/a&gt;. Source for the US$715 million closing value. &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.sec.gov/Archives/edgar/data/1288776/000119312506206884/dex991.htm&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Google release on YouTube, via SEC (2006)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://money.cnn.com/2013/05/20/technology/yahoo-buys-tumblr/index.html&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;CNN Money, Yahoo buys Tumblr (2013)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.sec.gov/Archives/edgar/data/0001326801/000132680114000010/exhibit991_pressrelease219.htm&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Facebook release on WhatsApp, via SEC (2014)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://time.com/3477028/facebook-whatsapp-19-billion-dollar-deal/&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Time, WhatsApp deal value at close (2014)&lt;/a&gt;. Source for the roughly US$22 billion closing value. Medium confidence. &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.sec.gov/Archives/edgar/data/0001271024/000110465916126712/a16-13234_1ex99d1.htm&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;LinkedIn 8-K on the Microsoft deal, via SEC (2016)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.axios.com/2019/08/13/tumblr-verizon-sale-automattic-wordpress&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Axios, Tumblr sold to Automattic (2019)&lt;/a&gt;. The US$3 million figure is reported from unnamed sources, never officially disclosed. &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/details&gt;
+  &lt;div class=&quot;lv-foot-row&quot;&gt;&lt;a id=&quot;lv-present-toggle&quot; href=&quot;#present&quot;&gt;Presenter view&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;lv-keys&quot; aria-hidden=&quot;true&quot;&gt;R reveal the real values · Esc leave presenter view&lt;/div&gt;
+&lt;/footer&gt;
+&lt;div id=&quot;lv-live&quot; class=&quot;lv-sr&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/main&gt;
+&lt;script&gt;(function lvRuntime(CONFIG) {
+  var doc = document;
+  var root = doc.documentElement;
+
+  /* ---------------- SCORM 1.2 ---------------- */
+
+  function findApi(win) {
+    var hops = 0;
+    try {
+      while (win &amp;&amp; hops &lt; 12) {
+        if (win.API &amp;&amp; typeof win.API.LMSInitialize === &apos;function&apos;) return win.API;
+        if (win.parent === win) break;
+        win = win.parent;
+        hops += 1;
+      }
+    } catch (e) {
+      // A cross-origin parent throws on access. That means no reachable LMS.
+    }
+    return null;
+  }
+
+  var api = findApi(window);
+  if (!api) {
+    try { if (window.opener) api = findApi(window.opener); } catch (e) { api = null; }
+  }
+
+  var lms = { connected: false, finished: false };
+  if (api) {
+    try {
+      lms.connected = String(api.LMSInitialize(&apos;&apos;)) === &apos;true&apos;;
+      if (lms.connected) {
+        var initial = api.LMSGetValue(&apos;cmi.core.lesson_status&apos;);
+        if (!initial || initial === &apos;not attempted&apos;) {
+          api.LMSSetValue(&apos;cmi.core.lesson_status&apos;, &apos;incomplete&apos;);
+          api.LMSCommit(&apos;&apos;);
+        }
+      }
+    } catch (e) {
+      lms.connected = false;
+    }
+  }
+
+  function lmsSet(key, value) {
+    try { api.LMSSetValue(key, String(value)); } catch (e) { /* ignore */ }
+  }
+
+  function finish() {
+    if (!lms.connected || lms.finished) return;
+    lms.finished = true;
+    try { api.LMSCommit(&apos;&apos;); api.LMSFinish(&apos;&apos;); } catch (e) { /* ignore */ }
+  }
+  window.addEventListener(&apos;pagehide&apos;, finish);
+  window.addEventListener(&apos;beforeunload&apos;, finish);
+
+  // The best score across attempts is what gets reported. These are practice
+  // activities: a learner who tries again and improves should be credited
+  // with the improvement, not held to the first attempt.
+  var best = null;
+  var lastStatus = &apos;incomplete&apos;;
+
+  function report(result) {
+    var score = typeof result.score === &apos;number&apos; &amp;&amp; isFinite(result.score)
+      ? Math.max(0, Math.min(1, result.score))
+      : null;
+    if (score !== null &amp;&amp; (best === null || score &gt; best)) best = score;
+
+    var status = result.complete ? &apos;completed&apos; : &apos;incomplete&apos;;
+    if (result.complete &amp;&amp; best !== null &amp;&amp; typeof CONFIG.passMark === &apos;number&apos;) {
+      status = best &gt;= CONFIG.passMark ? &apos;passed&apos; : &apos;failed&apos;;
+    }
+    // Never step a status backwards, for example from completed to incomplete
+    // because the learner pressed &quot;try again&quot;.
+    if (lastStatus !== &apos;incomplete&apos; &amp;&amp; status === &apos;incomplete&apos;) status = lastStatus;
+    lastStatus = status;
+
+    if (lms.connected) {
+      if (best !== null) {
+        lmsSet(&apos;cmi.core.score.min&apos;, 0);
+        lmsSet(&apos;cmi.core.score.max&apos;, 100);
+        lmsSet(&apos;cmi.core.score.raw&apos;, Math.round(best * 100));
+      }
+      lmsSet(&apos;cmi.core.lesson_status&apos;, status);
+      try { api.LMSCommit(&apos;&apos;); } catch (e) { /* ignore */ }
+    }
+    try {
+      window.parent.postMessage({ type: &apos;lv:result&apos;, status: status, score: best }, &apos;*&apos;);
+    } catch (e) { /* no parent */ }
+    return status;
+  }
+
+  /* ---------------- Announcements ---------------- */
+
+  var live = doc.getElementById(&apos;lv-live&apos;);
+  function announce(text) {
+    if (!live) return;
+    // Clearing first makes a repeated message be announced again.
+    live.textContent = &apos;&apos;;
+    window.setTimeout(function () { live.textContent = text; }, 40);
+  }
+
+  /* ---------------- Presenter mode ---------------- */
+
+  var handlers = {};
+  function presenting() { return /(^|[#&amp;])present(&amp;|$)/.test(window.location.hash); }
+
+  function applyMode() {
+    var on = presenting();
+    root.classList.toggle(&apos;lv-present&apos;, on);
+    var toggle = doc.getElementById(&apos;lv-present-toggle&apos;);
+    if (toggle) {
+      toggle.textContent = on ? &apos;Leave presenter view&apos; : &apos;Presenter view&apos;;
+      toggle.setAttribute(&apos;href&apos;, on ? &apos;#&apos; : &apos;#present&apos;);
+    }
+    reportHeight();
+  }
+
+  doc.addEventListener(&apos;keydown&apos;, function (e) {
+    if (!presenting()) return;
+    var t = e.target;
+    var tag = t &amp;&amp; t.tagName;
+    if (tag === &apos;INPUT&apos; || tag === &apos;SELECT&apos; || tag === &apos;TEXTAREA&apos;) return;
+    var key = e.key;
+    // Space and Enter on a focused button must still press the button.
+    if ((key === &apos; &apos; || key === &apos;Enter&apos;) &amp;&amp; tag === &apos;BUTTON&apos;) return;
+
+    if ((key === &apos;ArrowRight&apos; || key === &apos;PageDown&apos; || key === &apos; &apos;) &amp;&amp; handlers.next) {
+      e.preventDefault();
+      handlers.next();
+    } else if ((key === &apos;ArrowLeft&apos; || key === &apos;PageUp&apos;) &amp;&amp; handlers.prev) {
+      e.preventDefault();
+      handlers.prev();
+    } else if ((key === &apos;r&apos; || key === &apos;R&apos;) &amp;&amp; handlers.reveal) {
+      e.preventDefault();
+      handlers.reveal();
+    } else if (key === &apos;Escape&apos;) {
+      e.preventDefault();
+      try { window.history.replaceState(null, &apos;&apos;, window.location.pathname + window.location.search); } catch (err) { window.location.hash = &apos;&apos;; }
+      applyMode();
+    }
+  });
+
+  /* ---------------- Frame height ---------------- */
+
+  // The height of the content, not of the document. A document is never
+  // shorter than its frame, so reporting scrollHeight would make a frame that
+  // resizes to fit grow by its padding on every report, without end.
+  var lastHeight = -1;
+  function reportHeight() {
+    try {
+      if (window.parent === window) return;
+      var cs = window.getComputedStyle(doc.body);
+      var h = Math.ceil(doc.body.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom));
+      if (!isFinite(h) || Math.abs(h - lastHeight) &lt; 2) return;
+      lastHeight = h;
+      window.parent.postMessage({ type: &apos;lv:height&apos;, height: h }, &apos;*&apos;);
+    } catch (e) { /* no parent, or no layout to measure */ }
+  }
+
+  /* ---------------- Helpers ---------------- */
+
+  function esc(s) {
+    return String(s == null ? &apos;&apos; : s)
+      .replace(/&amp;/g, &apos;&amp;amp;&apos;).replace(/&lt;/g, &apos;&amp;lt;&apos;)
+      .replace(/&gt;/g, &apos;&amp;gt;&apos;).replace(/&quot;/g, &apos;&amp;quot;&apos;).replace(/&apos;/g, &apos;&amp;#39;&apos;);
+  }
+
+  /** Format for display: grouped thousands, fixed decimals, never &quot;NaN&quot;. */
+  function fmt(value, decimals) {
+    if (typeof value !== &apos;number&apos; || !isFinite(value)) return &apos;not defined&apos;;
+    var dp = typeof decimals === &apos;number&apos; ? decimals : (Math.abs(value) &lt; 10 ? 2 : Math.abs(value) &lt; 100 ? 1 : 0);
+    return value.toLocaleString(&apos;en-AU&apos;, { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  }
+
+  window.addEventListener(&apos;hashchange&apos;, applyMode);
+  window.addEventListener(&apos;load&apos;, reportHeight);
+  window.addEventListener(&apos;resize&apos;, reportHeight);
+  if (window.ResizeObserver) new window.ResizeObserver(reportHeight).observe(doc.body);
+
+  window.LV = {
+    config: CONFIG,
+    lms: lms,
+    report: report,
+    announce: announce,
+    esc: esc,
+    fmt: fmt,
+    reportHeight: reportHeight,
+    presenter: {
+      active: presenting,
+      on: function (h) {
+        handlers.next = h.next || null;
+        handlers.prev = h.prev || null;
+        handlers.reveal = h.reveal || null;
+      },
+    },
+  };
+
+  applyMode();
+})({});&lt;/script&gt;
+
+&lt;script&gt;(function client(D) {
+  var LV = window.LV;
+  var $ = function (id) { return document.getElementById(id); };
+  var revealed = false;
+
+  function fmt(v) {
+    var fixed = typeof D.decimals === &apos;number&apos;;
+    return (D.prefix || &apos;&apos;) + v.toLocaleString(&apos;en-AU&apos;, { minimumFractionDigits: fixed ? D.decimals : 0, maximumFractionDigits: fixed ? D.decimals : (Math.abs(v) &lt; 10 ? 2 : 1) }) + (D.suffix || &apos;&apos;);
+  }
+  function pct(v) { return Math.max(0, Math.min(100, (v / D.max) * 100)); }
+  // The value sits just past the end of its bar, or inside a nearly full one.
+  function place(el, v, solid) {
+    var p = pct(v);
+    var inside = p &gt; D.inside;
+    el.classList.toggle(&apos;is-inside&apos;, inside &amp;&amp; solid);
+    el.style.left = inside ? &apos;auto&apos; : &apos;calc(&apos; + p + &apos;% + 8px)&apos;;
+    el.style.right = inside ? &apos;calc(&apos; + (100 - p) + &apos;% + 6px)&apos; : &apos;auto&apos;;
+  }
+
+  D.bars.forEach(function (b, i) {
+    if (!b.hidden) return;
+    var r = $(&apos;lv-e-r-&apos; + i);
+    var out = $(&apos;lv-e-o-&apos; + i);
+    var ghost = $(&apos;lv-e-g-&apos; + i);
+    var pill = out.parentNode;
+    var sync = function () {
+      out.textContent = fmt(Number(r.value));
+      place(pill, Number(r.value), false);
+      ghost.style.width = pct(Number(r.value)) + &apos;%&apos;;
+      // Spoken as the number and the unit in words, without the symbols: &quot;20 billion US dollars&quot;.
+      r.setAttribute(&apos;aria-valuetext&apos;, Number(r.value).toLocaleString(&apos;en-AU&apos;, { maximumFractionDigits: 2 }) + &apos; &apos; + D.unit);
+    };
+    r.addEventListener(&apos;input&apos;, sync);
+    sync();
+  });
+
+  function reveal(room) {
+    if (revealed) return;
+    revealed = true;
+    var lines = [];
+    D.bars.forEach(function (b, i) {
+      if (!b.hidden) return;
+      var r = $(&apos;lv-e-r-&apos; + i);
+      var guess = Number(r.value);
+      r.disabled = true;
+      var row = $(&apos;lv-e-row-&apos; + i);
+      row.classList.add(&apos;is-revealed&apos;);
+      var fill = $(&apos;lv-e-f-&apos; + i);
+      fill.style.width = pct(b.value) + &apos;%&apos;;
+      // The pill showed the guess; now it shows the truth.
+      var pill = row.querySelector(&apos;.lv-e-value&apos;);
+      pill.textContent = fmt(b.value);
+      place(pill, b.value, true);
+      var tick = $(&apos;lv-e-t-&apos; + i);
+      if (!room) {
+        tick.style.left = pct(guess) + &apos;%&apos;;
+        // Near the right edge the label sits to the left of the line, so it stays inside the card.
+        tick.classList.toggle(&apos;is-right&apos;, pct(guess) &gt; 72);
+        tick.hidden = false;
+        var gap = b.value ? Math.round(Math.abs(guess - b.value) / b.value * 100) : 0;
+        var close = gap &lt;= 10;
+        // Percentages stop meaning much past double. &quot;About 8 times&quot; is how
+        // people actually talk about a guess that far out.
+        var times = function (r) { return LV.fmt(r, r &lt; 10 ? 1 : 0) + &apos; times&apos;; };
+        var how = close ? &apos;&amp;#10003; Close&apos;
+          : guess &gt;= b.value * 2 ? &apos;&amp;#8776; &apos; + times(guess / b.value) + &apos; too high&apos;
+            : guess &gt; 0 &amp;&amp; guess &lt;= b.value / 2 ? &apos;&amp;#8776; &apos; + times(b.value / guess) + &apos; too low&apos;
+              : guess &lt;= 0 ? &apos;Too low&apos;
+                : &apos;&amp;#8776; &apos; + gap + &apos;% too &apos; + (guess &lt; b.value ? &apos;low&apos; : &apos;high&apos;);
+        var fb = $(&apos;lv-e-fb-&apos; + i);
+        fb.innerHTML = &apos;&lt;span class=&quot;lv-tag &apos; + (close ? &apos;is-ok&apos; : &apos;is-part&apos;) + &apos;&quot;&gt;&apos; + how + &apos;&lt;/span&gt; You said &apos; + fmt(guess) + &apos;.&apos;;
+        fb.hidden = false;
+        lines.push(b.label + &apos;: you said &apos; + fmt(guess) + &apos;, the real value is &apos; + fmt(b.value) + &apos;.&apos;);
+      } else {
+        lines.push(b.label + &apos;: &apos; + fmt(b.value) + &apos;.&apos;);
+      }
+    });
+    $(&apos;lv-e-go&apos;).hidden = true;
+    var rv = $(&apos;lv-e-reveal&apos;);
+    rv.hidden = false;
+    rv.classList.add(&apos;lv-reveal&apos;);
+    $(&apos;lv-e-reveal-h&apos;).focus();
+    LV.announce(&apos;Revealed. &apos; + lines.join(&apos; &apos;));
+    LV.report({ complete: true, score: null });
+    LV.reportHeight();
+  }
+
+  $(&apos;lv-e-go&apos;).addEventListener(&apos;click&apos;, function () { reveal(false); });
+  LV.presenter.on({ reveal: function () { reveal(true); } });
+})({&quot;inside&quot;:75,&quot;bars&quot;:[{&quot;label&quot;:&quot;YouTube&quot;,&quot;note&quot;:&quot;Google, 2006&quot;,&quot;value&quot;:1.65},{&quot;label&quot;:&quot;Instagram&quot;,&quot;note&quot;:&quot;Facebook, 2012&quot;,&quot;value&quot;:1,&quot;hidden&quot;:true},{&quot;label&quot;:&quot;Tumblr&quot;,&quot;note&quot;:&quot;Yahoo, 2013&quot;,&quot;value&quot;:1.1},{&quot;label&quot;:&quot;WhatsApp&quot;,&quot;note&quot;:&quot;Facebook, 2014&quot;,&quot;value&quot;:19,&quot;hidden&quot;:true},{&quot;label&quot;:&quot;LinkedIn&quot;,&quot;note&quot;:&quot;Microsoft, 2016&quot;,&quot;value&quot;:26.2}],&quot;max&quot;:30,&quot;unit&quot;:&quot;billion US dollars, announced&quot;,&quot;prefix&quot;:&quot;US$&quot;,&quot;suffix&quot;:&quot;bn&quot;});&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></details>
+  </div></div>
+</article>
+<article class="opt is-rec" id="opt-2" aria-labelledby="opt-2-h">
+  <div class="opt-head"><span class="num" aria-hidden="true">2</span><div style="flex:1;min-width:0">
+  <h3 id="opt-2-h"><span class="sr">Option 2. </span>How Instagram grew</h3>
+  <ul class="chips">
+    <li class="chip rec">Recommended</li>
+    <li class="chip pattern"><svg class="lv-icon" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="10" width="4" height="4.5" rx="1" fill="currentColor"/><rect x="6" y="6" width="4" height="8.5" rx="1" fill="currentColor" opacity=".7"/><rect x="10.5" y="2" width="4" height="12.5" rx="1" fill="currentColor" opacity=".4"/></svg> Step by step</li>
+    <li class="chip">During class</li>
+    <li class="chip block">Needs sourcing and checking</li>
+    <li class="chip">low effort</li>
+  </ul>
+  <dl>
+    <dt>The angle</dt><dd>The timeline built one turning point at a time at the front of the room, pausing on each to ask what it was responding to: a rival, or a change in how people used their phones.</dd>
+    <dt>Afterwards</dt><dd>Explain Instagram&apos;s growth as a series of responses to competitors and to phones.</dd>
+    <dt>Works on</dt><dd>The threshold idea: platforms compete for attention.</dd>
+    <dt>Why this format</dt><dd>Showing one part at a time, with a sentence about each, removes the work of finding where to start and what to read next.</dd>
+    <dt>What it needs</dt><dd>Launch dates for video, Stories and Reels, checked against primary sources.</dd>
+  </dl>
+  <label class="choose"><input type="checkbox" value="2"> Build option 2</label>
+  <details class="try" open><summary>Try the sketch as a learner</summary>
+  <iframe class="frame" title="Sketch of option 2: How Instagram grew" loading="lazy" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en-AU&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;learnviz&quot;&gt;
+&lt;title&gt;How Instagram grew&lt;/title&gt;
+&lt;style&gt;
+:root {
+  color-scheme: light;
+  --ink: #000054;
+  --ink-soft: #3a3a6e;
+  --paper: #ffffff;
+  --wash: #f5f5fa;
+  --line: #d9d9e6;
+  --line-strong: #b9b9cc;
+  --accent: #fac800;
+  --ok: #00706b;
+  --ok-wash: #e6f3f2;
+  --miss: #a4177c;
+  --miss-wash: #f8e8f3;
+  --part: #8a5a00;
+  --part-wash: #f7efe0;
+  --focus: #1a56c4;
+  --draft: #fdf223;
+  --radius: 14px;
+  --radius-s: 9px;
+  --shadow: 0 1px 2px rgba(0, 0, 84, .06), 0 6px 20px rgba(0, 0, 84, .07);
+  --font: &quot;Helvetica Neue&quot;, Helvetica, Arial, &quot;Liberation Sans&quot;, sans-serif;
+  --t: 180ms;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.55 var(--font);
+}
+.lv { max-width: 880px; margin: 0 auto; padding: 22px 18px 28px; }
+.lv-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Draft banner ---------- */
+.lv-draft {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--draft); color: var(--ink);
+  border-radius: var(--radius-s); padding: 10px 14px; margin: 0 0 18px;
+  font-size: 14px;
+}
+.lv-draft strong { white-space: nowrap; }
+
+/* ---------- Heading ---------- */
+.lv-head { margin: 0 0 20px; }
+.lv-kicker {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin: 0 0 10px; padding: 4px 10px 4px 8px;
+  border-radius: 999px; background: var(--wash);
+  color: var(--ok); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+.lv-icon { flex: none; }
+.lv h1 { font-size: clamp(22px, 3.4vw, 30px); line-height: 1.18; margin: 0 0 10px; letter-spacing: -.01em; }
+.lv-lede { font-size: 17.5px; margin: 0 0 12px; max-width: 66ch; color: var(--ink); }
+.lv-goal { margin: 0; font-size: 14.5px; color: var(--ink-soft); max-width: 70ch; }
+.lv-goal strong { color: var(--ink); }
+.lv-head::after { content: &quot;&quot;; display: block; width: 56px; height: 4px; background: var(--accent); border-radius: 2px; margin-top: 16px; }
+
+/* ---------- Surfaces ---------- */
+.lv-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px; margin: 0 0 16px;
+}
+.lv-card.is-quiet { box-shadow: none; background: var(--wash); border-color: transparent; }
+.lv-prompt { font-size: 18px; font-weight: 700; margin: 0 0 14px; line-height: 1.35; }
+.lv-hint { font-size: 14px; color: var(--ink-soft); margin: -6px 0 14px; }
+.lv h2 { font-size: 18px; margin: 0 0 10px; }
+.lv h3 { font-size: 16px; margin: 0 0 6px; }
+.lv p { margin: 0 0 10px; }
+.lv ul, .lv ol { margin: 0 0 10px; padding-left: 22px; }
+
+/* ---------- Buttons ---------- */
+.lv-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; align-items: center; }
+.lv-btn {
+  appearance: none; font: inherit; font-weight: 700; font-size: 15px;
+  min-height: 44px; padding: 10px 18px; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--ink); background: var(--ink); color: var(--paper);
+  transition: transform var(--t) ease, background var(--t) ease, opacity var(--t) ease;
+}
+.lv-btn:hover { background: #14146a; }
+.lv-btn:active { transform: translateY(1px); }
+.lv-btn.is-secondary { background: var(--paper); color: var(--ink); }
+.lv-btn.is-secondary:hover { background: var(--wash); }
+.lv-btn.is-ghost { background: transparent; border-color: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; padding-left: 6px; padding-right: 6px; }
+.lv-btn[disabled] { opacity: .45; cursor: not-allowed; }
+.lv-btn .lv-key { display: none; }
+
+/* Focus is never removed from controls, only made more visible. Headings that
+   the page moves focus to, so a screen reader lands on new content, are not
+   controls and do not need a ring. */
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+[tabindex=&quot;-1&quot;]:focus { outline: none; }
+
+/* ---------- Choice controls (real radio inputs, styled as cards) ---------- */
+.lv-options { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.lv-options legend { padding: 0; }
+.lv-option {
+  position: relative; display: flex; align-items: flex-start; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer;
+  background: var(--paper); transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-option:hover { border-color: var(--line-strong); }
+.lv-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-option .lv-dot {
+  flex: none; width: 20px; height: 20px; margin-top: 2px; border-radius: 50%;
+  border: 2px solid var(--line-strong); background: var(--paper);
+  transition: border-color var(--t) ease, box-shadow var(--t) ease;
+}
+.lv-option input:checked + .lv-dot { border-color: var(--ink); box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 10px var(--ink); }
+.lv-option:has(input:checked) { border-color: var(--ink); background: var(--wash); }
+.lv-option:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-option.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-option.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+
+/* Segmented choice, used where each item has the same small set of answers. */
+.lv-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; padding: 0; border: 0; }
+.lv-seg label {
+  position: relative; display: inline-flex; align-items: center; min-height: 40px;
+  padding: 7px 12px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer;
+  font-size: 14px; font-weight: 700; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease, color var(--t) ease;
+}
+.lv-seg label:hover { border-color: var(--line-strong); }
+.lv-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-seg label:has(input:checked) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.lv-seg label:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- Reorderable rows (move up and down with buttons, never drag) ---------- */
+.lv .lv-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lv-row {
+  display: flex; align-items: center; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 12px; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-row-n {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: var(--paper); font-weight: 800; font-size: 14px;
+}
+.lv-row-label { flex: 1; font-weight: 700; }
+.lv-row-why { display: block; font-weight: 400; font-size: 14.5px; color: var(--ink); margin-top: 3px; }
+.lv-row-move { display: flex; gap: 6px; flex: none; }
+.lv-move {
+  appearance: none; font: inherit; font-size: 18px; line-height: 1; width: 44px; height: 44px; border-radius: 10px;
+  border: 2px solid var(--line-strong); background: var(--paper); color: var(--ink); cursor: pointer;
+}
+.lv-move:hover:not([disabled]) { border-color: var(--ink); background: var(--wash); }
+.lv-move[disabled] { opacity: .3; cursor: default; }
+.lv-row.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-row.is-ok .lv-row-n { background: var(--ok); }
+.lv-row.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+.lv-row.is-miss .lv-row-n { background: var(--miss); }
+
+/* ---------- Big number readout, for sliders ---------- */
+.lv-readout { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 8px; }
+.lv-readout output { font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+.lv-range { width: 100%; accent-color: var(--ink); min-height: 32px; }
+.lv-number { font: inherit; font-size: 16px; width: 9em; min-height: 44px; padding: 8px 10px; border: 2px solid var(--line-strong); border-radius: 10px; color: var(--ink); }
+
+/* ---------- Feedback ---------- */
+.lv-feedback {
+  display: flex; gap: 10px; align-items: flex-start;
+  border-radius: 12px; padding: 12px 14px; margin: 12px 0 0;
+  border-left: 5px solid var(--line-strong); background: var(--wash);
+}
+.lv-feedback .lv-mark { flex: none; font-weight: 800; white-space: nowrap; }
+.lv-feedback p:last-child { margin-bottom: 0; }
+.lv-feedback.is-ok { border-left-color: var(--ok); background: var(--ok-wash); }
+.lv-feedback.is-ok .lv-mark { color: var(--ok); }
+.lv-feedback.is-miss { border-left-color: var(--miss); background: var(--miss-wash); }
+.lv-feedback.is-miss .lv-mark { color: var(--miss); }
+.lv-feedback.is-part { border-left-color: var(--part); background: var(--part-wash); }
+.lv-feedback.is-part .lv-mark { color: var(--part); }
+.lv-tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--wash); }
+.lv-tag.is-ok { background: var(--ok-wash); color: var(--ok); }
+.lv-tag.is-miss { background: var(--miss-wash); color: var(--miss); }
+.lv-tag.is-part { background: var(--part-wash); color: var(--part); }
+
+/* ---------- Progress ---------- */
+.lv-progress { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-soft); margin: 0 0 14px; }
+.lv-bar { flex: 1; height: 8px; background: var(--wash); border-radius: 999px; overflow: hidden; }
+.lv-bar &gt; span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 999px; transition: width 320ms ease; }
+
+/* ---------- Figures ---------- */
+.lv-figure { margin: 0; }
+.lv-figure svg { display: block; width: 100%; height: auto; }
+.lv-figure [data-item] { transition: opacity 260ms ease; }
+.lv-figure [data-item][visibility=&quot;hidden&quot;] { opacity: 0; }
+.lv-figure figcaption { font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+
+/* ---------- Reveal ---------- */
+.lv-reveal { animation: lv-rise 260ms ease both; }
+@keyframes lv-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+[hidden] { display: none !important; }
+
+/* ---------- Footer ---------- */
+.lv-foot { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 14.5px; }
+.lv-foot details { margin: 0 0 8px; }
+.lv-foot summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.lv-foot summary:hover { text-decoration: underline; }
+.lv-foot .lv-text { white-space: pre-wrap; font: inherit; margin: 6px 0 10px; color: var(--ink); background: var(--wash); padding: 12px 14px; border-radius: 10px; }
+.lv-foot ul { margin: 6px 0 10px; }
+.lv-foot-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-top: 8px; color: var(--ink-soft); }
+.lv-foot a { color: var(--ink); font-weight: 700; text-underline-offset: 3px; }
+.lv-keys { display: none; }
+
+/* ---------- Presenter view ---------- */
+html.lv-present body { font-size: 21px; background: var(--paper); }
+html.lv-present .lv { max-width: 1240px; padding: 26px 40px 70px; }
+html.lv-present .lv h1 { font-size: clamp(30px, 3.6vw, 46px); }
+html.lv-present .lv-lede { font-size: 24px; }
+html.lv-present .lv-goal,
+html.lv-present .lv-draft,
+html.lv-present .lv-foot details { display: none; }
+html.lv-present .lv-card { box-shadow: none; }
+html.lv-present .lv-prompt { font-size: 28px; }
+html.lv-present .lv h2 { font-size: 28px; }
+html.lv-present .lv h3 { font-size: 22px; }
+html.lv-present .lv-btn { font-size: 19px; min-height: 52px; padding: 12px 22px; }
+html.lv-present .lv-btn .lv-key { display: inline; opacity: .6; font-weight: 400; margin-left: 6px; }
+html.lv-present .lv-keys {
+  display: block; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  background: var(--ink); color: var(--paper); font-size: 14px; padding: 6px 14px; border-radius: 999px; opacity: .8;
+}
+html.lv-present .lv-foot { border: 0; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+  .lv { padding: 16px 14px 24px; }
+  .lv-card { padding: 16px; }
+  .lv-actions .lv-btn:not(.is-ghost) { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+@media print {
+  .lv-btn, .lv-actions, #lv-present-toggle { display: none !important; }
+  .lv-card { box-shadow: none; break-inside: avoid; }
+  [hidden] { display: block !important; }
+}
+
+.lv-s-stage { padding: 16px 16px 8px; }
+.lv-s-say { font-size: 18px; line-height: 1.5; min-height: 3.2em; margin: 14px 0 0; padding: 14px 16px; background: var(--wash); border-radius: 12px; border-left: 5px solid var(--accent); }
+.lv-s-say:focus { outline: none; }
+.lv-figure [data-item].lv-new { animation: lv-glow 900ms ease; }
+@keyframes lv-glow { 0% { opacity: .2; } 100% { opacity: 1; } }
+.lv-dots { display: flex; gap: 2px; flex-wrap: wrap; margin: 0 0 0 auto; }
+/* A 24px target (WCAG 2.2 target size) around a 12px visible dot. */
+.lv-dotbtn { width: 24px; height: 24px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; border-radius: 50%; }
+.lv-dotbtn::before { content: &quot;&quot;; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--paper); }
+.lv-dotbtn.is-on::before { background: var(--ink); border-color: var(--ink); }
+html.lv-present .lv-s-say { font-size: 28px; }
+html.lv-present .lv-dotbtn::before { width: 16px; height: 16px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class=&quot;lv&quot;&gt;
+&lt;div class=&quot;lv-draft&quot; role=&quot;note&quot;&gt;&lt;strong&gt;Draft for review.&lt;/strong&gt;&lt;span&gt;2 sources still to check. Not for students until a subject expert has checked it.&lt;/span&gt;&lt;/div&gt;
+&lt;header class=&quot;lv-head&quot;&gt;
+  &lt;p class=&quot;lv-kicker&quot;&gt;&lt;svg class=&quot;lv-icon&quot; width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot;&gt;&lt;rect x=&quot;1.5&quot; y=&quot;10&quot; width=&quot;4&quot; height=&quot;4.5&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;&lt;rect x=&quot;6&quot; y=&quot;6&quot; width=&quot;4&quot; height=&quot;8.5&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot; opacity=&quot;.7&quot;/&gt;&lt;rect x=&quot;10.5&quot; y=&quot;2&quot; width=&quot;4&quot; height=&quot;12.5&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot; opacity=&quot;.4&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Step by step&lt;/span&gt;&lt;/p&gt;
+  &lt;h1&gt;How Instagram grew&lt;/h1&gt;
+  &lt;p class=&quot;lv-lede&quot;&gt;Each turning point is a response to a competitor or to a change in how people used their phones.&lt;/p&gt;
+  &lt;p class=&quot;lv-goal&quot;&gt;&lt;strong&gt;After this, you can&lt;/strong&gt; place Instagram&amp;apos;s major changes in order and say what pressure each one answered.&lt;/p&gt;
+&lt;/header&gt;
+&lt;section class=&quot;lv-activity&quot; aria-label=&quot;Activity&quot;&gt;
+
+&lt;div class=&quot;lv-card lv-s-stage&quot;&gt;
+  &lt;div class=&quot;lv-progress&quot;&gt;&lt;span id=&quot;lv-s-count&quot;&gt;Step 1&lt;/span&gt;&lt;div class=&quot;lv-bar&quot;&gt;&lt;span id=&quot;lv-s-bar&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;figure class=&quot;lv-figure&quot; id=&quot;lv-s-fig&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 760 465.25&quot; width=&quot;760&quot; height=&quot;465.25&quot; role=&quot;img&quot; aria-labelledby=&quot;lv-title lv-desc&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot;&gt;&lt;title id=&quot;lv-title&quot;&gt;A vertical timeline. Events run from earliest at the top to latest at the bottom, joined by a single vertical line titled &amp;quot;How Instagram grew&amp;quot;.&lt;/title&gt;&lt;desc id=&quot;lv-desc&quot;&gt;A vertical timeline. Events run from earliest at the top to latest at the bottom, joined by a single vertical line. 5 events, in chronological order. Each has a date, a heading, and a short explanation to the right of the line. October 2010: Launch, iPhone only. Photo sharing with filters, built for slow mobile connections. April 2012: Facebook agrees to buy it for about US$1 billion. Thirteen staff and no revenue. Worth about US$715 million by the close. June 2013: Video arrives. Fifteen second clips, a direct answer to Vine. August 2016: Stories launches. Twenty four hour posts, copied openly from Snapchat. August 2020: Reels launches. Short vertical video, answering TikTok. The feed shifts toward what the algorithm picks.&lt;/desc&gt;&lt;defs&gt;&lt;pattern id=&quot;lv-diagonal&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,8 L8,0 M-2,2 L2,-2 M6,10 L10,6&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-dots&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;circle cx=&quot;2&quot; cy=&quot;2&quot; r=&quot;1.4&quot; fill=&quot;#ffffff&quot; opacity=&quot;0.55&quot;/&gt;&lt;circle cx=&quot;6&quot; cy=&quot;6&quot; r=&quot;1.4&quot; fill=&quot;#ffffff&quot; opacity=&quot;0.55&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-horizontal&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,2 H8 M0,6 H8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-vertical&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M2,0 V8 M6,0 V8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-grid&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,4 H8 M4,0 V8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;marker id=&quot;lv-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,1 L9,5 L0,9 z&quot; fill=&quot;#000054&quot;/&gt;&lt;/marker&gt;&lt;/defs&gt;&lt;rect width=&quot;760&quot; height=&quot;465.25&quot; fill=&quot;#ffffff&quot;/&gt;&lt;line x1=&quot;44&quot; y1=&quot;30.9&quot; x2=&quot;44&quot; y2=&quot;361.5&quot; stroke=&quot;#d5d5dd&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;g data-item=&quot;0&quot;&gt;&lt;circle cx=&quot;44&quot; cy=&quot;30.9&quot; r=&quot;10&quot; fill=&quot;#ffffff&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;30.9&quot; r=&quot;7&quot; fill=&quot;#000054&quot;/&gt;&lt;text x=&quot;78&quot; y=&quot;35.5&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;October 2010&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;51.03&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;14.5&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Launch, iPhone only&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;74.6&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; fill=&quot;#000054&quot;&gt;Photo sharing with filters, built for slow mobile connections.&lt;/text&gt;&lt;/g&gt;&lt;g data-item=&quot;1&quot;&gt;&lt;circle cx=&quot;44&quot; cy=&quot;113.55&quot; r=&quot;14&quot; fill=&quot;#ffffff&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;113.55&quot; r=&quot;11&quot; fill=&quot;#a4177c&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;113.55&quot; r=&quot;15.5&quot; fill=&quot;none&quot; stroke=&quot;#a4177c&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;/&gt;&lt;text x=&quot;78&quot; y=&quot;118.15&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;April 2012&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;133.68&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;14.5&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Facebook agrees to buy it for about US$1 billion&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;157.25&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; fill=&quot;#000054&quot;&gt;Thirteen staff and no revenue. Worth about US$715 million by the close.&lt;/text&gt;&lt;/g&gt;&lt;g data-item=&quot;2&quot;&gt;&lt;circle cx=&quot;44&quot; cy=&quot;196.2&quot; r=&quot;10&quot; fill=&quot;#ffffff&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;196.2&quot; r=&quot;7&quot; fill=&quot;#000054&quot;/&gt;&lt;text x=&quot;78&quot; y=&quot;200.8&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;June 2013&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;216.33&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;14.5&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Video arrives&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;239.9&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; fill=&quot;#000054&quot;&gt;Fifteen second clips, a direct answer to Vine.&lt;/text&gt;&lt;/g&gt;&lt;g data-item=&quot;3&quot;&gt;&lt;circle cx=&quot;44&quot; cy=&quot;278.85&quot; r=&quot;14&quot; fill=&quot;#ffffff&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;278.85&quot; r=&quot;11&quot; fill=&quot;#a4177c&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;278.85&quot; r=&quot;15.5&quot; fill=&quot;none&quot; stroke=&quot;#a4177c&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;/&gt;&lt;text x=&quot;78&quot; y=&quot;283.45&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;August 2016&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;298.98&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;14.5&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Stories launches&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;322.55&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; fill=&quot;#000054&quot;&gt;Twenty four hour posts, copied openly from Snapchat.&lt;/text&gt;&lt;/g&gt;&lt;g data-item=&quot;4&quot;&gt;&lt;circle cx=&quot;44&quot; cy=&quot;361.5&quot; r=&quot;14&quot; fill=&quot;#ffffff&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;361.5&quot; r=&quot;11&quot; fill=&quot;#a4177c&quot;/&gt;&lt;circle cx=&quot;44&quot; cy=&quot;361.5&quot; r=&quot;15.5&quot; fill=&quot;none&quot; stroke=&quot;#a4177c&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;/&gt;&lt;text x=&quot;78&quot; y=&quot;366.1&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;August 2020&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;381.63&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;14.5&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Reels launches&lt;/text&gt;&lt;text x=&quot;78&quot; y=&quot;405.2&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; fill=&quot;#000054&quot;&gt;Short vertical video, answering TikTok. The feed shifts toward what the algorithm picks.&lt;/text&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/figure&gt;
+  &lt;p class=&quot;lv-s-say&quot; id=&quot;lv-s-say&quot; tabindex=&quot;-1&quot;&gt;&lt;/p&gt;
+  &lt;div class=&quot;lv-actions&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;lv-btn is-secondary&quot; id=&quot;lv-s-prev&quot;&gt;Back&lt;span class=&quot;lv-key&quot;&gt;←&lt;/span&gt;&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;lv-btn&quot; id=&quot;lv-s-next&quot;&gt;Next&lt;span class=&quot;lv-key&quot;&gt;→&lt;/span&gt;&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;lv-btn is-ghost&quot; id=&quot;lv-s-all&quot;&gt;Show it all&lt;/button&gt;
+    &lt;div class=&quot;lv-dots&quot; id=&quot;lv-s-dots&quot; role=&quot;group&quot; aria-label=&quot;Jump to a step&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;footer class=&quot;lv-foot&quot;&gt;
+  &lt;details&gt;&lt;summary&gt;Text version of this activity&lt;/summary&gt;&lt;pre class=&quot;lv-text&quot;&gt;How Instagram grew
+==================
+
+What this shows: A step-by-step walkthrough of a diagram, in 5 steps.
+How it is arranged: The parts appear in this order: October 2010, April 2012, June 2013, August 2016, August 2020.
+
+Contents:
+  - Step 1: October 2010. Instagram launches on iPhone only. Filters made phone photos look good on slow connections, which is what people needed at the time.
+  - Step 2: April 2012. Eighteen months later, Facebook agrees to buy it. Notice the gap: eighteen months from launch to a billion-dollar deal.
+  - Step 3: June 2013. Video arrives, a direct response to Vine. This is the first of three times Instagram answers a competitor by adding the competitor&amp;apos;s feature.
+  - Step 4: August 2016. Stories, copied openly from Snapchat. The second time.
+  - Step 5: August 2020. Reels, answering TikTok. The third time. Ask the room: what does that pattern tell you about how platforms compete?&lt;/pre&gt;&lt;/details&gt;
+  &lt;details&gt;&lt;summary&gt;Sources&lt;/summary&gt;&lt;ul&gt;&lt;li&gt;Company announcements for each date. Dates for video, Stories and Reels have not yet been checked against primary sources. &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.forbes.com/sites/tomiogeron/2012/09/06/facebook-officially-closes-instagram-deal/&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;Forbes, Facebook officially closes Instagram deal (2012)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/details&gt;
+  &lt;div class=&quot;lv-foot-row&quot;&gt;&lt;a id=&quot;lv-present-toggle&quot; href=&quot;#present&quot;&gt;Presenter view&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;lv-keys&quot; aria-hidden=&quot;true&quot;&gt;→ next step · ← back · Esc leave presenter view&lt;/div&gt;
+&lt;/footer&gt;
+&lt;div id=&quot;lv-live&quot; class=&quot;lv-sr&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/main&gt;
+&lt;script&gt;(function lvRuntime(CONFIG) {
+  var doc = document;
+  var root = doc.documentElement;
+
+  /* ---------------- SCORM 1.2 ---------------- */
+
+  function findApi(win) {
+    var hops = 0;
+    try {
+      while (win &amp;&amp; hops &lt; 12) {
+        if (win.API &amp;&amp; typeof win.API.LMSInitialize === &apos;function&apos;) return win.API;
+        if (win.parent === win) break;
+        win = win.parent;
+        hops += 1;
+      }
+    } catch (e) {
+      // A cross-origin parent throws on access. That means no reachable LMS.
+    }
+    return null;
+  }
+
+  var api = findApi(window);
+  if (!api) {
+    try { if (window.opener) api = findApi(window.opener); } catch (e) { api = null; }
+  }
+
+  var lms = { connected: false, finished: false };
+  if (api) {
+    try {
+      lms.connected = String(api.LMSInitialize(&apos;&apos;)) === &apos;true&apos;;
+      if (lms.connected) {
+        var initial = api.LMSGetValue(&apos;cmi.core.lesson_status&apos;);
+        if (!initial || initial === &apos;not attempted&apos;) {
+          api.LMSSetValue(&apos;cmi.core.lesson_status&apos;, &apos;incomplete&apos;);
+          api.LMSCommit(&apos;&apos;);
+        }
+      }
+    } catch (e) {
+      lms.connected = false;
+    }
+  }
+
+  function lmsSet(key, value) {
+    try { api.LMSSetValue(key, String(value)); } catch (e) { /* ignore */ }
+  }
+
+  function finish() {
+    if (!lms.connected || lms.finished) return;
+    lms.finished = true;
+    try { api.LMSCommit(&apos;&apos;); api.LMSFinish(&apos;&apos;); } catch (e) { /* ignore */ }
+  }
+  window.addEventListener(&apos;pagehide&apos;, finish);
+  window.addEventListener(&apos;beforeunload&apos;, finish);
+
+  // The best score across attempts is what gets reported. These are practice
+  // activities: a learner who tries again and improves should be credited
+  // with the improvement, not held to the first attempt.
+  var best = null;
+  var lastStatus = &apos;incomplete&apos;;
+
+  function report(result) {
+    var score = typeof result.score === &apos;number&apos; &amp;&amp; isFinite(result.score)
+      ? Math.max(0, Math.min(1, result.score))
+      : null;
+    if (score !== null &amp;&amp; (best === null || score &gt; best)) best = score;
+
+    var status = result.complete ? &apos;completed&apos; : &apos;incomplete&apos;;
+    if (result.complete &amp;&amp; best !== null &amp;&amp; typeof CONFIG.passMark === &apos;number&apos;) {
+      status = best &gt;= CONFIG.passMark ? &apos;passed&apos; : &apos;failed&apos;;
+    }
+    // Never step a status backwards, for example from completed to incomplete
+    // because the learner pressed &quot;try again&quot;.
+    if (lastStatus !== &apos;incomplete&apos; &amp;&amp; status === &apos;incomplete&apos;) status = lastStatus;
+    lastStatus = status;
+
+    if (lms.connected) {
+      if (best !== null) {
+        lmsSet(&apos;cmi.core.score.min&apos;, 0);
+        lmsSet(&apos;cmi.core.score.max&apos;, 100);
+        lmsSet(&apos;cmi.core.score.raw&apos;, Math.round(best * 100));
+      }
+      lmsSet(&apos;cmi.core.lesson_status&apos;, status);
+      try { api.LMSCommit(&apos;&apos;); } catch (e) { /* ignore */ }
+    }
+    try {
+      window.parent.postMessage({ type: &apos;lv:result&apos;, status: status, score: best }, &apos;*&apos;);
+    } catch (e) { /* no parent */ }
+    return status;
+  }
+
+  /* ---------------- Announcements ---------------- */
+
+  var live = doc.getElementById(&apos;lv-live&apos;);
+  function announce(text) {
+    if (!live) return;
+    // Clearing first makes a repeated message be announced again.
+    live.textContent = &apos;&apos;;
+    window.setTimeout(function () { live.textContent = text; }, 40);
+  }
+
+  /* ---------------- Presenter mode ---------------- */
+
+  var handlers = {};
+  function presenting() { return /(^|[#&amp;])present(&amp;|$)/.test(window.location.hash); }
+
+  function applyMode() {
+    var on = presenting();
+    root.classList.toggle(&apos;lv-present&apos;, on);
+    var toggle = doc.getElementById(&apos;lv-present-toggle&apos;);
+    if (toggle) {
+      toggle.textContent = on ? &apos;Leave presenter view&apos; : &apos;Presenter view&apos;;
+      toggle.setAttribute(&apos;href&apos;, on ? &apos;#&apos; : &apos;#present&apos;);
+    }
+    reportHeight();
+  }
+
+  doc.addEventListener(&apos;keydown&apos;, function (e) {
+    if (!presenting()) return;
+    var t = e.target;
+    var tag = t &amp;&amp; t.tagName;
+    if (tag === &apos;INPUT&apos; || tag === &apos;SELECT&apos; || tag === &apos;TEXTAREA&apos;) return;
+    var key = e.key;
+    // Space and Enter on a focused button must still press the button.
+    if ((key === &apos; &apos; || key === &apos;Enter&apos;) &amp;&amp; tag === &apos;BUTTON&apos;) return;
+
+    if ((key === &apos;ArrowRight&apos; || key === &apos;PageDown&apos; || key === &apos; &apos;) &amp;&amp; handlers.next) {
+      e.preventDefault();
+      handlers.next();
+    } else if ((key === &apos;ArrowLeft&apos; || key === &apos;PageUp&apos;) &amp;&amp; handlers.prev) {
+      e.preventDefault();
+      handlers.prev();
+    } else if ((key === &apos;r&apos; || key === &apos;R&apos;) &amp;&amp; handlers.reveal) {
+      e.preventDefault();
+      handlers.reveal();
+    } else if (key === &apos;Escape&apos;) {
+      e.preventDefault();
+      try { window.history.replaceState(null, &apos;&apos;, window.location.pathname + window.location.search); } catch (err) { window.location.hash = &apos;&apos;; }
+      applyMode();
+    }
+  });
+
+  /* ---------------- Frame height ---------------- */
+
+  // The height of the content, not of the document. A document is never
+  // shorter than its frame, so reporting scrollHeight would make a frame that
+  // resizes to fit grow by its padding on every report, without end.
+  var lastHeight = -1;
+  function reportHeight() {
+    try {
+      if (window.parent === window) return;
+      var cs = window.getComputedStyle(doc.body);
+      var h = Math.ceil(doc.body.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom));
+      if (!isFinite(h) || Math.abs(h - lastHeight) &lt; 2) return;
+      lastHeight = h;
+      window.parent.postMessage({ type: &apos;lv:height&apos;, height: h }, &apos;*&apos;);
+    } catch (e) { /* no parent, or no layout to measure */ }
+  }
+
+  /* ---------------- Helpers ---------------- */
+
+  function esc(s) {
+    return String(s == null ? &apos;&apos; : s)
+      .replace(/&amp;/g, &apos;&amp;amp;&apos;).replace(/&lt;/g, &apos;&amp;lt;&apos;)
+      .replace(/&gt;/g, &apos;&amp;gt;&apos;).replace(/&quot;/g, &apos;&amp;quot;&apos;).replace(/&apos;/g, &apos;&amp;#39;&apos;);
+  }
+
+  /** Format for display: grouped thousands, fixed decimals, never &quot;NaN&quot;. */
+  function fmt(value, decimals) {
+    if (typeof value !== &apos;number&apos; || !isFinite(value)) return &apos;not defined&apos;;
+    var dp = typeof decimals === &apos;number&apos; ? decimals : (Math.abs(value) &lt; 10 ? 2 : Math.abs(value) &lt; 100 ? 1 : 0);
+    return value.toLocaleString(&apos;en-AU&apos;, { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  }
+
+  window.addEventListener(&apos;hashchange&apos;, applyMode);
+  window.addEventListener(&apos;load&apos;, reportHeight);
+  window.addEventListener(&apos;resize&apos;, reportHeight);
+  if (window.ResizeObserver) new window.ResizeObserver(reportHeight).observe(doc.body);
+
+  window.LV = {
+    config: CONFIG,
+    lms: lms,
+    report: report,
+    announce: announce,
+    esc: esc,
+    fmt: fmt,
+    reportHeight: reportHeight,
+    presenter: {
+      active: presenting,
+      on: function (h) {
+        handlers.next = h.next || null;
+        handlers.prev = h.prev || null;
+        handlers.reveal = h.reveal || null;
+      },
+    },
+  };
+
+  applyMode();
+})({});&lt;/script&gt;
+
+&lt;script&gt;(function client(D) {
+  var LV = window.LV;
+  var $ = function (id) { return document.getElementById(id); };
+  var fig = $(&apos;lv-s-fig&apos;);
+  var groups = fig.querySelectorAll(&apos;[data-item]&apos;);
+  var say = $(&apos;lv-s-say&apos;);
+  var count = $(&apos;lv-s-count&apos;);
+  var bar = $(&apos;lv-s-bar&apos;);
+  var prev = $(&apos;lv-s-prev&apos;);
+  var next = $(&apos;lv-s-next&apos;);
+  var dots = $(&apos;lv-s-dots&apos;);
+  var total = D.steps.length;
+  var first = D.intro ? -1 : 0;
+  var at = first;
+  var done = false;
+
+  dots.innerHTML = D.steps.map(function (_, i) {
+    return &apos;&lt;button type=&quot;button&quot; class=&quot;lv-dotbtn&quot; data-i=&quot;&apos; + i + &apos;&quot; aria-label=&quot;Go to step &apos; + (i + 1) + &apos;&quot;&gt;&lt;/button&gt;&apos;;
+  }).join(&apos;&apos;);
+
+  function show(i, focusSay) {
+    at = Math.max(first, Math.min(total - 1, i));
+    var visible = at &lt; 0 ? 0 : D.steps[at].show;
+    for (var g = 0; g &lt; groups.length; g += 1) {
+      var idx = Number(groups[g].getAttribute(&apos;data-item&apos;));
+      groups[g].setAttribute(&apos;visibility&apos;, idx &lt; visible ? &apos;visible&apos; : &apos;hidden&apos;);
+      groups[g].classList.toggle(&apos;lv-new&apos;, at &gt;= 0 &amp;&amp; idx &lt; visible &amp;&amp; (at === 0 ? true : idx &gt;= D.steps[at - 1].show));
+    }
+    var text = at &lt; 0 ? D.intro : D.steps[at].say;
+    say.textContent = text;
+    count.textContent = at &lt; 0 ? &apos;Before we start&apos; : &apos;Step &apos; + (at + 1) + &apos; of &apos; + total;
+    bar.style.width = (at &lt; 0 ? 0 : ((at + 1) / total) * 100) + &apos;%&apos;;
+    prev.disabled = at &lt;= first;
+    next.innerHTML = (at === total - 1 ? &apos;Replay&apos; : (at &lt; 0 ? &apos;Start&apos; : &apos;Next&apos;)) + (at === total - 1 ? &apos;&apos; : &apos;&lt;span class=&quot;lv-key&quot;&gt;&amp;#8594;&lt;/span&gt;&apos;);
+    var btns = dots.querySelectorAll(&apos;.lv-dotbtn&apos;);
+    for (var d = 0; d &lt; btns.length; d += 1) {
+      btns[d].classList.toggle(&apos;is-on&apos;, d &lt;= at);
+      btns[d].setAttribute(&apos;aria-current&apos;, d === at ? &apos;step&apos; : &apos;false&apos;);
+    }
+    LV.announce(count.textContent + &apos;. &apos; + text);
+    if (at === total - 1 &amp;&amp; !done) {
+      done = true;
+      LV.report({ complete: true, score: null });
+    }
+    if (focusSay) say.focus();
+    LV.reportHeight();
+  }
+
+  next.addEventListener(&apos;click&apos;, function () { show(at === total - 1 ? first : at + 1); });
+  prev.addEventListener(&apos;click&apos;, function () { show(at - 1); });
+  dots.addEventListener(&apos;click&apos;, function (e) {
+    var b = e.target.closest(&apos;.lv-dotbtn&apos;);
+    if (b) show(Number(b.getAttribute(&apos;data-i&apos;)));
+  });
+  $(&apos;lv-s-all&apos;).addEventListener(&apos;click&apos;, function () { show(total - 1); });
+  LV.presenter.on({
+    next: function () { if (at &lt; total - 1) show(at + 1); },
+    prev: function () { show(at - 1); },
+  });
+  show(first);
+})({&quot;steps&quot;:[{&quot;say&quot;:&quot;October 2010. Instagram launches on iPhone only. Filters made phone photos look good on slow connections, which is what people needed at the time.&quot;,&quot;show&quot;:1},{&quot;say&quot;:&quot;April 2012. Eighteen months later, Facebook agrees to buy it. Notice the gap: eighteen months from launch to a billion-dollar deal.&quot;,&quot;show&quot;:2},{&quot;say&quot;:&quot;June 2013. Video arrives, a direct response to Vine. This is the first of three times Instagram answers a competitor by adding the competitor&apos;s feature.&quot;,&quot;show&quot;:3},{&quot;say&quot;:&quot;August 2016. Stories, copied openly from Snapchat. The second time.&quot;,&quot;show&quot;:4},{&quot;say&quot;:&quot;August 2020. Reels, answering TikTok. The third time. Ask the room: what does that pattern tell you about how platforms compete?&quot;,&quot;show&quot;:5}],&quot;intro&quot;:&quot;&quot;});&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></details>
+  </div></div>
+</article>
+<article class="opt is-rec" id="opt-3" aria-labelledby="opt-3-h">
+  <div class="opt-head"><span class="num" aria-hidden="true">3</span><div style="flex:1;min-width:0">
+  <h3 id="opt-3-h"><span class="sr">Option 3. </span>Why buy a rival?</h3>
+  <ul class="chips">
+    <li class="chip rec">Recommended</li>
+    <li class="chip pattern"><svg class="lv-icon" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg> Sort it</li>
+    <li class="chip">After class</li>
+    <li class="chip block">Needs sourcing and checking</li>
+    <li class="chip">medium effort</li>
+  </ul>
+  <dl>
+    <dt>The angle</dt><dd>Short descriptions of real technology acquisitions, sorted by the main reason for the purchase: to grow, to stop a rival, or to acquire people and technology. The contested ones make the best discussion.</dd>
+    <dt>Afterwards</dt><dd>Name the strategic reason behind an acquisition and back it with evidence.</dd>
+    <dt>Works on</dt><dd>The skill of explaining why a company pays what it pays.</dd>
+    <dt>Why this format</dt><dd>Recognition is learned from contrasting examples, not from definitions, and the reason given for each item teaches the cue to look for.</dd>
+    <dt>What it needs</dt><dd>A reason for each deal, sourced to reporting or filings rather than assumed. Where the reason is contested, say so in the feedback.</dd>
+  </dl>
+  <label class="choose"><input type="checkbox" value="3"> Build option 3</label>
+  <p class="nopreview">No sketch yet. A reason for each deal, sourced to reporting or filings rather than assumed. Where the reason is contested, say so in the feedback.</p>
+  </div></div>
+</article>
+<article class="opt" id="opt-4" aria-labelledby="opt-4-h">
+  <div class="opt-head"><span class="num" aria-hidden="true">4</span><div style="flex:1;min-width:0">
+  <h3 id="opt-4-h"><span class="sr">Option 4. </span>What was Instagram earning?</h3>
+  <ul class="chips">
+    
+    <li class="chip pattern"><svg class="lv-icon" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.2 6.1a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.6-.8 1.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".9" fill="currentColor"/></svg> Predict, then check</li>
+    <li class="chip">Before class</li>
+    <li class="chip block">Needs sourcing and checking</li>
+    <li class="chip">low effort</li>
+  </ul>
+  <dl>
+    <dt>The angle</dt><dd>Learners commit to a guess at Instagram&apos;s annual revenue when Facebook bought it. The answer, nothing at all, is the hook for the whole topic.</dd>
+    <dt>Afterwards</dt><dd>Explain what Facebook was paying for, if not revenue.</dd>
+    <dt>Works on</dt><dd>The belief that Facebook bought Instagram because it was making money.</dd>
+    <dt>Why this format</dt><dd>Generating an answer first makes the real one stick, and surfaces the belief the learner walked in with.</dd>
+    <dt>What it needs</dt><dd>The staff count, revenue and user figures at the time of sale, from contemporary reporting.</dd>
+  </dl>
+  <label class="choose"><input type="checkbox" value="4"> Build option 4</label>
+  <details class="try"><summary>Try the sketch as a learner</summary>
+  <iframe class="frame" title="Sketch of option 4: What was Instagram earning?" loading="lazy" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en-AU&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;learnviz&quot;&gt;
+&lt;title&gt;What was Instagram earning?&lt;/title&gt;
+&lt;style&gt;
+:root {
+  color-scheme: light;
+  --ink: #000054;
+  --ink-soft: #3a3a6e;
+  --paper: #ffffff;
+  --wash: #f5f5fa;
+  --line: #d9d9e6;
+  --line-strong: #b9b9cc;
+  --accent: #fac800;
+  --ok: #00706b;
+  --ok-wash: #e6f3f2;
+  --miss: #a4177c;
+  --miss-wash: #f8e8f3;
+  --part: #8a5a00;
+  --part-wash: #f7efe0;
+  --focus: #1a56c4;
+  --draft: #fdf223;
+  --radius: 14px;
+  --radius-s: 9px;
+  --shadow: 0 1px 2px rgba(0, 0, 84, .06), 0 6px 20px rgba(0, 0, 84, .07);
+  --font: &quot;Helvetica Neue&quot;, Helvetica, Arial, &quot;Liberation Sans&quot;, sans-serif;
+  --t: 180ms;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.55 var(--font);
+}
+.lv { max-width: 880px; margin: 0 auto; padding: 22px 18px 28px; }
+.lv-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Draft banner ---------- */
+.lv-draft {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--draft); color: var(--ink);
+  border-radius: var(--radius-s); padding: 10px 14px; margin: 0 0 18px;
+  font-size: 14px;
+}
+.lv-draft strong { white-space: nowrap; }
+
+/* ---------- Heading ---------- */
+.lv-head { margin: 0 0 20px; }
+.lv-kicker {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin: 0 0 10px; padding: 4px 10px 4px 8px;
+  border-radius: 999px; background: var(--wash);
+  color: var(--ok); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+.lv-icon { flex: none; }
+.lv h1 { font-size: clamp(22px, 3.4vw, 30px); line-height: 1.18; margin: 0 0 10px; letter-spacing: -.01em; }
+.lv-lede { font-size: 17.5px; margin: 0 0 12px; max-width: 66ch; color: var(--ink); }
+.lv-goal { margin: 0; font-size: 14.5px; color: var(--ink-soft); max-width: 70ch; }
+.lv-goal strong { color: var(--ink); }
+.lv-head::after { content: &quot;&quot;; display: block; width: 56px; height: 4px; background: var(--accent); border-radius: 2px; margin-top: 16px; }
+
+/* ---------- Surfaces ---------- */
+.lv-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px; margin: 0 0 16px;
+}
+.lv-card.is-quiet { box-shadow: none; background: var(--wash); border-color: transparent; }
+.lv-prompt { font-size: 18px; font-weight: 700; margin: 0 0 14px; line-height: 1.35; }
+.lv-hint { font-size: 14px; color: var(--ink-soft); margin: -6px 0 14px; }
+.lv h2 { font-size: 18px; margin: 0 0 10px; }
+.lv h3 { font-size: 16px; margin: 0 0 6px; }
+.lv p { margin: 0 0 10px; }
+.lv ul, .lv ol { margin: 0 0 10px; padding-left: 22px; }
+
+/* ---------- Buttons ---------- */
+.lv-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; align-items: center; }
+.lv-btn {
+  appearance: none; font: inherit; font-weight: 700; font-size: 15px;
+  min-height: 44px; padding: 10px 18px; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--ink); background: var(--ink); color: var(--paper);
+  transition: transform var(--t) ease, background var(--t) ease, opacity var(--t) ease;
+}
+.lv-btn:hover { background: #14146a; }
+.lv-btn:active { transform: translateY(1px); }
+.lv-btn.is-secondary { background: var(--paper); color: var(--ink); }
+.lv-btn.is-secondary:hover { background: var(--wash); }
+.lv-btn.is-ghost { background: transparent; border-color: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; padding-left: 6px; padding-right: 6px; }
+.lv-btn[disabled] { opacity: .45; cursor: not-allowed; }
+.lv-btn .lv-key { display: none; }
+
+/* Focus is never removed from controls, only made more visible. Headings that
+   the page moves focus to, so a screen reader lands on new content, are not
+   controls and do not need a ring. */
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+[tabindex=&quot;-1&quot;]:focus { outline: none; }
+
+/* ---------- Choice controls (real radio inputs, styled as cards) ---------- */
+.lv-options { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.lv-options legend { padding: 0; }
+.lv-option {
+  position: relative; display: flex; align-items: flex-start; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer;
+  background: var(--paper); transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-option:hover { border-color: var(--line-strong); }
+.lv-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-option .lv-dot {
+  flex: none; width: 20px; height: 20px; margin-top: 2px; border-radius: 50%;
+  border: 2px solid var(--line-strong); background: var(--paper);
+  transition: border-color var(--t) ease, box-shadow var(--t) ease;
+}
+.lv-option input:checked + .lv-dot { border-color: var(--ink); box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 10px var(--ink); }
+.lv-option:has(input:checked) { border-color: var(--ink); background: var(--wash); }
+.lv-option:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-option.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-option.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+
+/* Segmented choice, used where each item has the same small set of answers. */
+.lv-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; padding: 0; border: 0; }
+.lv-seg label {
+  position: relative; display: inline-flex; align-items: center; min-height: 40px;
+  padding: 7px 12px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer;
+  font-size: 14px; font-weight: 700; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease, color var(--t) ease;
+}
+.lv-seg label:hover { border-color: var(--line-strong); }
+.lv-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lv-seg label:has(input:checked) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.lv-seg label:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- Reorderable rows (move up and down with buttons, never drag) ---------- */
+.lv .lv-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lv-row {
+  display: flex; align-items: center; gap: 12px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 12px; background: var(--paper);
+  transition: border-color var(--t) ease, background var(--t) ease;
+}
+.lv-row-n {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: var(--paper); font-weight: 800; font-size: 14px;
+}
+.lv-row-label { flex: 1; font-weight: 700; }
+.lv-row-why { display: block; font-weight: 400; font-size: 14.5px; color: var(--ink); margin-top: 3px; }
+.lv-row-move { display: flex; gap: 6px; flex: none; }
+.lv-move {
+  appearance: none; font: inherit; font-size: 18px; line-height: 1; width: 44px; height: 44px; border-radius: 10px;
+  border: 2px solid var(--line-strong); background: var(--paper); color: var(--ink); cursor: pointer;
+}
+.lv-move:hover:not([disabled]) { border-color: var(--ink); background: var(--wash); }
+.lv-move[disabled] { opacity: .3; cursor: default; }
+.lv-row.is-ok { border-color: var(--ok); background: var(--ok-wash); }
+.lv-row.is-ok .lv-row-n { background: var(--ok); }
+.lv-row.is-miss { border-color: var(--miss); background: var(--miss-wash); }
+.lv-row.is-miss .lv-row-n { background: var(--miss); }
+
+/* ---------- Big number readout, for sliders ---------- */
+.lv-readout { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 8px; }
+.lv-readout output { font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+.lv-range { width: 100%; accent-color: var(--ink); min-height: 32px; }
+.lv-number { font: inherit; font-size: 16px; width: 9em; min-height: 44px; padding: 8px 10px; border: 2px solid var(--line-strong); border-radius: 10px; color: var(--ink); }
+
+/* ---------- Feedback ---------- */
+.lv-feedback {
+  display: flex; gap: 10px; align-items: flex-start;
+  border-radius: 12px; padding: 12px 14px; margin: 12px 0 0;
+  border-left: 5px solid var(--line-strong); background: var(--wash);
+}
+.lv-feedback .lv-mark { flex: none; font-weight: 800; white-space: nowrap; }
+.lv-feedback p:last-child { margin-bottom: 0; }
+.lv-feedback.is-ok { border-left-color: var(--ok); background: var(--ok-wash); }
+.lv-feedback.is-ok .lv-mark { color: var(--ok); }
+.lv-feedback.is-miss { border-left-color: var(--miss); background: var(--miss-wash); }
+.lv-feedback.is-miss .lv-mark { color: var(--miss); }
+.lv-feedback.is-part { border-left-color: var(--part); background: var(--part-wash); }
+.lv-feedback.is-part .lv-mark { color: var(--part); }
+.lv-tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--wash); }
+.lv-tag.is-ok { background: var(--ok-wash); color: var(--ok); }
+.lv-tag.is-miss { background: var(--miss-wash); color: var(--miss); }
+.lv-tag.is-part { background: var(--part-wash); color: var(--part); }
+
+/* ---------- Progress ---------- */
+.lv-progress { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-soft); margin: 0 0 14px; }
+.lv-bar { flex: 1; height: 8px; background: var(--wash); border-radius: 999px; overflow: hidden; }
+.lv-bar &gt; span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 999px; transition: width 320ms ease; }
+
+/* ---------- Figures ---------- */
+.lv-figure { margin: 0; }
+.lv-figure svg { display: block; width: 100%; height: auto; }
+.lv-figure [data-item] { transition: opacity 260ms ease; }
+.lv-figure [data-item][visibility=&quot;hidden&quot;] { opacity: 0; }
+.lv-figure figcaption { font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+
+/* ---------- Reveal ---------- */
+.lv-reveal { animation: lv-rise 260ms ease both; }
+@keyframes lv-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+[hidden] { display: none !important; }
+
+/* ---------- Footer ---------- */
+.lv-foot { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 14.5px; }
+.lv-foot details { margin: 0 0 8px; }
+.lv-foot summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.lv-foot summary:hover { text-decoration: underline; }
+.lv-foot .lv-text { white-space: pre-wrap; font: inherit; margin: 6px 0 10px; color: var(--ink); background: var(--wash); padding: 12px 14px; border-radius: 10px; }
+.lv-foot ul { margin: 6px 0 10px; }
+.lv-foot-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-top: 8px; color: var(--ink-soft); }
+.lv-foot a { color: var(--ink); font-weight: 700; text-underline-offset: 3px; }
+.lv-keys { display: none; }
+
+/* ---------- Presenter view ---------- */
+html.lv-present body { font-size: 21px; background: var(--paper); }
+html.lv-present .lv { max-width: 1240px; padding: 26px 40px 70px; }
+html.lv-present .lv h1 { font-size: clamp(30px, 3.6vw, 46px); }
+html.lv-present .lv-lede { font-size: 24px; }
+html.lv-present .lv-goal,
+html.lv-present .lv-draft,
+html.lv-present .lv-foot details { display: none; }
+html.lv-present .lv-card { box-shadow: none; }
+html.lv-present .lv-prompt { font-size: 28px; }
+html.lv-present .lv h2 { font-size: 28px; }
+html.lv-present .lv h3 { font-size: 22px; }
+html.lv-present .lv-btn { font-size: 19px; min-height: 52px; padding: 12px 22px; }
+html.lv-present .lv-btn .lv-key { display: inline; opacity: .6; font-weight: 400; margin-left: 6px; }
+html.lv-present .lv-keys {
+  display: block; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  background: var(--ink); color: var(--paper); font-size: 14px; padding: 6px 14px; border-radius: 999px; opacity: .8;
+}
+html.lv-present .lv-foot { border: 0; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+  .lv { padding: 16px 14px 24px; }
+  .lv-card { padding: 16px; }
+  .lv-actions .lv-btn:not(.is-ghost) { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+@media print {
+  .lv-btn, .lv-actions, #lv-present-toggle { display: none !important; }
+  .lv-card { box-shadow: none; break-inside: avoid; }
+  [hidden] { display: block !important; }
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class=&quot;lv&quot;&gt;
+&lt;div class=&quot;lv-draft&quot; role=&quot;note&quot;&gt;&lt;strong&gt;Draft for review.&lt;/strong&gt;&lt;span&gt;3 sources still to check. Not for students until a subject expert has checked it.&lt;/span&gt;&lt;/div&gt;
+&lt;header class=&quot;lv-head&quot;&gt;
+  &lt;p class=&quot;lv-kicker&quot;&gt;&lt;svg class=&quot;lv-icon&quot; width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot;&gt;&lt;circle cx=&quot;8&quot; cy=&quot;8&quot; r=&quot;6.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;/&gt;&lt;path d=&quot;M6.2 6.1a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.6-.8 1.3&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;circle cx=&quot;8&quot; cy=&quot;11.6&quot; r=&quot;.9&quot; fill=&quot;currentColor&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Predict, then check&lt;/span&gt;&lt;/p&gt;
+  &lt;h1&gt;What was Instagram earning?&lt;/h1&gt;
+  &lt;p class=&quot;lv-lede&quot;&gt;Facebook agreed to pay about US$1 billion for Instagram in April 2012. Before you look it up, decide how much revenue you think Instagram was making.&lt;/p&gt;
+  &lt;p class=&quot;lv-goal&quot;&gt;&lt;strong&gt;After this, you can&lt;/strong&gt; explain what a buyer is paying for when a company has no revenue at all.&lt;/p&gt;
+&lt;/header&gt;
+&lt;section class=&quot;lv-activity&quot; aria-label=&quot;Activity&quot;&gt;
+
+&lt;form class=&quot;lv-card&quot; id=&quot;lv-p-form&quot; onsubmit=&quot;return false&quot;&gt;
+  &lt;p class=&quot;lv-prompt&quot; id=&quot;lv-p-q&quot;&gt;When Facebook agreed to pay about US$1 billion for Instagram, how much revenue was Instagram making?&lt;/p&gt;
+  &lt;fieldset class=&quot;lv-options&quot;&gt;&lt;legend class=&quot;lv-sr&quot;&gt;When Facebook agreed to pay about US$1 billion for Instagram, how much revenue was Instagram making?&lt;/legend&gt;
+      &lt;label class=&quot;lv-option&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;lv-p-choice&quot; value=&quot;0&quot;&gt;&lt;span class=&quot;lv-dot&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;span&gt;Nothing at all&lt;/span&gt;&lt;/label&gt;
+      &lt;label class=&quot;lv-option&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;lv-p-choice&quot; value=&quot;1&quot;&gt;&lt;span class=&quot;lv-dot&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;span&gt;About US$10 million a year&lt;/span&gt;&lt;/label&gt;
+      &lt;label class=&quot;lv-option&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;lv-p-choice&quot; value=&quot;2&quot;&gt;&lt;span class=&quot;lv-dot&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;span&gt;About US$100 million a year&lt;/span&gt;&lt;/label&gt;
+      &lt;label class=&quot;lv-option&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;lv-p-choice&quot; value=&quot;3&quot;&gt;&lt;span class=&quot;lv-dot&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;span&gt;About US$1 billion a year&lt;/span&gt;&lt;/label&gt;
+    &lt;/fieldset&gt;
+  &lt;p class=&quot;lv-hint&quot; id=&quot;lv-p-hint&quot; hidden role=&quot;alert&quot;&gt;Make your prediction first. The point is to commit before you see the answer.&lt;/p&gt;
+  &lt;div class=&quot;lv-actions&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;lv-btn&quot; id=&quot;lv-p-lock&quot;&gt;Lock in my answer&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;lv-btn is-ghost&quot; id=&quot;lv-p-skip&quot;&gt;Skip and show me&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+&lt;section class=&quot;lv-card&quot; id=&quot;lv-p-reveal&quot; hidden aria-labelledby=&quot;lv-p-reveal-h&quot;&gt;
+  &lt;h2 id=&quot;lv-p-reveal-h&quot; tabindex=&quot;-1&quot;&gt;Nothing. So what was Facebook buying?&lt;/h2&gt;
+  &lt;div id=&quot;lv-p-mine&quot;&gt;&lt;/div&gt;
+  
+  &lt;p&gt;Instagram had no revenue, no advertising and thirteen staff. What Facebook paid for was about 30 million users, a team that had built something people used every day, and the certainty that a competitor would not own it.&lt;/p&gt;
+  &lt;ul&gt;&lt;li&gt;When a company has no revenue, its price is a bet about the future, not a calculation about the present.&lt;/li&gt;&lt;li&gt;Buying a company partly to stop a rival buying it is a strategy with a name: a defensive acquisition.&lt;/li&gt;&lt;/ul&gt;
+  &lt;figure class=&quot;lv-figure&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 760 394.15&quot; width=&quot;760&quot; height=&quot;394.15&quot; role=&quot;img&quot; aria-labelledby=&quot;lv-title lv-desc&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot;&gt;&lt;title id=&quot;lv-title&quot;&gt;A panel of 4 large figures, each in its own tile titled &amp;quot;What was Instagram earning?&amp;quot;.&lt;/title&gt;&lt;desc id=&quot;lv-desc&quot;&gt;A panel of 4 large figures, each in its own tile. 4 tiles in a grid 2 across, read left to right then down. US$1bn: Announced price, April 2012. Cash and Facebook shares. 13: Employees at the time of sale. $0: Revenue at the time of sale. No advertising, no subscriptions. 30m: Registered users at the time. Registered accounts, not monthly active users.&lt;/desc&gt;&lt;defs&gt;&lt;pattern id=&quot;lv-diagonal&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,8 L8,0 M-2,2 L2,-2 M6,10 L10,6&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-dots&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;circle cx=&quot;2&quot; cy=&quot;2&quot; r=&quot;1.4&quot; fill=&quot;#ffffff&quot; opacity=&quot;0.55&quot;/&gt;&lt;circle cx=&quot;6&quot; cy=&quot;6&quot; r=&quot;1.4&quot; fill=&quot;#ffffff&quot; opacity=&quot;0.55&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-horizontal&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,2 H8 M0,6 H8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-vertical&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M2,0 V8 M6,0 V8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;pattern id=&quot;lv-grid&quot; width=&quot;8&quot; height=&quot;8&quot; patternUnits=&quot;userSpaceOnUse&quot;&gt;&lt;path d=&quot;M0,4 H8 M4,0 V8&quot; stroke=&quot;#ffffff&quot; stroke-width=&quot;1.6&quot; opacity=&quot;0.55&quot; fill=&quot;none&quot;/&gt;&lt;/pattern&gt;&lt;marker id=&quot;lv-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,1 L9,5 L0,9 z&quot; fill=&quot;#000054&quot;/&gt;&lt;/marker&gt;&lt;/defs&gt;&lt;rect width=&quot;760&quot; height=&quot;394.15&quot; fill=&quot;#ffffff&quot;/&gt;&lt;g data-item=&quot;0&quot;&gt;&lt;path d=&quot;M44,18 H363 A8,8 0 0 1 371,26 V161.07 A8,8 0 0 1 363,169.08 H44 A8,8 0 0 1 36,161.07 V26 A8,8 0 0 1 44,18 Z&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;path d=&quot;M41,18 H366 A5,5 0 0 1 371,23 V23 A5,5 0 0 1 366,28 H41 A5,5 0 0 1 36,23 V23 A5,5 0 0 1 41,18 Z&quot; fill=&quot;#000054&quot;/&gt;&lt;rect x=&quot;36&quot; y=&quot;23&quot; width=&quot;335&quot; height=&quot;5&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;text x=&quot;56&quot; y=&quot;86.68&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;56&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;US$1bn&lt;/text&gt;&lt;text x=&quot;56&quot; y=&quot;111&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Announced price, April 2012&lt;/text&gt;&lt;g opacity=&quot;0.85&quot;&gt;&lt;text x=&quot;56&quot; y=&quot;135.55&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; fill=&quot;#000054&quot;&gt;Cash and Facebook shares.&lt;/text&gt;&lt;/g&gt;&lt;/g&gt;&lt;g data-item=&quot;1&quot;&gt;&lt;path d=&quot;M397,18 H716 A8,8 0 0 1 724,26 V161.07 A8,8 0 0 1 716,169.08 H397 A8,8 0 0 1 389,161.07 V26 A8,8 0 0 1 397,18 Z&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;path d=&quot;M394,18 H719 A5,5 0 0 1 724,23 V23 A5,5 0 0 1 719,28 H394 A5,5 0 0 1 389,23 V23 A5,5 0 0 1 394,18 Z&quot; fill=&quot;#00706b&quot;/&gt;&lt;rect x=&quot;389&quot; y=&quot;23&quot; width=&quot;335&quot; height=&quot;5&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;text x=&quot;409&quot; y=&quot;86.68&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;56&quot; font-weight=&quot;bold&quot; fill=&quot;#00706b&quot;&gt;13&lt;/text&gt;&lt;text x=&quot;409&quot; y=&quot;111&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Employees at the time of sale&lt;/text&gt;&lt;/g&gt;&lt;g data-item=&quot;2&quot;&gt;&lt;path d=&quot;M44,187.08 H363 A8,8 0 0 1 371,195.08 V330.15 A8,8 0 0 1 363,338.15 H44 A8,8 0 0 1 36,330.15 V195.08 A8,8 0 0 1 44,187.08 Z&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;path d=&quot;M41,187.08 H366 A5,5 0 0 1 371,192.08 V192.08 A5,5 0 0 1 366,197.08 H41 A5,5 0 0 1 36,192.08 V192.08 A5,5 0 0 1 41,187.08 Z&quot; fill=&quot;#a4177c&quot;/&gt;&lt;rect x=&quot;36&quot; y=&quot;192.08&quot; width=&quot;335&quot; height=&quot;5&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;text x=&quot;56&quot; y=&quot;255.76&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;56&quot; font-weight=&quot;bold&quot; fill=&quot;#a4177c&quot;&gt;$0&lt;/text&gt;&lt;text x=&quot;56&quot; y=&quot;280.08&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Revenue at the time of sale&lt;/text&gt;&lt;g opacity=&quot;0.85&quot;&gt;&lt;text x=&quot;56&quot; y=&quot;304.63&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; fill=&quot;#000054&quot;&gt;No advertising, no subscriptions.&lt;/text&gt;&lt;/g&gt;&lt;/g&gt;&lt;g data-item=&quot;3&quot;&gt;&lt;path d=&quot;M397,187.08 H716 A8,8 0 0 1 724,195.08 V330.15 A8,8 0 0 1 716,338.15 H397 A8,8 0 0 1 389,330.15 V195.08 A8,8 0 0 1 397,187.08 Z&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;path d=&quot;M394,187.08 H719 A5,5 0 0 1 724,192.08 V192.08 A5,5 0 0 1 719,197.08 H394 A5,5 0 0 1 389,192.08 V192.08 A5,5 0 0 1 394,187.08 Z&quot; fill=&quot;#8a5a00&quot;/&gt;&lt;rect x=&quot;389&quot; y=&quot;192.08&quot; width=&quot;335&quot; height=&quot;5&quot; fill=&quot;#f3f3f3&quot;/&gt;&lt;text x=&quot;409&quot; y=&quot;255.76&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;56&quot; font-weight=&quot;bold&quot; fill=&quot;#8a5a00&quot;&gt;30m&lt;/text&gt;&lt;text x=&quot;409&quot; y=&quot;280.08&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;13&quot; font-weight=&quot;bold&quot; fill=&quot;#000054&quot;&gt;Registered users at the time&lt;/text&gt;&lt;g opacity=&quot;0.85&quot;&gt;&lt;text x=&quot;409&quot; y=&quot;304.63&quot; font-family=&quot;Helvetica, Arial, &amp;apos;Liberation Sans&amp;apos;, sans-serif&quot; font-size=&quot;11.5&quot; fill=&quot;#000054&quot;&gt;Registered accounts, not monthly active users.&lt;/text&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/figure&gt;
+  &lt;div class=&quot;lv-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;lv-btn is-secondary&quot; id=&quot;lv-p-again&quot;&gt;Start again&lt;/button&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;footer class=&quot;lv-foot&quot;&gt;
+  &lt;details&gt;&lt;summary&gt;Text version of this activity&lt;/summary&gt;&lt;pre class=&quot;lv-text&quot;&gt;What was Instagram earning?
+===========================
+
+What this shows: A prediction activity. The learner answers a question before the answer is shown, then sees the answer and the reasoning.
+How it is arranged: Question first, then the learner&amp;apos;s answer, then the reveal.
+
+Contents:
+  - Question: When Facebook agreed to pay about US$1 billion for Instagram, how much revenue was Instagram making?
+  - Option 1: Nothing at all. Right. Instagram had never charged anyone for anything, and ran no advertising.
+  - Option 2: About US$10 million a year. A reasonable guess for a popular app, but Instagram had no revenue at all.
+  - Option 3: About US$100 million a year. That would put the price at ten times revenue, a common rule of thumb. The real answer makes the rule of thumb useless.
+  - Option 4: About US$1 billion a year. That would make the deal look cheap. In fact Instagram earned nothing.
+  - Nothing. So what was Facebook buying?: Nothing at all.
+  - Why: Instagram had no revenue, no advertising and thirteen staff. What Facebook paid for was about 30 million users, a team that had built something people used every day, and the certainty that a competitor would not own it.
+  - Point 1: When a company has no revenue, its price is a bet about the future, not a calculation about the present.
+  - Point 2: Buying a company partly to stop a rival buying it is a strategy with a name: a defensive acquisition.&lt;/pre&gt;&lt;/details&gt;
+  &lt;details&gt;&lt;summary&gt;Sources&lt;/summary&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.npr.org/2012/04/10/150372288/instagram-sells-for-1-billion-despite-no-revenue&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;NPR, Instagram sells for $1 billion despite no revenue (2012)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://money.cnn.com/2012/04/10/technology/startups/instagram-facebook/index.htm&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;CNN Money, 13 employees and no revenue (2012)&lt;/a&gt; &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://techcrunch.com/2012/04/03/instagram-android-demum/&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;&gt;TechCrunch, Instagram passes 30 million users (2012)&lt;/a&gt;. The count is of registered accounts. Medium confidence. &lt;span class=&quot;lv-tag is-part&quot;&gt;To check&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/details&gt;
+  &lt;div class=&quot;lv-foot-row&quot;&gt;&lt;a id=&quot;lv-present-toggle&quot; href=&quot;#present&quot;&gt;Presenter view&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;lv-keys&quot; aria-hidden=&quot;true&quot;&gt;R reveal the answer · Esc leave presenter view&lt;/div&gt;
+&lt;/footer&gt;
+&lt;div id=&quot;lv-live&quot; class=&quot;lv-sr&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/main&gt;
+&lt;script&gt;(function lvRuntime(CONFIG) {
+  var doc = document;
+  var root = doc.documentElement;
+
+  /* ---------------- SCORM 1.2 ---------------- */
+
+  function findApi(win) {
+    var hops = 0;
+    try {
+      while (win &amp;&amp; hops &lt; 12) {
+        if (win.API &amp;&amp; typeof win.API.LMSInitialize === &apos;function&apos;) return win.API;
+        if (win.parent === win) break;
+        win = win.parent;
+        hops += 1;
+      }
+    } catch (e) {
+      // A cross-origin parent throws on access. That means no reachable LMS.
+    }
+    return null;
+  }
+
+  var api = findApi(window);
+  if (!api) {
+    try { if (window.opener) api = findApi(window.opener); } catch (e) { api = null; }
+  }
+
+  var lms = { connected: false, finished: false };
+  if (api) {
+    try {
+      lms.connected = String(api.LMSInitialize(&apos;&apos;)) === &apos;true&apos;;
+      if (lms.connected) {
+        var initial = api.LMSGetValue(&apos;cmi.core.lesson_status&apos;);
+        if (!initial || initial === &apos;not attempted&apos;) {
+          api.LMSSetValue(&apos;cmi.core.lesson_status&apos;, &apos;incomplete&apos;);
+          api.LMSCommit(&apos;&apos;);
+        }
+      }
+    } catch (e) {
+      lms.connected = false;
+    }
+  }
+
+  function lmsSet(key, value) {
+    try { api.LMSSetValue(key, String(value)); } catch (e) { /* ignore */ }
+  }
+
+  function finish() {
+    if (!lms.connected || lms.finished) return;
+    lms.finished = true;
+    try { api.LMSCommit(&apos;&apos;); api.LMSFinish(&apos;&apos;); } catch (e) { /* ignore */ }
+  }
+  window.addEventListener(&apos;pagehide&apos;, finish);
+  window.addEventListener(&apos;beforeunload&apos;, finish);
+
+  // The best score across attempts is what gets reported. These are practice
+  // activities: a learner who tries again and improves should be credited
+  // with the improvement, not held to the first attempt.
+  var best = null;
+  var lastStatus = &apos;incomplete&apos;;
+
+  function report(result) {
+    var score = typeof result.score === &apos;number&apos; &amp;&amp; isFinite(result.score)
+      ? Math.max(0, Math.min(1, result.score))
+      : null;
+    if (score !== null &amp;&amp; (best === null || score &gt; best)) best = score;
+
+    var status = result.complete ? &apos;completed&apos; : &apos;incomplete&apos;;
+    if (result.complete &amp;&amp; best !== null &amp;&amp; typeof CONFIG.passMark === &apos;number&apos;) {
+      status = best &gt;= CONFIG.passMark ? &apos;passed&apos; : &apos;failed&apos;;
+    }
+    // Never step a status backwards, for example from completed to incomplete
+    // because the learner pressed &quot;try again&quot;.
+    if (lastStatus !== &apos;incomplete&apos; &amp;&amp; status === &apos;incomplete&apos;) status = lastStatus;
+    lastStatus = status;
+
+    if (lms.connected) {
+      if (best !== null) {
+        lmsSet(&apos;cmi.core.score.min&apos;, 0);
+        lmsSet(&apos;cmi.core.score.max&apos;, 100);
+        lmsSet(&apos;cmi.core.score.raw&apos;, Math.round(best * 100));
+      }
+      lmsSet(&apos;cmi.core.lesson_status&apos;, status);
+      try { api.LMSCommit(&apos;&apos;); } catch (e) { /* ignore */ }
+    }
+    try {
+      window.parent.postMessage({ type: &apos;lv:result&apos;, status: status, score: best }, &apos;*&apos;);
+    } catch (e) { /* no parent */ }
+    return status;
+  }
+
+  /* ---------------- Announcements ---------------- */
+
+  var live = doc.getElementById(&apos;lv-live&apos;);
+  function announce(text) {
+    if (!live) return;
+    // Clearing first makes a repeated message be announced again.
+    live.textContent = &apos;&apos;;
+    window.setTimeout(function () { live.textContent = text; }, 40);
+  }
+
+  /* ---------------- Presenter mode ---------------- */
+
+  var handlers = {};
+  function presenting() { return /(^|[#&amp;])present(&amp;|$)/.test(window.location.hash); }
+
+  function applyMode() {
+    var on = presenting();
+    root.classList.toggle(&apos;lv-present&apos;, on);
+    var toggle = doc.getElementById(&apos;lv-present-toggle&apos;);
+    if (toggle) {
+      toggle.textContent = on ? &apos;Leave presenter view&apos; : &apos;Presenter view&apos;;
+      toggle.setAttribute(&apos;href&apos;, on ? &apos;#&apos; : &apos;#present&apos;);
+    }
+    reportHeight();
+  }
+
+  doc.addEventListener(&apos;keydown&apos;, function (e) {
+    if (!presenting()) return;
+    var t = e.target;
+    var tag = t &amp;&amp; t.tagName;
+    if (tag === &apos;INPUT&apos; || tag === &apos;SELECT&apos; || tag === &apos;TEXTAREA&apos;) return;
+    var key = e.key;
+    // Space and Enter on a focused button must still press the button.
+    if ((key === &apos; &apos; || key === &apos;Enter&apos;) &amp;&amp; tag === &apos;BUTTON&apos;) return;
+
+    if ((key === &apos;ArrowRight&apos; || key === &apos;PageDown&apos; || key === &apos; &apos;) &amp;&amp; handlers.next) {
+      e.preventDefault();
+      handlers.next();
+    } else if ((key === &apos;ArrowLeft&apos; || key === &apos;PageUp&apos;) &amp;&amp; handlers.prev) {
+      e.preventDefault();
+      handlers.prev();
+    } else if ((key === &apos;r&apos; || key === &apos;R&apos;) &amp;&amp; handlers.reveal) {
+      e.preventDefault();
+      handlers.reveal();
+    } else if (key === &apos;Escape&apos;) {
+      e.preventDefault();
+      try { window.history.replaceState(null, &apos;&apos;, window.location.pathname + window.location.search); } catch (err) { window.location.hash = &apos;&apos;; }
+      applyMode();
+    }
+  });
+
+  /* ---------------- Frame height ---------------- */
+
+  // The height of the content, not of the document. A document is never
+  // shorter than its frame, so reporting scrollHeight would make a frame that
+  // resizes to fit grow by its padding on every report, without end.
+  var lastHeight = -1;
+  function reportHeight() {
+    try {
+      if (window.parent === window) return;
+      var cs = window.getComputedStyle(doc.body);
+      var h = Math.ceil(doc.body.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom));
+      if (!isFinite(h) || Math.abs(h - lastHeight) &lt; 2) return;
+      lastHeight = h;
+      window.parent.postMessage({ type: &apos;lv:height&apos;, height: h }, &apos;*&apos;);
+    } catch (e) { /* no parent, or no layout to measure */ }
+  }
+
+  /* ---------------- Helpers ---------------- */
+
+  function esc(s) {
+    return String(s == null ? &apos;&apos; : s)
+      .replace(/&amp;/g, &apos;&amp;amp;&apos;).replace(/&lt;/g, &apos;&amp;lt;&apos;)
+      .replace(/&gt;/g, &apos;&amp;gt;&apos;).replace(/&quot;/g, &apos;&amp;quot;&apos;).replace(/&apos;/g, &apos;&amp;#39;&apos;);
+  }
+
+  /** Format for display: grouped thousands, fixed decimals, never &quot;NaN&quot;. */
+  function fmt(value, decimals) {
+    if (typeof value !== &apos;number&apos; || !isFinite(value)) return &apos;not defined&apos;;
+    var dp = typeof decimals === &apos;number&apos; ? decimals : (Math.abs(value) &lt; 10 ? 2 : Math.abs(value) &lt; 100 ? 1 : 0);
+    return value.toLocaleString(&apos;en-AU&apos;, { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  }
+
+  window.addEventListener(&apos;hashchange&apos;, applyMode);
+  window.addEventListener(&apos;load&apos;, reportHeight);
+  window.addEventListener(&apos;resize&apos;, reportHeight);
+  if (window.ResizeObserver) new window.ResizeObserver(reportHeight).observe(doc.body);
+
+  window.LV = {
+    config: CONFIG,
+    lms: lms,
+    report: report,
+    announce: announce,
+    esc: esc,
+    fmt: fmt,
+    reportHeight: reportHeight,
+    presenter: {
+      active: presenting,
+      on: function (h) {
+        handlers.next = h.next || null;
+        handlers.prev = h.prev || null;
+        handlers.reveal = h.reveal || null;
+      },
+    },
+  };
+
+  applyMode();
+})({});&lt;/script&gt;
+
+&lt;script&gt;(function client(D) {
+  var LV = window.LV;
+  var $ = function (id) { return document.getElementById(id); };
+  var locked = false;
+  var order = D.kind === &apos;order&apos; ? D.shown.slice() : null;
+  var hint = $(&apos;lv-p-hint&apos;);
+
+  function fmtNum(v) {
+    return (D.prefix || &apos;&apos;) + LV.fmt(v, D.decimals) + (D.unit ? &apos; &apos; + D.unit : &apos;&apos;);
+  }
+
+  /* ----- order ----- */
+  function renderOrder(focusPos, dir) {
+    var list = $(&apos;lv-p-order&apos;);
+    list.innerHTML = order.map(function (itemIdx, pos) {
+      var label = LV.esc(D.items[itemIdx]);
+      return &apos;&lt;li class=&quot;lv-row&quot; data-pos=&quot;&apos; + pos + &apos;&quot;&gt;&apos;
+        + &apos;&lt;span class=&quot;lv-row-n&quot; aria-hidden=&quot;true&quot;&gt;&apos; + (pos + 1) + &apos;&lt;/span&gt;&apos;
+        + &apos;&lt;span class=&quot;lv-row-label&quot;&gt;&apos; + label + &apos;&lt;/span&gt;&apos;
+        + &apos;&lt;span class=&quot;lv-row-move&quot;&gt;&apos;
+        + &apos;&lt;button type=&quot;button&quot; class=&quot;lv-move&quot; data-dir=&quot;-1&quot; data-pos=&quot;&apos; + pos + &apos;&quot; aria-label=&quot;Move &apos; + label + &apos; up&quot;&apos; + (pos === 0 || locked ? &apos; disabled&apos; : &apos;&apos;) + &apos;&gt;&amp;#8593;&lt;/button&gt;&apos;
+        + &apos;&lt;button type=&quot;button&quot; class=&quot;lv-move&quot; data-dir=&quot;1&quot; data-pos=&quot;&apos; + pos + &apos;&quot; aria-label=&quot;Move &apos; + label + &apos; down&quot;&apos; + (pos === order.length - 1 || locked ? &apos; disabled&apos; : &apos;&apos;) + &apos;&gt;&amp;#8595;&lt;/button&gt;&apos;
+        + &apos;&lt;/span&gt;&lt;/li&gt;&apos;;
+    }).join(&apos;&apos;);
+    if (focusPos !== undefined) {
+      var sel = &apos;[data-pos=&quot;&apos; + focusPos + &apos;&quot;] .lv-move&apos;;
+      var btn = list.querySelector(sel + &apos;[data-dir=&quot;&apos; + dir + &apos;&quot;]:not([disabled])&apos;) || list.querySelector(sel + &apos;:not([disabled])&apos;);
+      if (btn) btn.focus();
+    }
+  }
+  if (order) {
+    renderOrder();
+    $(&apos;lv-p-order&apos;).addEventListener(&apos;click&apos;, function (e) {
+      var b = e.target.closest(&apos;.lv-move&apos;);
+      if (!b || locked) return;
+      var pos = Number(b.getAttribute(&apos;data-pos&apos;));
+      var dir = Number(b.getAttribute(&apos;data-dir&apos;));
+      var to = pos + dir;
+      if (to &lt; 0 || to &gt;= order.length) return;
+      var t = order[pos]; order[pos] = order[to]; order[to] = t;
+      renderOrder(to, dir);
+      LV.announce(D.items[order[to]] + &apos; is now number &apos; + (to + 1) + &apos; of &apos; + order.length + &apos;.&apos;);
+    });
+  }
+
+  /* ----- number ----- */
+  if (D.kind === &apos;number&apos;) {
+    var range = $(&apos;lv-p-range&apos;);
+    var box = $(&apos;lv-p-box&apos;);
+    var out = $(&apos;lv-p-out&apos;);
+    var sync = function (v) { out.textContent = fmtNum(Number(v)); };
+    range.addEventListener(&apos;input&apos;, function () { box.value = range.value; sync(range.value); });
+    box.addEventListener(&apos;input&apos;, function () { if (box.value !== &apos;&apos;) { range.value = box.value; sync(box.value); } });
+    sync(range.value);
+  }
+
+  function read() {
+    if (D.kind === &apos;choice&apos;) {
+      var c = document.querySelector(&apos;input[name=&quot;lv-p-choice&quot;]:checked&apos;);
+      return c ? Number(c.value) : null;
+    }
+    if (D.kind === &apos;number&apos;) {
+      var v = Number($(&apos;lv-p-box&apos;).value);
+      return isFinite(v) ? v : null;
+    }
+    return order.slice();
+  }
+
+  function mineHtml(ans, skipped, room) {
+    if (room) return &apos;&apos;;
+    if (skipped) return &apos;&lt;p&gt;You went straight to the answer. Next time, try committing to a guess first. It is the guess that makes the answer stick.&lt;/p&gt;&apos;;
+    if (D.kind === &apos;choice&apos;) {
+      var opt = D.options[ans];
+      var right = D.answer === null ? null : ans === D.answer;
+      var mark = right === null ? &apos;&apos; : right ? &apos;&lt;span class=&quot;lv-tag is-ok&quot;&gt;&amp;#10003; Right&lt;/span&gt; &apos; : &apos;&lt;span class=&quot;lv-tag is-miss&quot;&gt;&amp;#10007; Not this time&lt;/span&gt; &apos;;
+      return &apos;&lt;p&gt;&apos; + mark + &apos;You chose &lt;strong&gt;&apos; + LV.esc(opt.label) + &apos;&lt;/strong&gt;.&lt;/p&gt;&apos;
+        + (opt.feedback ? &apos;&lt;p&gt;&apos; + LV.esc(opt.feedback) + &apos;&lt;/p&gt;&apos; : &apos;&apos;)
+        + (right === false ? &apos;&lt;p&gt;The answer is &lt;strong&gt;&apos; + LV.esc(D.options[D.answer].label) + &apos;&lt;/strong&gt;.&lt;/p&gt;&apos; : &apos;&apos;);
+    }
+    if (D.kind === &apos;number&apos;) {
+      var gap = ans - D.answerValue;
+      var tol = typeof D.tolerance === &apos;number&apos; ? D.tolerance : Math.abs(D.answerValue) * 0.1;
+      var close = Math.abs(gap) &lt;= tol;
+      var pct = D.answerValue !== 0 ? Math.round(Math.abs(gap) / Math.abs(D.answerValue) * 100) : null;
+      var how = close ? &apos;Close. You were within range.&apos;
+        : &apos;You were &apos; + (pct !== null ? pct + &apos; per cent &apos; : &apos;&apos;) + (gap &lt; 0 ? &apos;under&apos; : &apos;over&apos;) + &apos;.&apos;;
+      return &apos;&lt;p&gt;&lt;span class=&quot;lv-tag &apos; + (close ? &apos;is-ok&apos; : &apos;is-part&apos;) + &apos;&quot;&gt;&apos; + (close ? &apos;&amp;#10003; Close&apos; : &apos;&amp;#8776; &apos; + (gap &lt; 0 ? &apos;Under&apos; : &apos;Over&apos;)) + &apos;&lt;/span&gt; &apos;
+        + &apos;You guessed &lt;strong&gt;&apos; + fmtNum(ans) + &apos;&lt;/strong&gt;. The answer is &lt;strong&gt;&apos; + fmtNum(D.answerValue) + &apos;&lt;/strong&gt;. &apos; + how + &apos;&lt;/p&gt;&apos;;
+    }
+    // order
+    var yours = ans.map(function (i) { return D.items[i]; });
+    if (!D.fixedOrder) {
+      return &apos;&lt;p&gt;Your order: &lt;strong&gt;&apos; + yours.map(LV.esc).join(&apos;, then &apos;) + &apos;&lt;/strong&gt;.&lt;/p&gt;&apos;;
+    }
+    var rightCount = ans.filter(function (itemIdx, pos) { return itemIdx === pos; }).length;
+    return &apos;&lt;p&gt;&lt;span class=&quot;lv-tag &apos; + (rightCount === ans.length ? &apos;is-ok&apos; : &apos;is-part&apos;) + &apos;&quot;&gt;&apos; + rightCount + &apos; of &apos; + ans.length + &apos; in place&lt;/span&gt; &apos;
+      + &apos;Here is your order against the answer.&lt;/p&gt;&apos;
+      + &apos;&lt;ol class=&quot;lv-rows&quot;&gt;&apos; + ans.map(function (itemIdx, pos) {
+        var ok = itemIdx === pos;
+        return &apos;&lt;li class=&quot;lv-row &apos; + (ok ? &apos;is-ok&apos; : &apos;is-miss&apos;) + &apos;&quot;&gt;&lt;span class=&quot;lv-row-n&quot; aria-hidden=&quot;true&quot;&gt;&apos; + (pos + 1) + &apos;&lt;/span&gt;&apos;
+          + &apos;&lt;span class=&quot;lv-row-label&quot;&gt;&apos; + LV.esc(D.items[itemIdx])
+          + &apos;&lt;span class=&quot;lv-row-why&quot;&gt;&apos; + (ok ? &apos;&amp;#10003; In the right place&apos; : &apos;&amp;#10007; Should be number &apos; + (itemIdx + 1)) + &apos;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&apos;;
+      }).join(&apos;&apos;) + &apos;&lt;/ol&gt;&apos;;
+  }
+
+  function setLocked(on) {
+    locked = on;
+    var inputs = document.querySelectorAll(&apos;#lv-p-form input, #lv-p-form button.lv-move&apos;);
+    for (var i = 0; i &lt; inputs.length; i += 1) inputs[i].disabled = on;
+    $(&apos;lv-p-lock&apos;).disabled = on;
+    $(&apos;lv-p-skip&apos;).hidden = on;
+    if (order) renderOrder();
+  }
+
+  function markOptions(chosen) {
+    if (D.kind !== &apos;choice&apos; || D.answer === null) return;
+    var labels = document.querySelectorAll(&apos;.lv-option&apos;);
+    for (var i = 0; i &lt; labels.length; i += 1) {
+      if (i === D.answer) labels[i].classList.add(&apos;is-ok&apos;);
+      else if (i === chosen) labels[i].classList.add(&apos;is-miss&apos;);
+    }
+  }
+
+  function lock(skipped, room) {
+    if (locked) return;
+    var ans = skipped ? null : read();
+    if (!skipped &amp;&amp; ans === null) {
+      hint.hidden = false;
+      LV.announce(hint.textContent);
+      return;
+    }
+    hint.hidden = true;
+    setLocked(true);
+    markOptions(ans);
+    $(&apos;lv-p-mine&apos;).innerHTML = mineHtml(ans, skipped, room);
+    var reveal = $(&apos;lv-p-reveal&apos;);
+    reveal.hidden = false;
+    reveal.classList.remove(&apos;lv-reveal&apos;);
+    void reveal.offsetWidth;
+    reveal.classList.add(&apos;lv-reveal&apos;);
+    var h = $(&apos;lv-p-reveal-h&apos;);
+    if (h) h.focus();
+    LV.report({ complete: true, score: null });
+    LV.announce(&apos;Answer shown. &apos; + D.heading);
+    LV.reportHeight();
+  }
+
+  function reset() {
+    setLocked(false);
+    if (order) { order = D.shown.slice(); renderOrder(); }
+    var checked = document.querySelector(&apos;input[name=&quot;lv-p-choice&quot;]:checked&apos;);
+    if (checked) checked.checked = false;
+    var labels = document.querySelectorAll(&apos;.lv-option&apos;);
+    for (var i = 0; i &lt; labels.length; i += 1) labels[i].classList.remove(&apos;is-ok&apos;, &apos;is-miss&apos;);
+    if (D.kind === &apos;number&apos;) { $(&apos;lv-p-range&apos;).value = D.start; $(&apos;lv-p-box&apos;).value = D.start; $(&apos;lv-p-out&apos;).textContent = fmtNum(D.start); }
+    $(&apos;lv-p-reveal&apos;).hidden = true;
+    $(&apos;lv-p-lock&apos;).focus();
+    LV.reportHeight();
+  }
+
+  $(&apos;lv-p-lock&apos;).addEventListener(&apos;click&apos;, function () { lock(false); });
+  $(&apos;lv-p-skip&apos;).addEventListener(&apos;click&apos;, function () { lock(true); });
+  $(&apos;lv-p-again&apos;).addEventListener(&apos;click&apos;, reset);
+  LV.presenter.on({ reveal: function () { lock(true, true); } });
+})({&quot;kind&quot;:&quot;choice&quot;,&quot;heading&quot;:&quot;Nothing. So what was Facebook buying?&quot;,&quot;options&quot;:[{&quot;label&quot;:&quot;Nothing at all&quot;,&quot;feedback&quot;:&quot;Right. Instagram had never charged anyone for anything, and ran no advertising.&quot;},{&quot;label&quot;:&quot;About US$10 million a year&quot;,&quot;feedback&quot;:&quot;A reasonable guess for a popular app, but Instagram had no revenue at all.&quot;},{&quot;label&quot;:&quot;About US$100 million a year&quot;,&quot;feedback&quot;:&quot;That would put the price at ten times revenue, a common rule of thumb. The real answer makes the rule of thumb useless.&quot;},{&quot;label&quot;:&quot;About US$1 billion a year&quot;,&quot;feedback&quot;:&quot;That would make the deal look cheap. In fact Instagram earned nothing.&quot;}],&quot;answer&quot;:0});&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></details>
+  </div></div>
+</article>
+<article class="opt" id="opt-5" aria-labelledby="opt-5-h">
+  <div class="opt-head"><span class="num" aria-hidden="true">5</span><div style="flex:1;min-width:0">
+  <h3 id="opt-5-h"><span class="sr">Option 5. </span>What was each user worth?</h3>
+  <ul class="chips">
+    
+    <li class="chip pattern"><svg class="lv-icon" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="6" cy="4" r="2.1" fill="currentColor"/><circle cx="10.5" cy="12" r="2.1" fill="currentColor"/></svg> Explore the model</li>
+    <li class="chip">During class</li>
+    <li class="chip block">Needs sourcing and checking</li>
+    <li class="chip">medium effort</li>
+  </ul>
+  <dl>
+    <dt>The angle</dt><dd>A price divided by users at the time of sale, with sliders for both. Learners set Instagram and WhatsApp side by side and see that the price per user is closer than the headline prices suggest.</dd>
+    <dt>Afterwards</dt><dd>Compare acquisitions of different sizes on a like-for-like measure.</dd>
+    <dt>Works on</dt><dd>The belief that a bigger price means a better deal.</dd>
+    <dt>Why this format</dt><dd>Changing an input and watching the result makes a relationship felt, and a challenge turns the sandbox into a task.</dd>
+    <dt>What it needs</dt><dd>User counts at the time of each deal, from the announcements, each labelled as registered or monthly active users, since the two are not comparable.</dd>
+  </dl>
+  <label class="choose"><input type="checkbox" value="5"> Build option 5</label>
+  <p class="nopreview">No sketch yet. User counts at the time of each deal, from the announcements, each labelled as registered or monthly active users, since the two are not comparable.</p>
+  </div></div>
+</article>
+
+<h2>Considered and ruled out</h2>
+<ul class="ruled"><li><strong>Instagram&apos;s profit over time.</strong> The data does not exist. Meta reports two segments, Family of Apps and Reality Labs, not individual apps, so there is no profit figure to chart. Anything found online is a third-party model. Charting it as profit would present a guess as a disclosure.</li><li><strong>The acquisition as a process flow.</strong> The negotiation is not documented well enough to draw without inventing steps, and the interesting part is the judgement, not the sequence.</li><li><strong>Growth of every social platform since 2004.</strong> Too many series and too many definitions of a user, and it answers no question this lesson is asking.</li></ul>
+</main>
+<div class="bar" role="region" aria-label="Your choice"><div class="bar-in">
+  <output id="g-chosen" aria-live="polite"></output>
+  <button type="button" id="g-copy">Copy my reply</button>
+  <p id="g-live" class="sr" aria-live="polite"></p>
+</div></div>
+<script>(function galleryClient() {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.choose input'));
+  var out = document.getElementById('g-chosen');
+  var copy = document.getElementById('g-copy');
+  var live = document.getElementById('g-live');
+  function reply() {
+    var picked = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+    if (!picked.length) return '';
+    var list = picked.length === 1 ? picked[0] : picked.slice(0, -1).join(', ') + ' and ' + picked[picked.length - 1];
+    return 'Please build ' + list + '.';
+  }
+  function sync() {
+    var text = reply();
+    out.textContent = text || 'Tick the options you want built.';
+    copy.disabled = !text;
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', sync); });
+  copy.addEventListener('click', function () {
+    var text = reply();
+    var done = function () { live.textContent = 'Copied: ' + text; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { live.textContent = 'Could not copy. Select the text beside the button instead.'; });
+    } else {
+      live.textContent = 'Select the text beside the button to copy it.';
+    }
+  });
+  // Previews report their height, so each frame fits its activity.
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'lv:height') return;
+    var frames = document.querySelectorAll('iframe.frame');
+    for (var i = 0; i < frames.length; i += 1) {
+      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.min(Math.max(360, e.data.height + 8), 2400) + 'px';
+    }
+  });
+  sync();
+})();</script>
+</body>
+</html>

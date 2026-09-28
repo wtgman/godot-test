@@ -1,0 +1,37 @@
+{
+  "kind": "learning-object",
+  "pattern": "explore",
+  "engine": "orbit",
+  "title": "Why the outer planets move so slowly",
+  "lede": "Change the mass of the star and watch every orbit respond. The same law sets every planet's year.",
+  "intent": "Learners can state Kepler's third law in their own words and predict how an orbital period changes with distance and stellar mass.",
+  "goal": "predict how a planet's year changes with its distance from the star and the star's mass.",
+  "placement": "during",
+  "parameters": [
+    { "key": "mass", "label": "Mass of the star", "min": 0.2, "max": 3, "value": 1, "step": 0.05, "unit": "solar masses", "decimals": 2 }
+  ],
+  "bodies": [
+    { "label": "Mercury", "distance": 0.39, "radius": 5 },
+    { "label": "Venus", "distance": 0.72, "radius": 7 },
+    { "label": "Earth", "distance": 1, "radius": 7 },
+    { "label": "Mars", "distance": 1.52, "radius": 6 },
+    { "label": "Jupiter", "distance": 5.2, "radius": 12 }
+  ],
+  "challenges": [
+    {
+      "prompt": "Make Earth's year last two years.",
+      "key": "period_Earth", "target": 2, "tolerance": 0.05,
+      "hint": "Less mass means a weaker pull and a slower orbit. How much less?",
+      "success": "A quarter of the Sun's mass. Halving the pull does not halve the speed: the period goes as one over the square root of the mass, so a quarter of the mass doubles the year."
+    },
+    {
+      "prompt": "Now get Jupiter round the star in under seven years.",
+      "key": "period_Jupiter", "max": 7,
+      "hint": "Jupiter is a long way out. It needs a much heavier star.",
+      "success": "It takes nearly three Suns. Jupiter is so far out that even tripling the star's mass only brings its year down from about 12 years to about 7."
+    }
+  ],
+  "sources": [
+    { "label": "NASA planetary fact sheet, orbital distances in astronomical units", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", "kind": "general", "status": "to-check" }
+  ]
+}

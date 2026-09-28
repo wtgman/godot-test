@@ -1,0 +1,96 @@
+# A conversation in the corridor
+
+> **Status: draft.** 1 source still to check.
+
+## 1. Does it do what it is for?
+
+**Intent.** Learners can respond to a grieving family member in a way that keeps the conversation open, without arguing, over-promising or stepping outside their role.
+
+**Activity.** Scenario: the learner makes decisions in a realistic situation and sees the consequences.
+
+- [ ] Doing this activity would move a learner towards the intent.
+- [ ] The language suits the learners who will see it.
+- [ ] Nothing in it would surprise or upset a learner without warning.
+
+## 2. Sources
+
+Open each source and confirm it says what the activity says. Then change its status to `verified` in the spec.
+
+| Check | Source | Where it came from | Status | Note |
+| --- | --- | --- | --- | --- |
+| [ ] | Scenario written for this activity | Written for this activity. Check it for realism, not accuracy. | **To check** | Check with a practitioner that the dialogue, the setting and the escalation advice match your placement sites' expectations. |
+
+### Written for this activity
+
+These parts were written, not quoted. Ask someone who does this work whether they ring true.
+
+- [ ] Scenario written for this activity
+
+## 3. Answers
+
+Confirm each answer, and that the reason given is the one you would give.
+
+| Check | Prompt | Answer | Reason |
+| --- | --- | --- | --- |
+| [ ] | start: "It sounds like the results came as a real shock. What did the doctor tell you?" | Strong | You neither agree that there is a mistake nor argue that there is not. You name the feeling and ask what she understands, which tells you where she is. |
+| [ ] | start: "I'm sorry, but the results are right. You need to accept this." | Unhelpful | Correct on the facts, but it tells her what she is allowed to feel. Denial often protects someone while the news sinks in, and pushing against it usually makes them hold on harder. |
+| [ ] | start: "I'm sure it's a mistake. I'll ask them to redo it." | Unhelpful | Kind in the moment, but it is a promise you cannot keep, it steps outside your role as a student, and it strengthens a belief that will hurt more later. |
+| [ ] | pushback: "I can hear how frustrated you are. You've been left without answers." | Strong | Naming the anger lets it be said, which usually lowers it. You have not taken it personally, and you have not defended anyone. |
+| [ ] | pushback: "That's not fair. The staff here work really hard." | Unhelpful | Defending the team is a natural reflex, but it turns her anger into an argument. Anger aimed at the person in the room is rarely about that person. |
+| [ ] | pushback: "Let me get the nurse in charge for you." | Workable | Bringing in the right person is a fair step. Done straight away, before acknowledging anything, it can feel like being handed off. |
+| [ ] | overpromise: "I'm sorry. I shouldn't have said that. I wanted to help and I got it wrong." | Strong | A plain apology, with no excuses, repairs more than an explanation would. It also shows her you can be trusted to tell her the truth. |
+| [ ] | overpromise: "I must have misunderstood what you were asking." | Unhelpful | It moves the mistake onto her. She will notice, and it makes the next conversation harder for whoever has it. |
+| [ ] | opens: "What do you think he needs to hear from you?" | Strong | It hands the question back to her, where the answer is. She knows her father. Your job is to help her find the words, not to supply them. |
+| [ ] | opens: "Tell him not to think like that. It's not his fault." | Workable | Reassuring and well meant, but it can close the conversation he is trying to have. "If only" is how many people work through what is happening to them. |
+| [ ] | opens: "The doctors did say smoking was the likely cause." | Unhelpful | True, and it confirms his guilt at the moment he is most exposed to it. Accuracy is not what is needed here. |
+
+## 4. Accessibility
+
+Automated checks passed: colour contrast meets WCAG 2.2 AA, nothing is carried by colour alone, and every part of the figure appears in the text version. Every control works from the keyboard, and the page respects reduced motion.
+
+- [ ] Try the activity with the keyboard only: Tab, arrow keys, Enter and Space.
+- [ ] Read the text version. It should stand on its own for someone who cannot use the activity.
+
+### Text version
+
+```
+A conversation in the corridor
+==============================
+
+What this shows: A branching scenario with 8 moments and 11 possible choices.
+How it is arranged: Starts at "start". Different choices lead to different moments. It ends with a summary of every decision made.
+
+Contents:
+  - Setting: You are a student on placement in a residential aged care home. Frank, 84, was told this week that his cancer has spread. His daughter Leanne visits every afternoon. Today she stops you in the corridor outside his room.
+  - Leanne (start): There's been a mix-up with Dad's results. He looks better than he has in months. Can you get the doctor to redo the scan?
+  - Choice ""It sounds like the results came as a real shock. What did the doctor tell you?"": Strong. You neither agree that there is a mistake nor argue that there is not. You name the feeling and ask what she understands, which tells you where she is. Leads to opens.
+  - Choice ""I'm sorry, but the results are right. You need to accept this."": Unhelpful. Correct on the facts, but it tells her what she is allowed to feel. Denial often protects someone while the news sinks in, and pushing against it usually makes them hold on harder. Leads to pushback.
+  - Choice ""I'm sure it's a mistake. I'll ask them to redo it."": Unhelpful. Kind in the moment, but it is a promise you cannot keep, it steps outside your role as a student, and it strengthens a belief that will hurt more later. Leads to overpromise.
+  - Leanne (pushback): Don't tell me what I need to do. Nobody here has told us anything straight for weeks.
+  - Choice ""I can hear how frustrated you are. You've been left without answers."": Strong. Naming the anger lets it be said, which usually lowers it. You have not taken it personally, and you have not defended anyone. Leads to opens.
+  - Choice ""That's not fair. The staff here work really hard."": Unhelpful. Defending the team is a natural reflex, but it turns her anger into an argument. Anger aimed at the person in the room is rarely about that person. Leads to closed.
+  - Choice ""Let me get the nurse in charge for you."": Workable. Bringing in the right person is a fair step. Done straight away, before acknowledging anything, it can feel like being handed off. Leads to handover.
+  - Leanne (overpromise): Later that afternoon Leanne finds you again. "The nurse said nobody is redoing the scan. Why did you tell me they would?".
+  - Choice ""I'm sorry. I shouldn't have said that. I wanted to help and I got it wrong."": Strong. A plain apology, with no excuses, repairs more than an explanation would. It also shows her you can be trusted to tell her the truth. Leads to opens.
+  - Choice ""I must have misunderstood what you were asking."": Unhelpful. It moves the mistake onto her. She will notice, and it makes the next conversation harder for whoever has it. Leads to closed.
+  - Leanne (opens): She is quieter now. "He keeps saying that if he'd stopped smoking earlier none of this would have happened. I don't know what to say to him.".
+  - Choice ""What do you think he needs to hear from you?"": Strong. It hands the question back to her, where the answer is. She knows her father. Your job is to help her find the words, not to supply them. Leads to good.
+  - Choice ""Tell him not to think like that. It's not his fault."": Workable. Reassuring and well meant, but it can close the conversation he is trying to have. "If only" is how many people work through what is happening to them. Leads to fine.
+  - Choice ""The doctors did say smoking was the likely cause."": Unhelpful. True, and it confirms his guilt at the moment he is most exposed to it. Accuracy is not what is needed here. Leads to closed.
+  - Leanne (good): Leanne is quiet for a moment. "That he did alright. That he was a good dad." She thanks you and goes back into his room.
+  - Outcome of good: You did not fix anything, and you were not meant to. You kept the conversation open at each point, and she left with something she can do. Before your shift ends, tell your supervisor about the conversation, so the team knows where the family is.
+  - Leanne (fine): Leanne nods. "Yeah. I'll tell him." She goes back into his room.
+  - Outcome of fine: A kind conversation that stayed open. The chance you missed was to let her find her own words for her father. Tell your supervisor about the conversation before your shift ends.
+  - Leanne (handover): The nurse in charge takes Leanne into the family room and closes the door.
+  - Outcome of handover: Getting the right person involved is never wrong. Next time, try acknowledging what she is feeling first, so the handover does not feel like a brush-off.
+  - Leanne (closed): Leanne turns away. "Forget it." She walks back to her father's room.
+  - Outcome of closed: The conversation closed. That happens, even to experienced staff, and it is recoverable. Let your supervisor know what was said so someone can follow up with the family today.
+```
+
+## Releasing it
+
+1. Tick every box above.
+2. In the spec, set each source's `status` to `verified`, and set `"status": "release"`.
+3. Build again with `--release`. The build refuses anything still marked as a draft, and the draft banner disappears.
+
+Reviewed by: ______________________  Date: ____________

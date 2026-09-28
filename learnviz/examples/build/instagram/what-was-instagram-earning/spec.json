@@ -1,0 +1,46 @@
+{
+  "kind": "learning-object",
+  "pattern": "predict",
+  "title": "What was Instagram earning?",
+  "lede": "Facebook agreed to pay about US$1 billion for Instagram in April 2012. Before you look it up, decide how much revenue you think Instagram was making.",
+  "intent": "Learners can explain what an acquirer is buying when it pays for a company with no revenue.",
+  "goal": "explain what a buyer is paying for when a company has no revenue at all.",
+  "placement": "before",
+  "question": "When Facebook agreed to pay about US$1 billion for Instagram, how much revenue was Instagram making?",
+  "response": {
+    "kind": "choice",
+    "options": [
+      { "label": "Nothing at all", "feedback": "Right. Instagram had never charged anyone for anything, and ran no advertising." },
+      { "label": "About US$10 million a year", "feedback": "A reasonable guess for a popular app, but Instagram had no revenue at all." },
+      { "label": "About US$100 million a year", "feedback": "That would put the price at ten times revenue, a common rule of thumb. The real answer makes the rule of thumb useless." },
+      { "label": "About US$1 billion a year", "feedback": "That would make the deal look cheap. In fact Instagram earned nothing." }
+    ],
+    "answer": 0
+  },
+  "reveal": {
+    "heading": "Nothing. So what was Facebook buying?",
+    "explanation": "Instagram had no revenue, no advertising and thirteen staff. What Facebook paid for was about 30 million users, a team that had built something people used every day, and the certainty that a competitor would not own it.",
+    "points": [
+      "When a company has no revenue, its price is a bet about the future, not a calculation about the present.",
+      "Buying a company partly to stop a rival buying it is a strategy with a name: a defensive acquisition."
+    ],
+    "figure": {
+      "type": "stat",
+      "stats": [
+        { "value": "US$1bn", "label": "Announced price, April 2012", "detail": "Cash and Facebook shares." },
+        { "value": "13", "label": "Employees at the time of sale" },
+        { "value": "$0", "label": "Revenue at the time of sale", "detail": "No advertising, no subscriptions." },
+        { "value": "30m", "label": "Registered users at the time", "detail": "Registered accounts, not monthly active users." }
+      ]
+    }
+  },
+  "teach": {
+    "watchFor": "The \"$0\" landing as a joke. Stay with it: ask the room to list what, apart from revenue, could be worth a billion dollars.",
+    "ask": ["What else, apart from revenue, could be worth paying for?"]
+  },
+  "sources": [
+    { "label": "NPR, Instagram sells for $1 billion despite no revenue (2012)", "url": "https://www.npr.org/2012/04/10/150372288/instagram-sells-for-1-billion-despite-no-revenue", "kind": "research", "status": "to-check" },
+    { "label": "CNN Money, 13 employees and no revenue (2012)", "url": "https://money.cnn.com/2012/04/10/technology/startups/instagram-facebook/index.htm", "kind": "research", "status": "to-check" },
+    { "label": "TechCrunch, Instagram passes 30 million users (2012)", "url": "https://techcrunch.com/2012/04/03/instagram-android-demum/", "note": "The count is of registered accounts. Medium confidence.", "kind": "research", "status": "to-check" }
+  ]
+}

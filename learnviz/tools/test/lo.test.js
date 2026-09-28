@@ -261,4 +261,10 @@ describe('the bundle', () => {
     assert.match(html, /Draft:/);
     assert.match(html, /After class/);
   });
+
+  test('the dashboard links proposal galleries when there are any', () => {
+    const html = dashboard([{ group: 'grief', slug, b, files }], { proposals: [{ file: 'grief.gallery.html', topic: 'Grief & loss' }] });
+    assert.match(html, /<a href="grief\.gallery\.html">Grief &amp; loss<\/a>/);
+    assert.ok(!dashboard([{ group: 'grief', slug, b, files }]).includes('Proposals'));
+  });
 });

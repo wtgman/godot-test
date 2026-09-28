@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review sheet: Building a twelve week schedule</title>
+<style>
+:root { color-scheme: light; }
+body { margin: 0; background: #ffffff; color: #000054; font: 16px/1.55 Helvetica, Arial, sans-serif; }
+main { max-width: 780px; margin: 0 auto; padding: 28px 16px 48px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; }
+h2 { font-size: 20px; margin: 30px 0 8px; padding-top: 14px; border-top: 1px solid #d9d9e6; }
+h3 { font-size: 16.5px; margin: 20px 0 6px; }
+p, ul, ol { margin: 0 0 12px; }
+li { margin: 3px 0; }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; background: #f5f5fa; padding: 1px 5px; border-radius: 4px; }
+pre { white-space: pre-wrap; background: #f5f5fa; padding: 14px; border-radius: 8px; font-size: 14px; }
+.note { border-left: 4px solid #fac800; background: #fffbe6; padding: 10px 14px; border-radius: 0 8px 8px 0; }
+.check { list-style: none; padding-left: 0; }
+.check li { display: flex; gap: 10px; align-items: flex-start; }
+.check li::before { content: ""; flex: 0 0 18px; height: 18px; margin-top: 3px; border: 2px solid #000054; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 0 0 14px; }
+th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid #d9d9e6; }
+th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+a { color: #1a56c4; }
+.kicker { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #00706b; margin: 0 0 8px; }
+@media print { body { font-size: 12pt; } h2 { break-after: avoid; } main { padding: 0; } a { color: inherit; } }
+</style>
+</head>
+<body><main>
+<p class="kicker">Review sheet</p><h1>Building a twelve week schedule</h1>
+<p class="note"><strong>Status: draft.</strong> 1 source still to check.</p>
+<h2>1. Does it do what it is for?</h2>
+<p><strong>Intent.</strong> Learners can read a schedule for parallel work and identify which tasks sit on the critical path.</p>
+<p><strong>Activity.</strong> Step by step: the learner advances through a diagram that builds one piece at a time.</p>
+<ul class="check"><li><span>Doing this activity would move a learner towards the intent.</span></li><li><span>The language suits the learners who will see it.</span></li><li><span>Nothing in it would surprise or upset a learner without warning.</span></li></ul>
+<h2>2. Sources</h2>
+<p>Open each source and confirm it says what the activity says. Then change its status to <code>verified</code> in the spec.</p>
+<table><thead><tr><th scope="col">Check</th><th scope="col">Source</th><th scope="col">Where it came from</th><th scope="col">Status</th><th scope="col">Note</th></tr></thead><tbody><tr><td>[ ]</td><td>Schedule written for this activity</td><td>Written for this activity. Check it for realism, not accuracy.</td><td><strong>To check</strong></td><td></td></tr></tbody></table>
+<h3>Written for this activity</h3>
+<p>These parts were written, not quoted. Ask someone who does this work whether they ring true.</p>
+<ul class="check"><li><span>Schedule written for this activity</span></li></ul>
+<h2>3. Accessibility</h2>
+<p>Automated checks passed: colour contrast meets WCAG 2.2 AA, nothing is carried by colour alone, and every part of the figure appears in the text version. Every control works from the keyboard, and the page respects reduced motion.</p>
+<ul class="check"><li><span>Try the activity with the keyboard only: Tab, arrow keys, Enter and Space.</span></li><li><span>Read the text version. It should stand on its own for someone who cannot use the activity.</span></li></ul>
+<h3>Text version</h3>
+<pre>Building a twelve week schedule
+===============================
+
+What this shows: A step-by-step walkthrough of a diagram, in 9 steps.
+How it is arranged: The parts appear in this order: Council permit, Soil testing, Recruit volunteers, Volunteer induction, Clear the ground, Build raised beds, Install irrigation, Lay paths, Planting day.
+
+Contents:
+  - Before the first step: The deadlines are already on the chart: site work cannot start before week 6, and handover is at week 12. Watch what has to fit between them.
+  - Step 1: The council permit takes six weeks, and nothing on site can start without it. This is the critical path. Everything else is arranged around it.
+  - Step 2: Soil testing runs inside the permit window. It does not hold anything up, so it has slack.
+  - Step 3: Volunteer recruitment also runs in parallel, finishing exactly as the permit arrives.
+  - Step 4: Induction cannot start until recruitment closes, and must finish before anyone is on site.
+  - Step 5: Site clearing starts the day the permit lands. Any delay to the permit pushes this, and everything after it.
+  - Step 6: The raised beds follow the clearing.
+  - Step 7: Irrigation overlaps the bed build on purpose: the plumber is only available in week 9.
+  - Step 8: Paths go down while the beds are finished.
+  - Step 9: Planting day lands in week 11, one week before handover. Ask the room: which single task, if it slipped by a week, would push the handover?</pre>
+<h2>Releasing it</h2>
+<ol><li>Tick every box above.</li><li>In the spec, set each source&apos;s <code>status</code> to <code>verified</code>, and set <code>&quot;status&quot;: &quot;release&quot;</code>.</li><li>Build again with <code>--release</code>. The build refuses anything still marked as a draft, and the draft banner disappears.</li></ol>
+<p>Reviewed by: ______________________  Date: ____________</p>
+</main></body>
+</html>

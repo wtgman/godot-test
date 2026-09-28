@@ -1,25 +1,249 @@
 # Spec reference
 
-Every visual is built from one JSON object. This is every field of every type.
+Everything is built from JSON. There are three kinds of spec:
 
-Run `node bin/learnviz.js validate my-spec.json` to check one. The validator's
-messages are written to be acted on, so read them rather than guessing.
+- a **learning object** (`"kind": "learning-object"`), an activity built from one of eight patterns
+- a **proposal** (`"kind": "proposal"`), the menu that comes before building
+- a **figure** (no `kind`, a `type` instead), a static diagram or chart, used on its own or inside a learning object
+
+Check any of them with `node bin/learnviz.js validate spec.json`. The messages
+name the field and say what to do, so read them rather than guessing. Every
+example under `examples/` validates and builds, and is the quickest way to see a
+field in use.
 
 ---
 
-## Fields every spec has
+# Part 1: Learning objects
+
+## Fields every learning object has
 
 | Field | Required | Notes |
 |---|---|---|
-| `type` | yes | One of the twelve below |
-| `title` | yes | Up to 120 characters. Becomes the heading and the basis of the alt text |
-| `intent` | yes | What the learner can do afterwards. The build refuses to run without it |
+| `kind` | yes | `"learning-object"` |
+| `pattern` | yes | `predict`, `stepthrough`, `sort`, `order`, `scenario`, `estimate`, `explore` or `cards` |
+| `title` | yes | Up to 120 characters. The heading on the page |
+| `intent` | yes | Up to 300. What the learner can do afterwards, for the teacher: "Learners can..." |
+| `goal` | no | Up to 300. The learner-facing version, shown as "After this, you can ...". Write it without "they" or "their". Without it, the page uses the intent |
+| `lede` | no | Up to 400. The paragraph under the heading that sets the task up |
+| `placement` | no | `before`, `during`, `after` or `any`. Where it goes in the week. Defaults to the pattern's usual place |
+| `passMark` | no | A proportion, 0 to 1, for scored patterns. `0.7` means 70 per cent. Goes into the SCORM manifest and turns completion into passed or failed |
+| `status` | no | `draft` or `release`. A draft always carries the draft banner |
+| `sketch` | no | `true` when any content is placeholder. Makes it a draft |
+| `teach` | no | Notes for the teacher guide. See below |
+| `sources` | no | Up to 16. Where every fact came from. See below |
+
+A learning object is a draft, with a banner on the page, if it is a sketch, if
+its status is `draft`, or if any source is still `to-check`. `build --release`
+refuses drafts.
+
+### teach
+
+All optional. Anything missing falls back to the pattern's own advice.
+
+| Field | Notes |
+|---|---|
+| `before`, `during`, `after` | Up to 600 each. How to use it at that point in the week |
+| `watchFor` | Up to 600. What to listen for in the room |
+| `ask` | 1 to 5 questions to put to the room, up to 240 each |
+| `say` | 1 to 30 lines of script, up to 400 each. The step-through pattern writes one from its steps if this is empty |
+
+### sources
+
+| Field | Required | Notes |
+|---|---|---|
+| `label` | yes | Up to 240. Author, title, publisher and year, exactly as the source gives them |
+| `kind` | yes | `supplied` (the course material), `research` (found for this), `teacher`, `constructed` (written for the activity) or `general` (standard knowledge in the field) |
+| `status` | yes | `to-check` or `verified`. Only a person who has opened the source sets `verified` |
+| `url` | no | Must start with `http://` or `https://` |
+| `note` | no | Up to 400. What to check, and any doubt about it |
+
+See `sources-and-review.md` for how these are used.
+
+---
+
+## predict
+
+| Field | Required | Notes |
+|---|---|---|
+| `question` | yes | Up to 300 |
+| `response.kind` | yes | `choice`, `number` or `order` |
+| `reveal.explanation` | yes | Up to 900. The teaching. Shown after the learner commits |
+| `reveal.heading` | no | Up to 140 |
+| `reveal.points` | no | 1 to 6, up to 240 each |
+| `reveal.figure` | no | A figure spec, shown in the reveal |
+
+For `"kind": "choice"`: `options` (2 to 6, each `{ "label", "feedback" }`) and
+`answer`, the index of the right option, or `null` when there is no single right
+answer. For `"kind": "number"`: `min`, `max`, `answer`, and optionally `step`,
+`tolerance`, `decimals`, `unit` and `prefix`. The answer may sit outside the
+slider on purpose. For `"kind": "order"`: `items` (3 to 7) and `fixedOrder`,
+required: `true` when the items are listed in the right order, `false` when
+there is no right order.
+
+```json
+{
+  "kind": "learning-object", "pattern": "predict",
+  "title": "What was Instagram earning?",
+  "intent": "Learners can explain what Facebook was paying for when it bought Instagram.",
+  "question": "About how much revenue was Instagram making a year when Facebook agreed to buy it?",
+  "response": { "kind": "choice", "answer": 0, "options": [
+    { "label": "Nothing", "feedback": "Right. It had no revenue at all." },
+    { "label": "About US$10 million a year", "feedback": "A reasonable guess for a popular app, but it had no revenue." }
+  ] },
+  "reveal": { "heading": "No revenue at all", "explanation": "Facebook was paying for users and growth, not income." }
+}
+```
+
+## estimate
+
+| Field | Required | Notes |
+|---|---|---|
+| `question` | yes | Up to 300 |
+| `unit` | yes | Up to 40, in words: "billion US dollars, announced". Screen readers hear it |
+| `prefix`, `suffix` | no | Short symbols around each value, such as `US$` and `bn` |
+| `decimals` | no | Fixed decimals. Otherwise up to 2 below ten and 1 above, without trailing zeros |
+| `max` | no | The scale's top. Rounded up to a clean gridline either way |
+| `bars` | yes | 2 to 8, each `{ "label", "value", "hidden", "note" }`. At least one hidden and one visible. Values are zero or more |
+| `reveal.explanation` | yes | Up to 900, with optional `heading` and `points` as for predict |
+
+## stepthrough
+
+| Field | Required | Notes |
+|---|---|---|
+| `figure` | yes | A figure spec. Its parts appear one at a time |
+| `steps` | yes | 1 to 30, each `{ "say" }`, up to 600 |
+| `steps[].show` | no | How many parts are visible after this step. Give it on every step or none. It only goes up, and the last step shows every part |
+| `intro` | no | Up to 500. A step before the first part appears |
+
+Without `show`, write one step per part. The parts are the figure's events,
+steps, stages, tasks, items, rows, bars or series, in drawing order. The
+validator names them if the count is wrong.
+
+## sort
+
+| Field | Required | Notes |
+|---|---|---|
+| `prompt` | yes | Up to 300 |
+| `categories` | yes | 2 to 6, each `{ "key", "label", "hint" }`. The hint, up to 220, is shown as a legend and used for the first-miss nudge |
+| `items` | yes | 3 to 16, each `{ "text", "category", "why" }`. `category` is a key. `why`, up to 420, is the teaching |
+
+## order
+
+| Field | Required | Notes |
+|---|---|---|
+| `prompt` | yes | Up to 300 |
+| `mode` | no | `order` (the default) or `timing` |
+| `items` | yes | 3 to 12, each `{ "label", "why" }`, listed in the right order |
+| `timeUnit` | timing | Up to 40, such as "minutes from the start" |
+| `items[].at` | timing | The model time |
+| `items[].duration` | no | When every item has one, timing mode draws bars and the figure is a gantt |
+| `items[].tolerance` | no | How close counts. Defaults to 5 per cent of the latest time, at least 1 |
+| `deadline` | no | Timing only. `{ "at", "label" }`, such as `{ "at": 105, "label": "Dinner is served" }`, drawn as a line |
+
+## scenario
+
+| Field | Required | Notes |
+|---|---|---|
+| `setting` | yes | Up to 700. The situation, in the second person |
+| `character` | no | `{ "name", "role" }`, the person the learner speaks with |
+| `start` | yes | The id of the first node |
+| `nodes` | yes | 2 to 16 |
+| `nodes[].id`, `.say` | yes | `say` up to 600 is what happens or is said |
+| `nodes[].speaker` | no | Defaults to the character |
+| `nodes[].choices` | or `outcome` | 2 to 4, each `{ "label", "quality", "feedback", "next" }`. `quality` is `best`, `ok` or `poor`. Without `next`, the choice ends the scenario |
+| `nodes[].outcome` | or `choices` | Up to 700. Makes the node an ending |
+
+The validator checks that every node can be reached, every path can finish,
+every `next` exists and every decision has a `best` choice.
+
+## explore
+
+| Field | Required | Notes |
+|---|---|---|
+| `engine` | yes | `formula`, `orbit` or `growth` |
+| `parameters` | yes | 1 to 6 sliders, each `{ "key", "label", "min", "max", "value" }`, with optional `step`, `decimals`, `unit`, `prefix`. Keys are plain names: letters, digits, underscores |
+| `outputs` | formula | 1 to 6, each `{ "key", "label", "expr" }`, with optional `explain`, `unit`, `prefix`, `decimals` |
+| `plot` | no | Formula only. `{ "x": parameter key, "y": output key }` |
+| `bodies` | orbit | 1 to 6, each `{ "label", "distance" }` in astronomical units, optional `radius` in pixels. Needs a `mass` parameter in solar masses |
+| `challenges` | no | Up to 6, met in order |
+
+The **orbit** engine uses Kepler's third law in solar units: period in years is
+the square root of distance cubed over mass. Earth at 1 AU and one solar mass
+takes one year, Jupiter at 5.2 AU about 11.86. Orbits are drawn on a
+square-root scale so inner planets stay visible, and the picture says so.
+The **growth** engine needs parameters `initial`, `rate` (per cent per period)
+and `periods`, and provides outputs `final` and `doubling`.
+
+**Formulas** may use `+ - * / ^`, brackets, `pi`, `e`, and `sqrt abs min max
+floor ceil exp pow ln log sin cos tan round`. They may refer to parameters and
+to other outputs, in any order, but not in a loop. They are parsed and
+evaluated directly, never with `eval`.
+
+**Challenges.** Each is `{ "prompt", "key", "success" }` plus either `target`
+(with `tolerance`, default 1 per cent of the target) or `min` and/or `max`, and
+an optional `hint`. `key` is any parameter or output, or for the orbit engine
+`period_<Label>`, such as `period_Earth`. `given` lists slider settings the
+challenge depends on, such as `{ "cost": 11, "target": 30 }`, each met to within
+half a step. The validator tries every combination of slider positions, when
+there are fewer than 250,000, and refuses a challenge nobody can meet.
+
+## cards
+
+| Field | Required | Notes |
+|---|---|---|
+| `cards` | yes | 3 to 30, each `{ "front", "back" }`, up to 240 and 600 |
+| `prompt` | no | Up to 240 |
+| `frontLabel`, `backLabel` | no | Up to 40. Default "Recall" and "Answer" |
+
+---
+
+# Part 2: Proposals
+
+| Field | Required | Notes |
+|---|---|---|
+| `kind` | yes | `"proposal"` |
+| `topic` | yes | Up to 160 |
+| `sourceSummary` | yes | Up to 900. What the content is and where it came from |
+| `audience` | no | Up to 200 |
+| `analysis.keyIdeas` | yes | 1 to 6, up to 240 each |
+| `analysis.threshold` | no | Up to 400. The idea that unlocks the rest |
+| `analysis.knowledge`, `analysis.skill` | no | Up to 300. What learners need to know, and to be able to do |
+| `analysis.misconceptions` | no | Up to 5, each `{ "belief", "reality" }` |
+| `questions` | no | Up to 6, each `{ "ask", "why", "options" }`, options 2 to 5 |
+| `candidates` | yes | 2 to 8. See below |
+| `rejected` | no | Up to 8, each `{ "name", "because" }` |
+
+Each candidate:
+
+| Field | Required | Notes |
+|---|---|---|
+| `name` | yes | Up to 120 |
+| `pattern` | yes | One of the eight |
+| `placement` | yes | `before`, `during`, `after` or `any` |
+| `angle` | yes | Up to 500. What the learner does, and what makes it work |
+| `payoff` | yes | Up to 300. What the learner can do afterwards |
+| `addresses` | no | Up to 240. Which key idea or misconception it works on |
+| `effort` | yes | `low`, `medium` or `high` |
+| `recommended` | no | One to three candidates in the proposal |
+| `data.status` | yes | `none-needed`, `in-source`, `needs-teacher`, `needs-research` or `unavailable` |
+| `data.needs` | when blocking | What exactly is missing |
+| `sketch` or `sketchFile` | no | A learning-object spec of the same pattern, inline or as a path relative to the proposal. Must build as a draft |
+
+---
+
+# Part 3: Figures
+
+## Fields every figure has
+
+| Field | Required | Notes |
+|---|---|---|
+| `type` | yes | One of the ten below |
+| `title` | yes | Up to 120 characters. Becomes the heading and the basis of the alt text. Inside a learning object it defaults to the activity's title |
+| `intent` | yes | What the learner can do afterwards. Inside a learning object it defaults to the activity's intent |
 | `subtitle` | no | One line under the title. Use it to say what to look for |
 | `caption` | no | Sits under the visual. Use it for a caveat or a reading instruction |
 | `source` | no | Where the content came from. Reproduce citations exactly, never invent one |
 
-`intent` is not decoration. It is the only test of whether the visual earns its
-place, and it is printed on every interactive.
 
 ---
 
@@ -54,7 +278,7 @@ order rather than rate.
 ## process
 
 Ordered steps with a first and a last. Up to five steps renders as a left to
-right row; more stacks vertically, because narrower boxes cannot hold a real
+right row. More stacks vertically, because narrower boxes cannot hold a real
 label.
 
 | Field | Required | Notes |
@@ -198,7 +422,7 @@ rounds nothing, so it cannot quietly turn 47.6 into "nearly 50" or invent a
 percentage the source never gave.
 
 `label` is required for a reason. A number without its unit and its population
-is not a fact, it is decoration. "13" means nothing; "13 employees at the time
+is not a fact, it is decoration. "13" means nothing. "13 employees at the time
 of sale" means something.
 
 Tiles lay out in one row up to three, then a grid. The figure is auto-sized to
@@ -262,67 +486,22 @@ proportion readable at a glance.
 
 ---
 
-## sequencer (interactive)
-
-Predict, check, explain. The learner is asked when each item should happen,
-commits to an answer, and only then sees the model timing and the reasoning.
-
-| Field | Required | Notes |
-|---|---|---|
-| `timeUnit` | yes | |
-| `prompt` | yes | The question. State the total time available |
-| `items` | yes | 3 to 14 |
-| `items[].label` | yes | |
-| `items[].at` | yes | The model timing |
-| `items[].because` | yes | Why. Shown after checking. **This is the whole activity** |
-| `items[].tolerance` | no | How close counts. Defaults to about 5 percent of the span |
-
-`because` is required for a reason. Without it the activity marks answers and
-teaches nothing.
-
-Use this over `gantt` whenever getting the timing right is an assessable skill
-rather than a fact to know.
-
----
-
-## simulation (interactive)
-
-A model the learner can push on. Two engines ship.
-
-| Field | Required | Notes |
-|---|---|---|
-| `model` | yes | `"orbit"` or `"growth"` |
-| `parameters` | yes | 1 to 6 sliders |
-| `parameters[].key` | yes | Identifier the engine reads. `orbit` reads `mass`; `growth` reads `initial`, `rate` and `periods` |
-| `parameters[].label` | yes | Shown by the slider |
-| `parameters[].min`, `.max`, `.value` | yes | `value` must sit within the range |
-| `parameters[].unit` | no | Singularised automatically at a value of one |
-| `bodies` | orbit only | 1 to 6 |
-| `bodies[].label` | yes | |
-| `bodies[].distance` | yes | Astronomical units |
-| `bodies[].radius` | yes | Drawn size in pixels, not to scale |
-
-### orbit
-
-Periods come from Kepler's third law in solar units: period in years equals the
-square root of distance in AU cubed, divided by mass in solar masses. Earth at
-1 AU around 1 solar mass gives exactly 1 year, and Jupiter at 5.2 AU gives 11.86,
-which is the real figure. The physics is checked by the test suite.
-
-Orbit *spacing on screen* uses a square-root scale, because drawn linearly with
-Jupiter at the edge, Mercury lands inside the star. The diagram says so on its
-face and the text equivalent repeats it. The distances in the table are real.
-
-### growth
-
-Compounding: value equals initial times one plus rate, raised to the number of
-periods. The readout marks the doubling point.
-
----
-
 ## Things the validator will not let you do
 
 These are all pedagogical limits, not technical ones.
+
+For learning objects:
+
+- A sort item whose category is not a category key, or fewer than 3 items
+- A predict order that does not say whether a right order exists
+- A scenario node that cannot be reached, a path that cannot finish, or a decision with no strong choice
+- An explore challenge that no slider setting can meet, or a formula that loops or divides by zero at the start
+- A step-through whose last step does not show the whole figure
+- An estimate with nothing hidden, or nothing visible to guess against
+- A proposal with no analysis, no recommendation, more than three, or a sketch that would build as finished
+
+For figures:
+
 
 - More than 14 timeline events, 10 process steps, 8 cycle stages, 20 gantt tasks, 30 hierarchy nodes
 - A hierarchy more than four levels deep
@@ -332,6 +511,6 @@ These are all pedagogical limits, not technical ones.
 - A stat tile with no label, or waffle parts that add to more than the whole
 - A fractional waffle count, because a square cannot be split
 - A pin coordinate outside 0 to 100
-- Any spec with no `intent`
+- Any figure with no `intent`
 
 If you are hitting a cap, the answer is two visuals, not a bigger one.

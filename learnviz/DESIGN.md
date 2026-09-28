@@ -94,7 +94,7 @@ each is in `references/learning-design.md`.
 | `sort` | classifies real examples into categories, with feedback on each | Contrasting cases train discrimination, which is what recognition on the job actually is | categories are easy to define and hard to tell apart |
 | `order` | puts steps in order, or times them, then checks | Retrieval of a procedure, and the errors expose the dependencies | a procedure, a sequence, a schedule |
 | `scenario` | makes decisions in a realistic situation and sees what happens | Practice of judgement in context, where failing is free | workplace communication, ethics, customer or client work |
-| `estimate` | guesses values on a chart before they are revealed | Confronting intuition about scale; the gap between guess and truth is memorable | numbers, comparisons, proportions |
+| `estimate` | guesses values on a chart before they are revealed | Confronting intuition about scale. The gap between guess and truth is memorable | numbers, comparisons, proportions |
 | `explore` | changes inputs to a model and meets challenges | An explorable explanation: cause and effect felt rather than read | formulas, systems, anything with an "if this, then that" |
 | `cards` | recalls, flips, rates themselves, repeats what they missed | Retrieval practice, spaced within the session | terms, rules, facts that must become automatic |
 
@@ -116,12 +116,14 @@ A learning object is written once and built into everything each person needs.
 |---|---|---|
 | `index.html` | student | The full interactive. One file, loads nothing from anywhere. |
 | `index.html#present` | teacher | The same file in presenter mode: full screen, big type, arrow keys. |
-| `*.scorm.zip` | designer | The interactive as a SCORM 1.2 package. Upload through Canvas's SCORM tool as a graded or ungraded assignment. **No hosting needed.** Reports completion and score. |
-| `canvas-native.html` | designer | A no-script version built from Emble accordions, to paste straight into a page. The prediction is in the summary, the answer is inside. Works in every Canvas, today. |
-| `canvas-iframe.html` | designer | The Emble block for when the file is hosted somewhere. |
-| `figure.png` | designer | The figure, for the page and for Ally. |
-| `teacher-guide.md` | teacher | Before, during and after class. What to say at each step. The misconception to listen for. Presenter keys. |
-| `review-sheet.md` | expert | Every source and claim, every answer key, a box to tick. |
+| `<slug>.scorm.zip` | designer | The interactive as a SCORM 1.2 package. Upload through Canvas's SCORM tool as a graded or ungraded assignment. **No hosting needed.** Reports completion and score. |
+| `canvas-page.html` | designer | A no-script version built from Emble components, to paste straight into a page. Answer first, then open the box. Works in every Canvas, today, including the mobile app. |
+| `canvas-embed.html` | designer | The Emble iframe block for when the page is hosted somewhere. |
+| `figure.svg`, `figure.png`, `figure.canvas.html` | designer | The figure, with its alt text and image description, for the page and for Ally. |
+| `animation.mp4` | designer | With `--video`, a recording of a moving model for Canvas Studio. |
+| `teacher-guide.html` and `.md` | teacher | Before, during and after class. What to say, what to ask, what to listen for. Presenter keys. The answer key. Every delivery route. |
+| `review-sheet.html` and `.md` | expert | Every source and claim, every answer, the constructed content, the accessibility checks, a box to tick for each. |
+| `spec.json` | designer | The spec it was built from, to edit and rebuild. |
 | `text-version.txt` | student | The whole activity as text. |
 
 ### The Canvas ladder, corrected
@@ -157,7 +159,7 @@ content ─▶ diagnose ─▶ ideate ─▶ propose ─▶ [designer chooses] �
    misconception to pre-empt, the decision the learner will face, the ratio
    nobody computed, and so on), crossed with the eight patterns.
 3. **Propose.** A gallery of candidates, each a live sketch, each declaring its
-   data provenance, one or two recommended, a suggested before, during and after
+   data provenance, one to three recommended as a before, during and after
    arc, and a record of what was ruled out and why. **Nothing is built.**
 4. **Source.** Anything needing data is researched and cited, or handed to the
    teacher. Nothing is filled in from memory.

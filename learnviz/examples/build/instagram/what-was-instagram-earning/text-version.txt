@@ -1,0 +1,16 @@
+What was Instagram earning?
+===========================
+
+What this shows: A prediction activity. The learner answers a question before the answer is shown, then sees the answer and the reasoning.
+How it is arranged: Question first, then the learner's answer, then the reveal.
+
+Contents:
+  - Question: When Facebook agreed to pay about US$1 billion for Instagram, how much revenue was Instagram making?
+  - Option 1: Nothing at all. Right. Instagram had never charged anyone for anything, and ran no advertising.
+  - Option 2: About US$10 million a year. A reasonable guess for a popular app, but Instagram had no revenue at all.
+  - Option 3: About US$100 million a year. That would put the price at ten times revenue, a common rule of thumb. The real answer makes the rule of thumb useless.
+  - Option 4: About US$1 billion a year. That would make the deal look cheap. In fact Instagram earned nothing.
+  - Nothing. So what was Facebook buying?: Nothing at all.
+  - Why: Instagram had no revenue, no advertising and thirteen staff. What Facebook paid for was about 30 million users, a team that had built something people used every day, and the certainty that a competitor would not own it.
+  - Point 1: When a company has no revenue, its price is a bet about the future, not a calculation about the present.
+  - Point 2: Buying a company partly to stop a rival buying it is a strategy with a name: a defensive acquisition.

@@ -1,151 +1,166 @@
 # learnviz
 
-Turns a piece of learner content into visual and interactive learning objects
-for Canvas LMS, together with the alt text, the image description, the plain
-text equivalent and the paste-ready Canvas markup.
+Turns a piece of course content into learning activities for Canvas LMS:
+things a learner does, not pictures they look at.
 
-It proposes before it builds. Given content, the first thing it produces is a
-menu of candidate visuals with the questions worth answering first, not an
-artefact. Half the value is in the ideas: the angle nobody had thought of, and
-the honest note that the data for one of them does not exist.
+Give it content about the five stages of grief and it will not draw five boxes.
+It will notice that almost every learner arrives believing the stages happen in
+order, and propose an activity that asks them to put the stages in order before
+showing them why that is the misconception. Then a step-through for the teacher
+to explain with in class, and a sorting task for practice afterwards. Each
+option comes as a working sketch to try before choosing.
 
-Built to sit alongside the `cove-canvas-page` skill, which builds the page this
-drops into. That skill reaches its Visual Element section and can only write a
-brief for a human to draw something. This builds the actual thing.
+Built for three people:
+
+- **Learning designers** get ideas they had not thought of, a gallery to try
+  them in, a week-by-week dashboard that shows the gaps, and a review sheet for
+  the subject expert.
+- **Teachers** get a presenter view of every activity (add `#present` to the
+  address) and a teacher guide saying what to say, what to ask and what to
+  listen for, before, during and after class.
+- **Students** get activities that ask them to commit before they are told,
+  explain why an answer is right or wrong, make failing safe and retrying
+  worthwhile, and work on a phone and from the keyboard.
+
+Sits alongside the `cove-canvas-page` skill, which builds the page these drop
+into. `DESIGN.md` explains the thinking behind the design.
 
 ## What it is
 
 Two halves, and the split is the point.
 
-- **A skill** (`SKILL.md` and `references/`). The judgement: what shape is this
-  content, does it deserve a visual at all, which type teaches it, how does it
-  get into Canvas. That is language work, so a language model does it.
-- **A toolkit** (`tools/`). The rendering: exact geometry, WCAG-checked colour,
-  generated text equivalents, Canvas-safe markup. That has to be identical every
-  time and verifiable, so deterministic code does it.
-
-A model asked to draw an accessible SVG freehand will produce something that
-looks right and fails an audit. Code asked to decide what a piece of content
-means will produce a bar chart of nothing. Neither half works alone.
+- **A skill** (`SKILL.md` and `references/`). The judgement: what matters in this
+  content, what learners get wrong, which activity would change that, and how
+  it gets into Canvas. That is language work, so a language model does it.
+- **A toolkit** (`tools/`). The building: activities that behave identically
+  every time, WCAG-checked colour, generated text versions, SCORM packages,
+  Canvas-safe markup. That has to be exact and verifiable, so deterministic code
+  does it.
 
 ## Quick start
 
+Node 22 or later. No runtime dependencies.
+
 ```bash
 cd tools
-node bin/learnviz.js doctor                                  # what this machine can do
-node bin/learnviz.js types                                   # the twelve visual types
-node bin/learnviz.js propose ../examples/grief-proposal.json --out ../examples/out
-node bin/learnviz.js validate ../examples/*.json
-node bin/learnviz.js build ../examples/*.json --out ../examples/out
+node bin/learnviz.js doctor                          # what this machine can do
+node bin/learnviz.js patterns                        # the eight activity patterns
+node bin/learnviz.js propose ../examples/grief/proposal.json --out build
+node bin/learnviz.js build ../examples/*/[0-9]*.json --out build
 npm test
 ```
 
-No dependencies. Node 22 or later. PNG output uses whatever Chromium is on the
-machine; without one you still get SVG.
+`propose` writes a gallery page where every option can be tried as a learner,
+ticked, and turned into a one-line reply. `build` writes a folder per activity
+and a dashboard at `build/index.html`.
 
-## Propose first
+A built copy of every example is in `examples/build/`. Open
+`examples/build/index.html` to try them.
 
-`learnviz propose` turns a proposal into a brief a teacher can read in a minute
-and reply to with a list of numbers. The validator enforces the two things that
-make a menu useful rather than decorative:
+## The eight patterns
 
-- **Every candidate declares where its data comes from**: `none-needed`,
-  `in-source`, `needs-teacher`, `needs-research` or `unavailable`. Anything
-  blocking must say what specifically is missing. This is what catches "chart
-  Instagram's profit over time" before someone publishes a guess as a
-  disclosure.
-- **One or two candidates are recommended.** Not none, which hands the decision
-  back. Not all of them, which is the same thing in disguise.
+| Pattern | The learner | Scored |
+|---|---|---|
+| `predict` | commits to an answer, an order or a number before the explanation | No |
+| `estimate` | guesses hidden values on a chart, then sees the real bars land against their guesses | No |
+| `stepthrough` | follows a figure that builds one part at a time, with a sentence for each | No |
+| `sort` | puts real examples into categories, with a nudge on the first miss and the reason on the second | Yes |
+| `order` | puts steps in order, or times overlapping steps against a deadline | Yes |
+| `scenario` | makes decisions in a conversation and sees where each leads | Yes |
+| `explore` | pushes on a model with sliders (a formula, orbits, compounding) to meet challenges | With challenges |
+| `cards` | recalls answers, and meets the missed ones again a few cards later | No |
 
-The brief also records what was ruled out and why, which on well-known content
-is often the most useful part: it stops the obvious-but-wrong visual being
-proposed again next term.
+Ten static figure types (timeline, process, cycle, gantt, comparison,
+hierarchy, chart, labelled, stat, waffle) sit inside these as components, and
+can still be built on their own. `references/patterns.md` covers each pattern.
 
-## What a build produces
+## What each activity ships as
 
-For a static visual, from one spec:
-
-| File | What it is |
+| File | For |
 |---|---|
-| `.png` | Upload this to Canvas Files. Rendered at 2x so it stays sharp |
-| `.svg` | The editable original. Do not paste it into Canvas, which strips inline SVG |
-| `.canvas.html` | Paste-ready Emble block with the image description accordion |
-| `.generic.html` | Plain HTML for anywhere that is not Canvas |
-| `.txt` | Plain text equivalent, for a handout or transcript |
-| `.notes.md` | Alt text, five-part image description, embed steps, audit results |
+| `index.html` | The activity. One self-contained page that loads nothing from anywhere. `#present` for presenter view |
+| `<slug>.scorm.zip` | SCORM 1.2 for the Canvas SCORM tool. Reports completion, and a score and pass or fail where the pattern is scored |
+| `canvas-page.html` | Paste into any Canvas page. No scripts, so it survives the editor and works in the mobile app |
+| `canvas-embed.html` | Iframe block for when `index.html` is hosted |
+| `figure.svg`, `figure.png`, `figure.canvas.html` | The figure, with alt text and image description |
+| `animation.mp4` | With `--video`, a recording of a moving model for Canvas Studio |
+| `teacher-guide.html` | How to use it across the week, a script, questions, the answer key, and every delivery route |
+| `review-sheet.html` | What a subject expert checks before release |
+| `text-version.txt`, `spec.json` | The text version, and the spec to edit and rebuild |
 
-For an interactive: a single self-contained `.html` that loads nothing from
-anywhere, plus the same supporting files.
+## Getting it into Canvas
 
-## The twelve types
+Canvas will not run JavaScript on a page, and an HTML file uploaded to Course
+Files is shown without running its scripts. So the activities reach learners
+through routes that do work:
 
-| Type | For |
-|---|---|
-| `timeline` | When things happened, in order |
-| `process` | How something is done, first to last |
-| `cycle` | Something that repeats, no start or end |
-| `gantt` | What runs at the same time as what |
-| `comparison` | How options differ across shared criteria |
-| `hierarchy` | How a whole breaks into named parts and sub-parts |
-| `chart` | How much, and which way it is moving |
-| `labelled` | What the parts of a thing are called |
-| `stat` | Big-number callouts. The infographic register |
-| `waffle` | What share of a whole each part takes, as countable squares. Use instead of a pie chart |
-| `sequencer` | **Interactive.** Learner predicts the timing, then checks against the model |
-| `simulation` | **Interactive.** A model with sliders. Orbit (Kepler) and growth (compounding) |
+1. **SCORM**, where the institution has the Canvas SCORM tool. The full
+   activity, inside Canvas, reporting to the gradebook.
+2. **A Canvas page**, pasted in. Works everywhere, today.
+3. **An embedded page**, when there is a web host.
+4. **Presenter view** from the teacher's own computer, for class.
 
-## The Canvas constraint, in short
+`references/canvas-delivery.md` has the detail, including where Flourish,
+Datawrapper, Chart.js and Plotly fit.
 
-Canvas will not run your JavaScript. The Rich Content Editor strips `<script>`
-on save, and an HTML file uploaded to Course Files is previewed in a sandboxed
-iframe that usually withholds `allow-scripts`, so it loads and does nothing.
+## Nothing reaches students unchecked
 
-So there is a ladder, and the toolkit emits markup for the right rung:
-
-1. **Static image.** Always works. The default.
-2. **Video**, via Canvas Studio, for things that must move but need not respond.
-3. **H5P**, the only rung that puts a mark in the gradebook.
-4. **A self-contained page in an iframe**, which needs a host that serves it as
-   an ordinary web page.
-
-`references/canvas-embedding.md` has the detail, including where Flourish,
-Datawrapper, Chart.js and Plotly fit and what each costs you.
+Every fact in an activity carries a source, and every source starts `to-check`.
+Until a person has checked them all, the activity is a draft with a banner
+across the top, and `build --release` refuses it. `references/sources-and-review.md`
+explains the review.
 
 ## Accessibility
 
-Generated from the same spec that draws the picture, so it cannot drift out of
-step, and checked at build time. The build reports `CHECK` instead of `OK` if
-anything fails.
+Generated from the same spec as the activity, so it cannot drift, and checked at
+build time. The build prints `CHECK` rather than `OK` if anything fails.
 
-- Short alt for `alt`, full alt for `data-ally-user-updated-alt`, five-part
-  image description in the exact house labels and order
-- Every colour pair meets WCAG 2.2 AA contrast
-- No two series colours are perceptually close, measured as CIELAB distance
-  rather than contrast ratio
-- Nothing encoded by colour alone. Every coloured element carries a number, a
-  label or a texture as well
-- Bar chart axes include zero whenever the data is non-negative
-- No drag and drop anywhere. Every control is keyboard operable
-- Every iframe carries a title
+- WCAG 2.2 AA contrast for every colour pair, and CIELAB distance between
+  series colours
+- Nothing carried by colour alone: every right and wrong has a word and a
+  symbol, every coloured mark a label or texture
+- No drag and drop. Every control works from the keyboard, with targets of 24px
+  or more and focus that follows the action
+- Changes are announced to screen readers, and motion respects reduced-motion
+  settings
+- Every activity ships a text version, and every figure a short alt, a full alt
+  and a five-part image description
+- Pages fit a 375px phone without sideways scrolling
+
+## Tests
+
+`npm test` runs 300 tests in about ten seconds. They build every example and
+check it is self-contained, deterministic, accessible and correctly drafted,
+pin the validation rules, check every bundle file, and drive every example in
+Chromium: completing it, reaching a control by keyboard, fitting a phone, and
+using presenter view. A fake LMS hosts each SCORM package the way Canvas's
+player does and checks the status, score, pass mark and best attempt it
+receives, and that showing a model answer never sends a score. The browser
+tests are skipped where Chromium or playwright-core is missing.
 
 ## Layout
 
 ```
-SKILL.md                  the skill: what to build and why
-references/               proposing, spec reference, Canvas embedding, design notes, prompt packs
-examples/                 two worked proposals, eight worked visuals, and their output
+SKILL.md                  the skill: diagnose, ideate, propose, source, build, deliver, teach
+DESIGN.md                 why it is built this way
+references/               ideation, patterns, spec reference, sources and review,
+                          Canvas delivery, visual design, prompt packs
+examples/                 grief, instagram, kitchen, science, service, project:
+                          proposals, activity specs, research notes
+examples/figures/         standalone figure specs
+examples/build/           everything built, with a dashboard
 tools/
   bin/learnviz.js         the CLI
-  src/validate.js         shared validation primitives
-  src/spec.js             the visual schema and validator
-  src/proposal.js         the proposal schema, validator and brief renderer
-  src/theme.js            palette, contrast and colour-distance checks
-  src/svg.js              SVG primitives and text measurement
+  src/lo/                 learning objects: schema, page shell, Canvas blocks
+  src/lo/patterns/        the eight patterns
+  src/runtime/            the in-page runtime (SCORM, presenter view), formulas, seeded shuffles
+  src/delivery/           bundle, dashboard, teacher guide, review sheet, SCORM, zip
+  src/proposal.js         proposals and the gallery
+  src/renderers/          the ten figure types
+  src/spec.js             the figure schema
   src/a11y.js             alt text, image descriptions, the audit
-  src/emble.js            Canvas and Emble embed markup
-  src/png.js              PNG cropping, for the Chromium screenshot bug
-  src/raster.js           PNG and video rendering
-  src/renderers/          the ten static types
-  src/interactive/        the two interactive types
-  test/                   122 tests
+  src/emble.js            Emble blocks for Canvas
+  src/theme.js            palette and colour checks
+  src/raster.js           PNG and video
+  test/                   unit, proposal, learning-object and browser tests
 ```
