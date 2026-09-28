@@ -24,12 +24,16 @@ export const VISUAL_TYPES = [
   'labelled',
   'stat',
   'waffle',
-  'sequencer',
-  'simulation',
 ];
 
-/** Types that render to an interactive HTML page rather than a static image. */
-export const INTERACTIVE_TYPES = new Set(['sequencer', 'simulation']);
+/**
+ * Types from the first version that are now learning-object patterns. A spec
+ * that still uses one gets told where it went rather than "unknown type".
+ */
+export const MOVED_TYPES = {
+  sequencer: 'The sequencer is now the "order" pattern with "mode": "timing". Write it as a learning object: "kind": "learning-object", "pattern": "order". See references/spec-reference.md.',
+  simulation: 'The simulation is now the "explore" pattern, with "engine": "orbit", "growth" or "formula". Write it as a learning object: "kind": "learning-object", "pattern": "explore". See references/spec-reference.md.',
+};
 
 
 /* ------------------------------------------------------------------ */
@@ -197,51 +201,6 @@ const validators = {
     }
   },
 
-  /**
-   * Interactive staging exercise. The learner places items on a timeline and
-   * checks their answer against the model order.
-   * This is the recipe-into-the-pot and the project-schedule tool.
-   */
-  sequencer(s) {
-    str(s.timeUnit, 'timeUnit', { max: 30 });
-    str(s.prompt, 'prompt', { max: 300 });
-    arr(s.items, 'items', { min: 3, max: 14 }).forEach((it, i) => {
-      str(it.label, `items[${i}].label`, { max: 70 });
-      num(it.at, `items[${i}].at`);
-      str(it.because, `items[${i}].because`, { max: 300 });
-      num(it.tolerance, `items[${i}].tolerance`, { required: false });
-    });
-  },
-
-  /**
-   * Interactive model with tunable parameters. Orbital mechanics, compound
-   * interest, queueing, staffing levels.
-   */
-  simulation(s) {
-    const model = str(s.model, 'model', { max: 40 });
-    if (!['orbit', 'growth'].includes(model)) {
-      fail('model', "must be 'orbit' or 'growth'. These are the two simulation engines the toolkit ships.");
-    }
-    arr(s.parameters, 'parameters', { min: 1, max: 6 }).forEach((p, i) => {
-      str(p.key, `parameters[${i}].key`, { max: 40 });
-      str(p.label, `parameters[${i}].label`, { max: 60 });
-      num(p.min, `parameters[${i}].min`);
-      num(p.max, `parameters[${i}].max`);
-      num(p.value, `parameters[${i}].value`);
-      if (p.min >= p.max) fail(`parameters[${i}]`, 'min must be less than max');
-      if (p.value < p.min || p.value > p.max) {
-        fail(`parameters[${i}].value`, `must sit between min (${p.min}) and max (${p.max})`);
-      }
-      str(p.unit, `parameters[${i}].unit`, { required: false, max: 20 });
-    });
-    if (s.bodies !== undefined) {
-      arr(s.bodies, 'bodies', { min: 1, max: 6 }).forEach((b, i) => {
-        str(b.label, `bodies[${i}].label`, { max: 40 });
-        num(b.distance, `bodies[${i}].distance`);
-        num(b.radius, `bodies[${i}].radius`);
-      });
-    }
-  },
 };
 
 /**
@@ -254,13 +213,14 @@ export function validate(raw) {
   }
 
   const type = str(raw.type, 'type', { max: 30 });
+  if (MOVED_TYPES[type]) fail('type', `is "${type}". ${MOVED_TYPES[type]}`);
   if (!VISUAL_TYPES.includes(type)) {
     fail('type', `is "${type}", which is not a visual type. Choose one of: ${VISUAL_TYPES.join(', ')}`);
   }
 
   str(raw.title, 'title', { max: 120 });
 
-  // `intent` is what makes this a learning object rather than a picture. It is
+  // `intent` is what makes this a teaching figure rather than a picture. It is
   // required, and the renderers print it, so a spec cannot quietly skip the
   // question of what the learner is meant to get out of the visual.
   str(raw.intent, 'intent', { max: 300 });

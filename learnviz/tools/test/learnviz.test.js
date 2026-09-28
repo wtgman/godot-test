@@ -11,9 +11,8 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { assertPaletteAccessible, assertPaletteDistinct, deltaE, MIN_DELTA_E, SERIES, BRAND } from '../src/theme.js';
-import { validate, SpecError, VISUAL_TYPES, INTERACTIVE_TYPES } from '../src/spec.js';
+import { validate, SpecError, VISUAL_TYPES } from '../src/spec.js';
 import { render } from '../src/renderers/index.js';
-import { build } from '../src/interactive/index.js';
 import { audit } from '../src/a11y.js';
 import { diagramBlock, interactiveBlock } from '../src/emble.js';
 import { measure, wrap, esc, sentences } from '../src/svg.js';
@@ -110,27 +109,9 @@ const FIXTURES = {
       { label: 'Knowledge quiz', value: 20, detail: 'Week 6, open book.' },
     ],
   },
-  sequencer: {
-    type: 'sequencer', title: 'Timing a roast', intent: 'Learners can plan backwards.',
-    timeUnit: 'minutes', prompt: 'When does each task start?',
-    items: [
-      { label: 'Lamb in', at: 0, because: 'Longest cook plus resting.' },
-      { label: 'Potatoes in', at: 60, because: 'Forty five minutes to crisp.' },
-      { label: 'Beans on', at: 95, because: 'Green vegetables go last.' },
-    ],
-  },
-  simulation: {
-    type: 'simulation', model: 'orbit', title: 'Orbital periods',
-    intent: "Learners can predict how period changes with distance.",
-    parameters: [{ key: 'mass', label: 'Star mass', min: 0.2, max: 3, value: 1, unit: 'solar masses' }],
-    bodies: [
-      { label: 'Earth', distance: 1, radius: 7 },
-      { label: 'Jupiter', distance: 5.2, radius: 13 },
-    ],
-  },
 };
 
-const staticTypes = VISUAL_TYPES.filter((t) => !INTERACTIVE_TYPES.has(t));
+const staticTypes = VISUAL_TYPES;
 
 /* ------------------------------------------------------------------ */
 
@@ -306,63 +287,14 @@ describe('static rendering', () => {
   });
 });
 
-describe('interactive building', () => {
-  for (const type of [...INTERACTIVE_TYPES]) {
-    test(`${type} builds a self-contained page`, () => {
-      const spec = validate(FIXTURES[type]);
-      const { html } = build(spec);
-
-      assert.ok(html.startsWith('<!doctype html>'));
-      assert.match(html, /<html lang="en-AU">/);
-
-      // Self-contained is the whole point: a course asset that depends on a CDN
-      // breaks behind a strict CSP and breaks again when the CDN moves.
-      assert.ok(!/<script[^>]+src=/i.test(html), 'external script tag found');
-      assert.ok(!/<link[^>]+stylesheet/i.test(html), 'external stylesheet found');
-      assert.ok(!/https?:\/\/(?!www\.w3\.org)/.test(html.replace(/Source:[^<]*/g, '')), 'external URL found');
-    });
-
-    test(`${type} ships its text equivalent inside the page`, () => {
-      const spec = validate(FIXTURES[type]);
-      const { html, a11y } = build(spec);
-      assert.ok(html.includes('Text version of this activity'));
-      assert.ok(html.includes(esc(a11y.textEquivalent.split('\n')[0])));
-    });
-
-    test(`${type} states its learning intent on the page`, () => {
-      const spec = validate(FIXTURES[type]);
-      const { html } = build(spec);
-      assert.ok(html.includes(esc(spec.intent)));
-    });
-
-    test(`${type} uses no drag and drop`, () => {
-      // Drag and drop excludes keyboard and switch users. There is always a
-      // better control, so its absence is an invariant, not a preference.
-      const { html } = build(validate(FIXTURES[type]));
-      assert.ok(!/draggable=|ondrag|dragstart/i.test(html));
-    });
-
-    test(`${type} is deterministic`, () => {
-      const spec = validate(FIXTURES[type]);
-      assert.equal(build(spec).html, build(spec).html);
-    });
-  }
-
-  test('orbit periods follow Kepler\'s third law', () => {
-    // The description is generated from the same formula the page runs, so this
-    // pins the physics rather than the prose. Jupiter at 5.2 AU around one solar
-    // mass takes 11.86 years, which is the real figure.
-    const spec = validate(FIXTURES.simulation);
-    const { a11y } = build(spec);
-    assert.match(a11y.fullAlt, /Jupiter: orbits at 5\.2 astronomical units.*?11\.86 years/);
-    assert.match(a11y.fullAlt, /Earth: orbits at 1 astronomical units.*?1 years/);
-  });
-
-  test('an unknown simulation model is rejected at validation, not at build', () => {
-    assert.throws(
-      () => validate({ ...FIXTURES.simulation, model: 'quantum' }),
-      (e) => e instanceof SpecError && /orbit/.test(e.message),
-    );
+describe('moved types', () => {
+  test('a first-version sequencer or simulation spec is told where it went', () => {
+    for (const type of ['sequencer', 'simulation']) {
+      assert.throws(
+        () => validate({ type, title: 'T', intent: 'I' }),
+        (e) => e instanceof SpecError && /learning object/.test(e.message),
+      );
+    }
   });
 });
 
@@ -400,7 +332,7 @@ describe('canvas embed markup', () => {
   });
 
   test('every iframe carries a title attribute', () => {
-    const { a11y } = build(validate(FIXTURES.sequencer));
+    const { a11y } = render(validate(FIXTURES.timeline));
     const html = interactiveBlock({ url: 'https://example.edu/a.html', title: 'Timing a roast', a11y });
     const iframes = html.match(/<iframe[^>]*>/g) || [];
     assert.ok(iframes.length > 0);
@@ -408,7 +340,7 @@ describe('canvas embed markup', () => {
   });
 
   test('an interactive block always ships the text version alongside the iframe', () => {
-    const { a11y } = build(validate(FIXTURES.sequencer));
+    const { a11y } = render(validate(FIXTURES.timeline));
     const html = interactiveBlock({ url: 'https://example.edu/a.html', title: 'T', a11y });
     assert.ok(html.includes('Text version of this activity'));
   });
