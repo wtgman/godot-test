@@ -169,6 +169,13 @@ function deliveryBlocks(b, slug, files) {
     ['h3', '4. In class, from your own computer'],
     ['p', 'Open `index.html` in a browser and add `#present` to the end of the address, or use the Presenter view link at the bottom of the page. It needs no internet connection and no login.'],
   ];
+  const video = files.find((f) => /^animation\./.test(f.name));
+  if (video) {
+    blocks.push(
+      ['h3', 'As a video in Canvas Studio'],
+      ['p', `Upload \`${video.name}\` to Canvas Studio rather than Course Files. Studio adds captions and plays it everywhere, including the mobile apps. It shows the model running at its starting settings, so pair it with a question about what learners notice. Keep the text version on the page beside it.`],
+    );
+  }
   if (has('figure.png')) {
     blocks.push(
       ['h3', 'The figure on its own'],

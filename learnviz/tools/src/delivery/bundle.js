@@ -34,7 +34,7 @@ export function slugify(title, fallback = 'activity') {
  * touching the disk. `png` is an optional async function that rasterises the
  * figure; without it the figure ships as SVG only.
  */
-export async function bundleFiles(b, { slug, source, png } = {}) {
+export async function bundleFiles(b, { slug, source, png, video } = {}) {
   const files = [];
   const add = (name, data, what) => files.push({ name, data, what });
 
@@ -67,6 +67,17 @@ export async function bundleFiles(b, { slug, source, png } = {}) {
     add('figure.canvas.html', `${diagramBlock({ a11y: b.figure.a11y })}\n`, 'Emble diagram block for the figure, with its alt text and image description.');
   }
 
+  if (b.recording && video) {
+    // Optional, and never fatal: without a full ffmpeg there is no video,
+    // and every other rendition still ships.
+    try {
+      const v = await video(b.recording);
+      add(`animation.${v.extension}`, v.buffer, `The animation as a video (${v.codec}) for Canvas Studio, which adds captions and plays in the mobile apps. It shows the starting settings. Learners cannot change them.`);
+    } catch (e) {
+      if (video.onError) video.onError(e);
+    }
+  }
+
   add('text-version.txt', `${b.a11y.textEquivalent}\n`, 'The whole activity as plain text, for a handout, a screen reader or a transcript.');
   if (source) add('spec.json', source, 'The spec this was built from. Edit it and build again to change anything.');
 
@@ -86,8 +97,8 @@ export async function bundleFiles(b, { slug, source, png } = {}) {
 }
 
 /** Write one learning object's folder. Returns the file list. */
-export async function writeBundle(b, { dir, slug, source, png }) {
-  const files = await bundleFiles(b, { slug, source, png });
+export async function writeBundle(b, { dir, slug, source, png, video }) {
+  const files = await bundleFiles(b, { slug, source, png, video });
   await mkdir(dir, { recursive: true });
   for (const f of files) await writeFile(join(dir, f.name), f.data);
   return files;

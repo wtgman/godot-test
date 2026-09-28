@@ -185,6 +185,18 @@ describe('pattern validation catches broken activities', () => {
     rejects({ ...byPattern('cards'), pattern: 'quiz' }, /predict/);
   });
 
+  test('only an activity that moves offers a recording, and it can be stepped', () => {
+    for (const { raw } of EXAMPLES) {
+      const rec = build(raw).recording;
+      if (raw.pattern === 'explore' && raw.engine === 'orbit') {
+        assert.ok(rec && rec.html.includes('window.lvSeek'), 'orbit has no steppable recording');
+        assert.ok(rec.width > 0 && rec.seconds * rec.fps > 0);
+      } else {
+        assert.equal(rec, null, `${raw.title} offers a recording`);
+      }
+    }
+  });
+
   test('a source link must be a web address', () => {
     const raw = structuredClone(byPattern('cards'));
     raw.sources = [{ label: 'X', kind: 'research', status: 'to-check', url: 'javascript:alert(1)' }];

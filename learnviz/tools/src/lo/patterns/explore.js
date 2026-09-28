@@ -169,7 +169,7 @@ export function validate(s, h) {
   if (s.engine === 'orbit') {
     if (!params.some((p) => p.key === 'mass')) h.fail('parameters', 'the orbit engine needs a parameter with key "mass", in solar masses');
     const mass = params.find((p) => p.key === 'mass');
-    if (mass.min <= 0) h.fail('parameters "mass".min', 'must be greater than zero; a star with no mass holds nothing in orbit');
+    if (mass.min <= 0) h.fail('parameters "mass".min', 'must be greater than zero. A star with no mass holds nothing in orbit.');
     h.arr(s.bodies, 'bodies', { min: 1, max: 6 }).forEach((b, i) => {
       h.str(b.label, `bodies[${i}].label`, { max: 30 });
       h.num(b.distance, `bodies[${i}].distance`);
@@ -180,7 +180,7 @@ export function validate(s, h) {
 
   if (s.engine === 'growth') {
     for (const k of ['initial', 'rate', 'periods']) {
-      if (!params.some((p) => p.key === k)) h.fail('parameters', `the growth engine needs parameters "initial", "rate" (per cent per period) and "periods"; "${k}" is missing`);
+      if (!params.some((p) => p.key === k)) h.fail('parameters', `the growth engine needs parameters "initial", "rate" (per cent per period) and "periods". "${k}" is missing.`);
     }
   }
 
@@ -462,7 +462,9 @@ function client(D) {
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + starR.toFixed(1) + '" fill="#fac800" stroke="#8a5a00" stroke-width="2"/>';
     var colours = ['#000054', '#00706b', '#a4177c', '#8a5a00', '#1a56c4', '#a3301b'];
     D.bodies.forEach(function (b, i) {
-      var a = clock / period(b) * Math.PI * 2;
+      // Starting positions spread by the golden angle, so no two planets
+      // begin side by side with their labels on top of each other.
+      var a = clock / period(b) * Math.PI * 2 - i * 2.39996;
       var r = rad(b.distance);
       var px = cx + r * Math.cos(a), py = cy + r * Math.sin(a);
       var col = colours[i % colours.length];
@@ -679,6 +681,17 @@ ${challenges}`;
     needsExpr: s.engine === 'formula',
     script: `(${client.toString()})(${ctx.safeJson(data)});`,
   };
+}
+
+/**
+ * A page for recording the orbit as video: the animation alone, filling the
+ * frame, stepped by window.lvSeek across one orbit of the outermost planet.
+ * Only the orbit engine moves, so only it records.
+ */
+export function recording(s, html) {
+  if (s.engine !== 'orbit') return null;
+  const css = '<style>html,body{margin:0;overflow:hidden;background:#fff}#lv-x-orbit{position:fixed;inset:0;width:100vw;height:100vh;max-width:none;margin:0;z-index:2147483647}</style>';
+  return { html: html.replace('</head>', `${css}</head>`), width: 960, height: 720, seconds: 20, fps: 25 };
 }
 
 export function native(s, ctx) {

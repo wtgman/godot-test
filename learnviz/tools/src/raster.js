@@ -53,21 +53,36 @@ export function findChromium() {
 
 /** Locate ffmpeg. Playwright ships one; the system one is used if present. */
 export function findFfmpeg() {
+  return ffmpegCandidates().find((p) => videoFormat(p).ok) || ffmpegCandidates()[0] || null;
+}
+
+/**
+ * Every ffmpeg worth trying, best first: one named in LEARNVIZ_FFMPEG, the
+ * ffmpeg-static package if it is installed, the system one, and last the
+ * cut-down build beside the Playwright browsers, which can encode but cannot
+ * read frames.
+ */
+function ffmpegCandidates() {
+  const found = [];
+  if (process.env.LEARNVIZ_FFMPEG) found.push(process.env.LEARNVIZ_FFMPEG);
+  try {
+    const bundled = require_('ffmpeg-static');
+    if (typeof bundled === 'string') found.push(bundled);
+  } catch {
+    // Not installed. It is optional.
+  }
+  found.push('/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/opt/homebrew/bin/ffmpeg');
   const root = process.env.PLAYWRIGHT_BROWSERS_PATH || '/opt/pw-browsers';
-  const candidates = ['/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg'];
   if (existsSync(root)) {
     try {
       for (const entry of readdirSync(root)) {
-        if (entry.startsWith('ffmpeg')) {
-          candidates.unshift(join(root, entry, 'ffmpeg-linux'));
-          candidates.unshift(join(root, entry, 'ffmpeg'));
-        }
+        if (entry.startsWith('ffmpeg')) found.push(join(root, entry, 'ffmpeg-linux'), join(root, entry, 'ffmpeg'));
       }
     } catch {
       // Fall through.
     }
   }
-  return candidates.find((p) => existsSync(p)) || null;
+  return [...new Set(found)].filter((p) => existsSync(p));
 }
 
 function run(cmd, args, { timeout = 90_000 } = {}) {
@@ -235,6 +250,52 @@ export function videoFormat(ffmpeg = findFfmpeg()) {
  *
  * Returns `{ buffer, extension, codec, universal }`.
  */
+/**
+ * Screenshot `frames` positions of an animation that exposes window.lvSeek(t)
+ * for t from 0 to 1. With playwright-core installed this drives one page,
+ * which takes seconds. Without it, each frame is its own browser launch, which
+ * is slow but needs nothing extra.
+ */
+async function captureFrames(html, dir, { width, height, frames, scale }) {
+  let chromium = null;
+  try {
+    ({ chromium } = await import('playwright-core'));
+  } catch {
+    // Fall back to one launch per frame below.
+  }
+  if (chromium) {
+    const browser = await chromium.launch({ executablePath: findChromium(), args: ['--no-sandbox'] });
+    try {
+      const page = await browser.newPage({ viewport: { width: Math.ceil(width), height: Math.ceil(height) }, deviceScaleFactor: scale });
+      await page.setContent(html, { waitUntil: 'load' });
+      for (let i = 0; i < frames; i += 1) {
+        await page.evaluate((t) => window.lvSeek && window.lvSeek(t), i / frames);
+        await page.screenshot({ path: join(dir, `frame-${String(i).padStart(4, '0')}.png`) });
+      }
+    } finally {
+      await browser.close();
+    }
+    return;
+  }
+  const chrome = findChromium();
+  for (let i = 0; i < frames; i += 1) {
+    const t = i / frames;
+    const framed = html.replace(
+      '</body>',
+      `<script>document.addEventListener('DOMContentLoaded',function(){window.lvSeek&&window.lvSeek(${t});});</script></body>`,
+    );
+    const htmlPath = join(dir, `frame-${String(i).padStart(4, '0')}.html`);
+    await writeFile(htmlPath, framed, 'utf8');
+    await run(chrome, [
+      ...CHROME_FLAGS,
+      `--force-device-scale-factor=${scale}`,
+      `--window-size=${Math.ceil(width)},${Math.ceil(height)}`,
+      `--screenshot=${join(dir, `frame-${String(i).padStart(4, '0')}.png`)}`,
+      `file://${htmlPath}`,
+    ], { timeout: 30_000 });
+  }
+}
+
 export async function pageToVideo(html, {
   width, height, frames = 120, fps = 30, scale = 1,
 } = {}) {
@@ -248,24 +309,9 @@ export async function pageToVideo(html, {
 
   const dir = await mkdtemp(join(tmpdir(), 'learnviz-anim-'));
   try {
-    // Each frame is its own page load at a fixed clock position. Slower than
-    // driving one page, and completely reproducible.
-    for (let i = 0; i < frames; i += 1) {
-      const t = i / frames;
-      const framed = html.replace(
-        '</body>',
-        `<script>document.addEventListener('DOMContentLoaded',function(){window.lvSeek&&window.lvSeek(${t});});</script></body>`,
-      );
-      const htmlPath = join(dir, `frame-${String(i).padStart(4, '0')}.html`);
-      await writeFile(htmlPath, framed, 'utf8');
-      await run(chrome, [
-        ...CHROME_FLAGS,
-        `--force-device-scale-factor=${scale}`,
-        `--window-size=${Math.ceil(width)},${Math.ceil(height)}`,
-        `--screenshot=${join(dir, `frame-${String(i).padStart(4, '0')}.png`)}`,
-        `file://${htmlPath}`,
-      ], { timeout: 30_000 });
-    }
+    // Each frame is drawn at a fixed clock position rather than timed, so the
+    // recording is the same every time.
+    await captureFrames(html, dir, { width, height, frames, scale });
 
     const outPath = join(dir, `out.${format.extension}`);
     await run(ffmpeg, [

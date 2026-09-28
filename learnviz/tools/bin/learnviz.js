@@ -3,7 +3,7 @@
  * learnviz. Turn course content into learning activities for Canvas.
  *
  *   learnviz propose <proposal.json> [--out DIR]
- *   learnviz build <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png]
+ *   learnviz build <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png] [--video]
  *   learnviz validate <spec.json...>
  *   learnviz patterns
  *   learnviz types
@@ -22,7 +22,7 @@ import { validate, SpecError, VISUAL_TYPES } from '../src/spec.js';
 import { render as renderStatic } from '../src/renderers/index.js';
 import { audit } from '../src/a11y.js';
 import { diagramBlock, genericBlock } from '../src/emble.js';
-import { svgToPng, capabilities } from '../src/raster.js';
+import { svgToPng, pageToVideo, capabilities } from '../src/raster.js';
 import { validateLO, buildLO, PATTERNS } from '../src/lo/index.js';
 import { writeBundle, dashboard, slugify } from '../src/delivery/bundle.js';
 import { assertPaletteAccessible } from '../src/theme.js';
@@ -36,13 +36,14 @@ const command = argv[0];
 /* ------------------------------------------------------------------ */
 
 function parseFlags(args) {
-  const flags = { out: 'out', png: true, width: 960, scale: 2, release: false, group: undefined };
+  const flags = { out: 'out', png: true, video: false, width: 960, scale: 2, release: false, group: undefined };
   const files = [];
   for (let i = 0; i < args.length; i += 1) {
     const a = args[i];
     if (a === '--out') { flags.out = args[++i]; }
     else if (a === '--no-png') { flags.png = false; }
     else if (a === '--release') { flags.release = true; }
+    else if (a === '--video') { flags.video = true; }
     else if (a === '--group') { flags.group = args[++i]; }
     else if (a === '--width') { flags.width = Number(args[++i]); }
     else if (a === '--scale') { flags.scale = Number(args[++i]); }
@@ -245,6 +246,13 @@ async function cmdBuild(args) {
   if (failures) process.exitCode = 1;
 }
 
+const recorder = (flags) => {
+  if (!flags.video) return null;
+  const record = (rec) => pageToVideo(rec.html, { width: rec.width, height: rec.height, frames: rec.seconds * rec.fps, fps: rec.fps });
+  record.onError = (e) => console.error(`  ${dim(`Video skipped: ${e.message}`)}`);
+  return record;
+};
+
 const rasterise = (flags) => (flags.png
   ? (fig) => svgToPng(fig.svg, { width: fig.width, height: fig.height, scale: flags.scale })
   : null);
@@ -263,7 +271,7 @@ async function buildActivity({ spec: lo, text }, file, flags) {
 
   const group = flags.group ?? basename(dirname(resolve(file)));
   const dir = group ? join(flags.out, group, slug) : join(flags.out, slug);
-  const written = await writeBundle(b, { dir, slug, source: text, png: rasterise(flags) });
+  const written = await writeBundle(b, { dir, slug, source: text, png: rasterise(flags), video: recorder(flags) });
 
   const tag = b.problems.length ? red('CHECK') : b.draft.isDraft ? yellow('DRAFT') : green('OK   ');
   console.log(`${tag} ${lo.pattern.padEnd(11)} ${group ? `${group}/` : ''}${slug} ${dim(`${written.length} files`)}`);
@@ -396,6 +404,10 @@ function cmdDoctor() {
   console.log(bold('learnviz environment\n'));
   console.log(`  Node        ${process.version}`);
   console.log(`  Chromium    ${caps.chromium ? green(caps.chromium) : red('not found. PNG output is unavailable, SVG still works.')}`);
+  console.log(`  ffmpeg      ${caps.ffmpeg ? green(caps.ffmpeg) : red('not found. --video is unavailable.')}`);
+  console.log(`  Video       ${caps.video.ok
+    ? green(`${caps.video.codec}${caps.video.universal ? '' : ', upload via Canvas Studio so it is transcoded'}`)
+    : red(`${caps.video.reason} Set LEARNVIZ_FFMPEG to a full ffmpeg, or run npm install ffmpeg-static.`)}`);
   try {
     assertPaletteAccessible();
     console.log(`  Palette     ${green('every colour pair meets WCAG 2.2 AA')}`);
@@ -408,7 +420,7 @@ function usage() {
   console.log(`${bold('learnviz')} turns course content into learning activities for Canvas.
 
   ${bold('learnviz propose')} <proposal.json> [--out DIR]
-  ${bold('learnviz build')} <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png]
+  ${bold('learnviz build')} <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png] [--video]
   ${bold('learnviz validate')} <spec.json...>
   ${bold('learnviz patterns')}     the eight activity patterns
   ${bold('learnviz types')}        the figure types

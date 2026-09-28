@@ -113,5 +113,6 @@ export function buildLO(lo) {
     draft,
     teach: pattern.teach(lo),
     answerKey: pattern.answerKey(lo),
+    recording: pattern.recording ? pattern.recording(lo, html) : null,
   };
 }
