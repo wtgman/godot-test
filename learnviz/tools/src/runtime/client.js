@@ -165,10 +165,19 @@ function lvRuntime(CONFIG) {
 
   /* ---------------- Frame height ---------------- */
 
+  // The height of the content, not of the document. A document is never
+  // shorter than its frame, so reporting scrollHeight would make a frame that
+  // resizes to fit grow by its padding on every report, without end.
+  var lastHeight = -1;
   function reportHeight() {
     try {
-      window.parent.postMessage({ type: 'lv:height', height: Math.ceil(root.scrollHeight) }, '*');
-    } catch (e) { /* no parent */ }
+      if (window.parent === window) return;
+      var cs = window.getComputedStyle(doc.body);
+      var h = Math.ceil(doc.body.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom));
+      if (!isFinite(h) || Math.abs(h - lastHeight) < 2) return;
+      lastHeight = h;
+      window.parent.postMessage({ type: 'lv:height', height: h }, '*');
+    } catch (e) { /* no parent, or no layout to measure */ }
   }
 
   /* ---------------- Helpers ---------------- */

@@ -1,0 +1,122 @@
+{
+  "kind": "proposal",
+  "topic": "The five stages of grief",
+  "sourceSummary": "Well-known content with no supplied source material. Kübler-Ross named five responses in 1969 after interviewing people who were dying. Almost every learner arrives already holding a flattened version of it, so the teaching problem is not introducing the model. It is correcting what learners already believe, and turning it into something they can use in a conversation.",
+  "audience": "Community services and aged care learners who will support grieving residents and families on placement.",
+  "analysis": {
+    "keyIdeas": [
+      "Kübler-Ross described five responses to loss: denial, anger, bargaining, depression and acceptance.",
+      "They are not a sequence. People move between them, skip some, and show several at once.",
+      "Each response sounds different in what a person says, and a worker can learn to hear it.",
+      "The worker's job is to keep the conversation open and stay within their role, not to move someone along."
+    ],
+    "threshold": "The five are a vocabulary for what someone might be feeling, not a map of where they should be. Once learners see that, they stop trying to move people to the next stage and start listening to the one in front of them.",
+    "knowledge": "The five responses, and what each can sound like in everyday speech.",
+    "skill": "Respond to a grieving family member in a way that keeps the conversation open, without arguing, over-promising or stepping outside their role.",
+    "misconceptions": [
+      { "belief": "Grief happens in five stages, in order.", "reality": "Kübler-Ross and later writers stressed that the responses do not come in a fixed order, and many people never show some of them." },
+      { "belief": "Acceptance means feeling better.", "reality": "Acceptance is engaging with what is real. It can be very sad." },
+      { "belief": "An angry family member is angry at me.", "reality": "Anger is often aimed at whoever is in the room. It is rarely about that person." },
+      { "belief": "If someone is in denial, I should gently correct them.", "reality": "Denial often protects someone while the news sinks in. Arguing with it usually closes the conversation." }
+    ]
+  },
+  "questions": [
+    {
+      "ask": "Is this for recognising grief on placement, or for critiquing the model itself?",
+      "why": "Recognition needs practice hearing the responses and answering them. Critique needs the history of how the model was misread. Both are worth building, but the options below lean to recognition, because that is what placement students need first.",
+      "options": ["Recognition, for use on placement", "Critique, as an example of a contested model", "Both"]
+    },
+    {
+      "ask": "Does your unit prescribe a specific grief model?",
+      "why": "Many current units teach dual process or continuing bonds alongside or instead of stage theory. If yours does, option 6 becomes worth building and the others should mention it.",
+      "options": ["Kübler-Ross only", "Kübler-Ross plus a named alternative", "Not sure, I will check the unit guide"]
+    },
+    {
+      "ask": "Can someone who works in aged care read the constructed examples before release?",
+      "why": "The statements, replies and the scenario were written for these activities. They need a practitioner to confirm they ring true, and the review sheets list exactly what to check."
+    }
+  ],
+  "candidates": [
+    {
+      "name": "Put the five stages in order",
+      "pattern": "predict",
+      "placement": "before",
+      "recommended": true,
+      "angle": "Before they read anything, learners put the five in the order they think people go through them. Almost everyone produces the textbook sequence, and the reveal shows why that sequence is the misconception.",
+      "payoff": "Say why the five responses are not a sequence, in their own words.",
+      "addresses": "The belief that grief happens in five stages, in order.",
+      "effort": "low",
+      "data": { "status": "needs-research", "needs": "Check the reveal's wording against On Death and Dying (1969) and On Grief and Grieving (2005)." },
+      "sketchFile": "1-predict-the-order.json"
+    },
+    {
+      "name": "The five responses, one at a time",
+      "pattern": "stepthrough",
+      "placement": "during",
+      "recommended": true,
+      "angle": "Taken one response per step at the front of the room: what it can sound like, what the person may need, and the well-meant reply that shuts the conversation down.",
+      "payoff": "Name each response from what someone says, and know one reply to avoid for each.",
+      "addresses": "The threshold idea: the five are a vocabulary, not a map.",
+      "effort": "low",
+      "data": { "status": "needs-teacher", "needs": "The replies were written for this activity. Check them against your service's communication guidance." },
+      "sketchFile": "5-walk-through-the-responses.json"
+    },
+    {
+      "name": "Which response is this?",
+      "pattern": "sort",
+      "placement": "after",
+      "recommended": true,
+      "angle": "Nine things a family member might say, each sorted into the response it shows most clearly. A first miss gets a nudge, a second gets the answer and the cue to listen for.",
+      "payoff": "Recognise each response from real speech rather than from a definition.",
+      "addresses": "Hearing the responses in everyday speech, including the ones that sound hopeful.",
+      "effort": "medium",
+      "data": { "status": "needs-teacher", "needs": "The nine statements were written for this activity. A practitioner should confirm they read as realistic." },
+      "sketchFile": "2-recognise-the-response.json"
+    },
+    {
+      "name": "A conversation in the corridor",
+      "pattern": "scenario",
+      "placement": "during",
+      "angle": "A resident's daughter stops the learner in the corridor and asks them to get the scan redone. Each choice leads somewhere different, with coaching on why.",
+      "payoff": "Respond to denial and bargaining without arguing, over-promising or stepping outside their role.",
+      "addresses": "The belief that denial should be corrected, and the skill of keeping a conversation open.",
+      "effort": "high",
+      "data": { "status": "needs-teacher", "needs": "A practitioner should check the dialogue, the setting and the escalation advice against your service's procedures." },
+      "sketchFile": "3-first-conversation.json"
+    },
+    {
+      "name": "What to say instead",
+      "pattern": "cards",
+      "placement": "after",
+      "angle": "Each card shows something kind people often say to someone who is grieving. The learner thinks of a better reply before turning it over.",
+      "payoff": "Have a better phrase ready for the moments that usually go wrong.",
+      "effort": "low",
+      "data": { "status": "needs-teacher", "needs": "Check the replacement phrases suit the tone and cultural context of your placements." },
+      "sketchFile": "4-what-to-say-instead.json"
+    },
+    {
+      "name": "Kübler-Ross beside the model your unit teaches",
+      "pattern": "sort",
+      "placement": "after",
+      "angle": "Short accounts of grief sorted by which model explains them better. The contrast shows what each model notices and what it misses.",
+      "payoff": "Explain what stage theory leaves out, using a model the unit prescribes.",
+      "addresses": "The belief that the five stages are the whole field.",
+      "effort": "medium",
+      "data": { "status": "needs-teacher", "needs": "The name of the alternative model your unit prescribes, such as dual process or continuing bonds, and the reading it comes from." }
+    }
+  ],
+  "rejected": [
+    {
+      "name": "The five stages as a numbered process flow",
+      "because": "This is the obvious visual and it is the wrong one. Five numbered boxes with arrows asserts a fixed order, which is exactly the misreading this topic has to correct. A diagram states it more persuasively than prose, so building it would teach the misconception."
+    },
+    {
+      "name": "The five stages as a cycle",
+      "because": "Better than a process, but still wrong. A ring with arrows asserts that the responses recur in a fixed order. They recur in no order at all."
+    },
+    {
+      "name": "Proportion of bereaved people showing each response",
+      "because": "There is no agreed figure to put in it. Studies use different populations, definitions and time windows. A chart would manufacture a precision the evidence does not support."
+    }
+  ]
+}

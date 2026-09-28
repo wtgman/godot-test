@@ -26,7 +26,7 @@ import { svgToPng, capabilities } from '../src/raster.js';
 import { validateLO, buildLO, PATTERNS } from '../src/lo/index.js';
 import { writeBundle, dashboard, slugify } from '../src/delivery/bundle.js';
 import { assertPaletteAccessible } from '../src/theme.js';
-import { validateProposal, renderProposal, summariseProposal, DATA_STATUS } from '../src/proposal.js';
+import { validateProposal, renderProposal, renderGallery, summariseProposal, DATA_STATUS } from '../src/proposal.js';
 
 const argv = process.argv.slice(2);
 const command = argv[0];
@@ -153,37 +153,50 @@ Do not paste the \`.svg\` into the Rich Content Editor. Canvas strips inline SVG
 async function cmdPropose(args) {
   const { flags, files } = parseFlags(args);
   if (files.length !== 1) {
-    console.error('Give me exactly one proposal file. Try: learnviz propose options.json --out build');
+    console.error('Give me exactly one proposal file. Try: learnviz propose examples/grief/proposal.json --out build');
     process.exitCode = 1;
     return;
   }
 
-  const raw = await readFile(files[0], 'utf8');
   let proposal;
   try {
-    proposal = validateProposal(JSON.parse(raw));
+    const { raw } = await readJson(files[0]);
+    // A candidate can point at a sketch in its own file, relative to the
+    // proposal, rather than carrying it inline.
+    for (const [i, c] of (raw.candidates || []).entries()) {
+      if (c && typeof c.sketchFile === 'string') {
+        try {
+          c.sketch = (await readJson(join(dirname(resolve(files[0])), c.sketchFile))).raw;
+        } catch (e) {
+          throw new SpecError(`candidates[${i}].sketchFile: ${e.code === 'ENOENT' ? `no file at ${c.sketchFile}` : e.message}`);
+        }
+        delete c.sketchFile;
+      }
+    }
+    proposal = validateProposal(raw);
   } catch (e) {
     console.error(`${red('FAILED')} ${files[0]}\n  ${e.message}`);
     process.exitCode = 1;
     return;
   }
 
-  const brief = renderProposal(proposal);
   await mkdir(flags.out, { recursive: true });
-  const name = `${slugify(proposal.topic, 'proposal')}.options.md`;
-  await writeFile(join(flags.out, name), brief);
+  const stem = slugify(proposal.topic, 'proposal');
+  await writeFile(join(flags.out, `${stem}.options.md`), renderProposal(proposal));
+  await writeFile(join(flags.out, `${stem}.gallery.html`), renderGallery(proposal));
 
   for (const row of summariseProposal(proposal)) {
     const status = DATA_STATUS[row.status];
     const mark = row.recommended ? green('PICK ') : '     ';
     const flag = status.blocking ? red(status.label) : dim(status.label);
     console.log(`${mark} ${String(row.n).padStart(2)}. ${row.name}`);
-    console.log(`      ${dim(row.type)} · ${flag} · ${dim(`${row.effort} effort`)}`);
+    console.log(`      ${dim(`${row.pattern} · ${row.placement}`)} · ${flag} · ${dim(`${row.effort} effort`)}${row.sketch ? dim(' · sketch') : ''}`);
   }
 
   const blocked = proposal.candidates.filter((c) => DATA_STATUS[c.data.status].blocking).length;
-  console.log(`\n${bold(String(proposal.candidates.length))} candidates, ${blocked} needing data before they can be built.`);
-  console.log(`Brief written to ${bold(join(resolve(flags.out), name))}`);
+  console.log(`\n${bold(String(proposal.candidates.length))} options, ${blocked} needing content before release.`);
+  console.log(`Gallery: ${bold(join(resolve(flags.out), `${stem}.gallery.html`))}`);
+  console.log(`Brief:   ${dim(join(resolve(flags.out), `${stem}.options.md`))}`);
 }
 
 async function cmdBuild(args) {

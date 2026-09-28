@@ -1,0 +1,106 @@
+{
+  "kind": "proposal",
+  "topic": "The Instagram acquisition",
+  "sourceSummary": "The source is a short history of Instagram: launched October 2010, bought by Facebook in April 2012 for a headline one billion US dollars, with thirteen staff and no revenue. The figures below come from contemporary reporting and filings, listed in research.md, and every one is marked to check until someone has opened the original.",
+  "audience": "Social media and digital marketing learners meeting platform economics for the first time.",
+  "analysis": {
+    "keyIdeas": [
+      "Facebook paid a headline US$1 billion for a company with thirteen staff and no revenue.",
+      "A price only means something next to other prices. Against later deals it looks small, against its revenue it looks absurd.",
+      "Big technology companies buy rivals to grow, and also to stop a rival growing.",
+      "Headline prices are not what was paid. Deals paid in shares change value before they close."
+    ],
+    "threshold": "Platforms were bought for users and attention, not for profit. Once learners see that, a billion dollars for a company with no revenue stops looking like a mistake and starts looking like a strategy.",
+    "knowledge": "What Facebook paid, what Instagram had at the time, and how that compares to other acquisitions of the period.",
+    "skill": "Put an acquisition price in context and explain the strategic reason a company might pay it.",
+    "misconceptions": [
+      { "belief": "Facebook bought Instagram because it was making money.", "reality": "It had no revenue at all. Facebook was paying for its users and its growth." },
+      { "belief": "The announced price is what was paid.", "reality": "The deal was mostly Facebook shares, which fell before it closed, so it was worth roughly US$715 million by then." },
+      { "belief": "A bigger price means a better deal.", "reality": "Tumblr cost about the same as Instagram and was later sold for a tiny fraction of it." }
+    ]
+  },
+  "questions": [
+    {
+      "ask": "Is the lesson about valuation, or about competitive strategy?",
+      "why": "The same billion dollars supports two different lessons. Valuation asks how you price something with no revenue. Strategy asks why you pay anything at all to stop a rival. Options 1 to 3 suit either. Option 4 is strategy.",
+      "options": ["Valuation", "Competitive strategy", "Both, across the week"]
+    },
+    {
+      "ask": "Do you want figures kept to 2012, or brought up to date?",
+      "why": "A 2012-only lesson is fully sourceable from the announcements. Bringing it to today means third-party estimates, because Meta has never published Instagram's revenue or profit separately. That is a teaching point in itself, but it changes what can be cited.",
+      "options": ["2012 only, everything citable", "Up to date, with estimates clearly labelled"]
+    }
+  ],
+  "candidates": [
+    {
+      "name": "What was Instagram worth?",
+      "pattern": "estimate",
+      "placement": "before",
+      "recommended": true,
+      "angle": "YouTube, Tumblr and LinkedIn are shown. Instagram and WhatsApp are hidden. Learners drag each hidden bar to their guess, then see the real prices land against their guesses.",
+      "payoff": "Place the Instagram price among the deals of its time, and say why the headline price is not the whole story.",
+      "addresses": "The belief that the announced price is what was paid.",
+      "effort": "low",
+      "data": { "status": "needs-research", "needs": "Eight prices from announcements, filings and reporting. Tumblr's 2019 sale price is reported, never disclosed." },
+      "sketchFile": "1-guess-the-price.json"
+    },
+    {
+      "name": "What was Instagram earning?",
+      "pattern": "predict",
+      "placement": "before",
+      "angle": "Learners commit to a guess at Instagram's annual revenue when Facebook bought it. The answer, nothing at all, is the hook for the whole topic.",
+      "payoff": "Explain what Facebook was paying for, if not revenue.",
+      "addresses": "The belief that Facebook bought Instagram because it was making money.",
+      "effort": "low",
+      "data": { "status": "needs-research", "needs": "The staff count, revenue and user figures at the time of sale, from contemporary reporting." },
+      "sketchFile": "2-what-was-it-earning.json"
+    },
+    {
+      "name": "How Instagram grew",
+      "pattern": "stepthrough",
+      "placement": "during",
+      "recommended": true,
+      "angle": "The timeline built one turning point at a time at the front of the room, pausing on each to ask what it was responding to: a rival, or a change in how people used their phones.",
+      "payoff": "Explain Instagram's growth as a series of responses to competitors and to phones.",
+      "addresses": "The threshold idea: platforms compete for attention.",
+      "effort": "low",
+      "data": { "status": "needs-research", "needs": "Launch dates for video, Stories and Reels, checked against primary sources." },
+      "sketchFile": "3-how-it-happened.json"
+    },
+    {
+      "name": "Why buy a rival?",
+      "pattern": "sort",
+      "placement": "after",
+      "recommended": true,
+      "angle": "Short descriptions of real technology acquisitions, sorted by the main reason for the purchase: to grow, to stop a rival, or to acquire people and technology. The contested ones make the best discussion.",
+      "payoff": "Name the strategic reason behind an acquisition and back it with evidence.",
+      "addresses": "The skill of explaining why a company pays what it pays.",
+      "effort": "medium",
+      "data": { "status": "needs-research", "needs": "A reason for each deal, sourced to reporting or filings rather than assumed. Where the reason is contested, say so in the feedback." }
+    },
+    {
+      "name": "What was each user worth?",
+      "pattern": "explore",
+      "placement": "during",
+      "angle": "A price divided by users at the time of sale, with sliders for both. Learners set Instagram and WhatsApp side by side and see that the price per user is closer than the headline prices suggest.",
+      "payoff": "Compare acquisitions of different sizes on a like-for-like measure.",
+      "addresses": "The belief that a bigger price means a better deal.",
+      "effort": "medium",
+      "data": { "status": "needs-research", "needs": "User counts at the time of each deal, from the announcements, each labelled as registered or monthly active users, since the two are not comparable." }
+    }
+  ],
+  "rejected": [
+    {
+      "name": "Instagram's profit over time",
+      "because": "The data does not exist. Meta reports two segments, Family of Apps and Reality Labs, not individual apps, so there is no profit figure to chart. Anything found online is a third-party model. Charting it as profit would present a guess as a disclosure."
+    },
+    {
+      "name": "The acquisition as a process flow",
+      "because": "The negotiation is not documented well enough to draw without inventing steps, and the interesting part is the judgement, not the sequence."
+    },
+    {
+      "name": "Growth of every social platform since 2004",
+      "because": "Too many series and too many definitions of a user, and it answers no question this lesson is asking."
+    }
+  ]
+}
