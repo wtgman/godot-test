@@ -415,12 +415,16 @@ async function cmdCourse(args) {
     await mkdir(join(out, 'sketches'), { recursive: true });
     for (const s of sketches) await writeFile(join(out, s.file), s.html);
     await writeFile(join(out, 'index.html'), reviewApp(data));
+    // The same app as one file, sketches included, for sending to someone.
+    const single = `${slugify(data.title, 'course')}-review.html`;
+    await writeFile(join(out, single), reviewApp(data, { inline: sketches }));
     const ready = data.pages.filter((p) => p.status === 'ready').length;
     const skips = data.pages.filter((p) => p.status === 'skip').length;
     const bad = data.pages.filter((p) => p.status === 'invalid');
     console.log(`${green('OK   ')} ${data.pages.length} pages: ${ready} with options, ${skips} suggested for no activity, ${data.pages.length - ready - skips - bad.length} without options yet`);
     for (const p of bad) console.log(`      ${red('!')} ${p.slug}: ${p.error}`);
     console.log(`\nReview app: ${bold(resolve(join(out, 'index.html')))}`);
+    console.log(`One file:   ${dim(resolve(join(out, single)))}`);
     return;
   }
 

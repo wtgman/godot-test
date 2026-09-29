@@ -124,10 +124,17 @@ function app(D) {
   }
 
   function decided(p) { return state[p.slug] && state[p.slug].decision; }
+  // Pages Claude suggested need nothing, and nobody has decided yet. On a
+  // real course that is most of it, and agreeing one at a time is tedious.
+  function openSkips() { return D.pages.filter(function (p) { return p.status === 'skip' && !decided(p); }); }
   function progress() {
     var n = D.pages.filter(decided).length;
     $('prog-n').textContent = n + ' of ' + D.pages.length + ' pages decided';
     $('prog-bar').style.width = (n / D.pages.length * 100) + '%';
+    var k = openSkips().length;
+    var b = $('skip-all');
+    b.hidden = !k;
+    b.textContent = 'Agree to ' + k + ' suggested skip' + (k === 1 ? '' : 's');
   }
 
   function sideNav(current) {
@@ -221,7 +228,9 @@ function app(D) {
       var load = function () {
         if (det.querySelector('iframe')) return;
         var f = document.createElement('iframe');
-        f.src = det.getAttribute('data-sketch');
+        var path = det.getAttribute('data-sketch');
+        // A single-file review carries its sketches inline.
+        if (D.inline && D.inline[path]) f.srcdoc = D.inline[path]; else f.src = path;
         f.title = 'Sketch: ' + det.parentNode.querySelector('h4').textContent;
         f.loading = 'lazy';
         det.appendChild(f);
@@ -263,6 +272,7 @@ function app(D) {
       + '<p>' + n.build + ' activit' + (n.build === 1 ? 'y' : 'ies') + ' to build, ' + n.skip + ' page' + (n.skip === 1 ? '' : 's') + ' with none, ' + n.options + ' waiting for other options.</p>'
       + '<p>Save your choices, then give them to Claude to build: put <code>choices.json</code> in the course folder, or copy them and paste them into the conversation.</p>'
       + '<p><button type="button" class="btn" data-act="save">Save choices.json</button> <button type="button" class="btn sec" data-act="copy">Copy choices for Claude</button></p>'
+      + '<details class="page"><summary>Show the choices as text, to copy by hand</summary><div class="page-text"><textarea readonly style="width:100%;min-height:220px;font:13px ui-monospace,Menlo,Consolas,monospace;border:0" aria-label="Your choices as text">' + esc(payload()) + '</textarea></div></details>'
       + '<div class="summary"><table><thead><tr><th scope="col">Page</th><th scope="col">Decision</th><th scope="col">Where</th></tr></thead><tbody>'
       + D.pages.map(function (p) {
         var d = state[p.slug] || {};
@@ -301,6 +311,18 @@ function app(D) {
     var act = b.dataset.act;
     var slug = main.dataset.slug;
     var p = D.pages.filter(function (x) { return x.slug === slug; })[0];
+    if (act === 'skipall') {
+      var list = openSkips();
+      list.forEach(function (x) { state[x.slug] = { decision: 'skip' }; });
+      persist();
+      progress();
+      // Stay on the current page if it still needs a decision.
+      var here = D.pages.filter(function (x) { return x.slug === slug; })[0];
+      var next = here && !decided(here) ? here.slug : nextUndecided(slug || D.pages[D.pages.length - 1].slug);
+      live.textContent = list.length + ' pages marked as needing no activity. Each can still be changed from the page list.';
+      if (next) show(next, true); else summary();
+      return;
+    }
     if (act === 'save') save();
     else if (act === 'copy') copy();
     else if (act === 'summary') summary();
@@ -324,7 +346,12 @@ function app(D) {
 }
 /* eslint-enable */
 
-export function reviewApp(data) {
+/**
+ * @param {object} data from reviewData
+ * @param {{ inline?: { file: string, html: string }[] }} [options] inline: put the
+ *   sketches inside the page, so the app is one file that can be sent anywhere.
+ */
+export function reviewApp(data, { inline } = {}) {
   const icons = {};
   for (const p of data.pages) for (const o of p.options || []) icons[o.pattern] = icon(o.pattern, 13);
   return `<!doctype html>
@@ -340,6 +367,7 @@ export function reviewApp(data) {
   <h1>${esc(data.title)}</h1>
   <div class="prog"><span id="prog-n"></span><div class="bar" aria-hidden="true"><span id="prog-bar"></span></div></div>
   <button type="button" class="btn sec pages-toggle" data-act="pages" aria-expanded="false" aria-controls="side">All pages</button>
+  <button type="button" class="btn sec" data-act="skipall" id="skip-all" hidden></button>
   <button type="button" class="btn sec" data-act="copy">Copy choices</button>
   <button type="button" class="btn" data-act="save">Save choices.json</button>
 </div></header>
@@ -348,7 +376,7 @@ export function reviewApp(data) {
   <main id="main" aria-live="off"></main>
 </div>
 <p id="live" class="sr" aria-live="polite"></p>
-<script>(${app.toString()})(${safeJson({ ...data, icons })});</script>
+<script>(${app.toString()})(${safeJson({ ...data, icons, inline: inline ? Object.fromEntries(inline.map((x) => [x.file, x.html])) : null })});</script>
 </body>
 </html>
 `;

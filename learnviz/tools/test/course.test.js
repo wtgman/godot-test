@@ -37,6 +37,11 @@ describe('zip reading', () => {
     }
   });
 
+  test('keeps folder entries, so a rewritten export has every entry the original had', () => {
+    const back = unzip(zip([{ name: 'wiki_content/', data: '' }, { name: 'wiki_content/a.html', data: 'x' }]));
+    assert.deepEqual(back.map((e) => e.name), ['wiki_content/', 'wiki_content/a.html']);
+  });
+
   test('refuses something that is not a zip, saying what an export is', () => {
     assert.throws(() => unzip(Buffer.from('not a zip')), /\.imscc/);
   });

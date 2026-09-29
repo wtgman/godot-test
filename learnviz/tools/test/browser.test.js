@@ -324,9 +324,18 @@ describe('the course review app', { skip }, () => {
       await page.reload();
       assert.match(await page.textContent('#prog-n'), /^3 of 7/, 'choices lost on reload');
 
+      // The one remaining suggested skip can be agreed in one go, which then
+      // moves to the next page that still needs a decision.
+      assert.equal(await page.textContent('#skip-all'), 'Agree to 1 suggested skip');
+      await page.click('#skip-all');
+      assert.match(await page.textContent('#prog-n'), /^4 of 7/);
+      assert.ok(await page.isHidden('#skip-all'));
+      assert.equal(await heading(), 'Recognising grief responses');
+
       const [download] = await Promise.all([page.waitForEvent('download'), page.click('.top [data-act="save"]')]);
       const saved = JSON.parse(readFileSync(await download.path(), 'utf8'));
       assert.equal(saved.kind, 'course-choices');
+      assert.deepEqual(saved.pages['looking-after-yourself'], { decision: 'skip' });
       assert.deepEqual(saved.pages['what-is-grief'], { decision: 'build', candidate: 1, option: 2, name: 'The five responses, one at a time', pattern: 'stepthrough', label: 'Step by step', insert: { after: 'The five stages' } });
       assert.deepEqual(errors, []);
       await ctx.close();

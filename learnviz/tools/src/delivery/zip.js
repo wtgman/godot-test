@@ -76,7 +76,7 @@ export function zip(entries, { store = false } = {}) {
     central.writeUInt16LE(0, 32); // comment
     central.writeUInt16LE(0, 34); // disk
     central.writeUInt16LE(0, 36); // internal attrs
-    central.writeUInt32LE(0, 38); // external attrs
+    central.writeUInt32LE(entry.name.endsWith('/') ? 0x10 : 0, 38); // external attrs: MS-DOS folder bit
     central.writeUInt32LE(offset, 42);
     centrals.push(central, name);
 
@@ -123,7 +123,9 @@ export function unzip(buf) {
     const name = buf.toString(flags & 0x0800 ? 'utf8' : 'latin1', p + 46, p + 46 + nameLen);
     p += 46 + nameLen + extra + comment;
     if (flags & 0x1) throw new Error(`${name} is encrypted.`);
-    if (name.endsWith('/')) continue;
+    // Folder entries are kept, so a rewritten archive has exactly the entries
+    // the original had.
+    if (name.endsWith('/')) { out.push({ name, data: Buffer.alloc(0) }); continue; }
     const start = local + 30 + buf.readUInt16LE(local + 26) + buf.readUInt16LE(local + 28);
     const body = buf.subarray(start, start + size);
     let data;
