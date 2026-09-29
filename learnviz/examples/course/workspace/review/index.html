@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review: Supporting People Through Grief and Loss</title>
+<style>
+:root { color-scheme: light; --ink: #000054; --soft: #3a3a6e; --line: #d9d9e6; --wash: #f5f5fa; --accent: #fac800; --ok: #00706b; --ok-wash: #e3f2f1; --miss: #a4177c; --focus: #1a56c4; --draft: #fdf223; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #ffffff; color: var(--ink); font: 16px/1.55 Helvetica, Arial, sans-serif; }
+button, select, textarea { font: inherit; color: inherit; }
+a { color: var(--focus); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+[tabindex="-1"]:focus { outline: none; }
+.top { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 2px solid var(--ink); }
+.top-in { max-width: 1320px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.top h1 { font-size: 17px; margin: 0; flex: 1 1 260px; }
+.prog { display: flex; align-items: center; gap: 10px; font-size: 14px; flex: 1 1 220px; }
+.bar { flex: 1; height: 8px; background: var(--wash); border-radius: 999px; overflow: hidden; min-width: 80px; }
+.bar span { display: block; height: 100%; width: 0; background: var(--ok); transition: width 300ms ease; }
+.btn { border: 2px solid var(--ink); background: var(--ink); color: #fff; border-radius: 10px; padding: 8px 14px; font-weight: 800; cursor: pointer; min-height: 44px; }
+.btn.sec { background: #fff; color: var(--ink); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink); text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.layout { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; padding: 0 16px; }
+.side { position: sticky; top: 72px; align-self: start; max-height: calc(100vh - 84px); overflow: auto; padding: 16px 4px 24px 0; }
+.side h2 { font-size: 12.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ok); margin: 14px 0 4px; }
+.side ol { list-style: none; margin: 0; padding: 0; }
+.side button { display: flex; gap: 8px; align-items: flex-start; width: 100%; text-align: left; background: none; border: 0; border-radius: 8px; padding: 6px 8px; cursor: pointer; font-size: 14.5px; min-height: 36px; }
+.side button:hover { background: var(--wash); }
+.side button[aria-current="page"] { background: var(--ink); color: #fff; }
+.dot { flex: 0 0 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 800; margin-top: 1px; }
+.dot.build { background: var(--ok); border-color: var(--ok); color: #fff; }
+.dot.skip { background: var(--wash); border-color: var(--soft); color: var(--soft); }
+.dot.options { border-color: var(--miss); color: var(--miss); }
+.dot.none { border-style: dashed; }
+main { padding: 20px 0 80px; min-width: 0; }
+.kicker { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ok); margin: 0 0 4px; }
+main h2.title { font-size: 30px; line-height: 1.15; margin: 0 0 10px; }
+.decided { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: var(--ok-wash); border-left: 5px solid var(--ok); border-radius: 0 10px 10px 0; padding: 10px 14px; margin: 0 0 14px; }
+.decided.skip { background: var(--wash); border-color: var(--soft); }
+.decided.options { background: #fbeaf3; border-color: var(--miss); }
+.page { border: 1px solid var(--line); border-radius: 14px; margin: 0 0 18px; }
+.page summary { cursor: pointer; padding: 12px 16px; font-weight: 800; }
+.page-text { max-height: 380px; overflow: auto; padding: 0 18px 14px; border-top: 1px solid var(--line); }
+.page-text h3, .page-text h4, .page-text h5 { margin: 14px 0 4px; font-size: 16.5px; }
+.page-text p { margin: 6px 0; }
+.page-text .note { color: var(--soft); font-style: italic; }
+.why { background: var(--wash); border-radius: 12px; padding: 12px 16px; margin: 0 0 18px; }
+.why p { margin: 0 0 6px; }
+.why ul { margin: 4px 0 0; padding-left: 20px; }
+h3.opts { font-size: 20px; margin: 22px 0 10px; }
+.opt { border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin: 0 0 14px; }
+.opt.is-rec { border: 2px solid var(--ink); }
+.opt.is-chosen { border: 3px solid var(--ok); background: #fafefd; }
+.opt h4 { font-size: 18px; margin: 0 0 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 10px; padding: 0; }
+.chip { display: inline-flex; gap: 5px; align-items: center; font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--wash); }
+.chip.rec { background: var(--ink); color: #fff; }
+.chip.pat { color: var(--ok); }
+.chip.block { background: #fbeaf3; color: var(--miss); }
+.opt dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 10px; font-size: 15px; }
+.opt dt { font-weight: 800; }
+.opt dd { margin: 0; }
+@media (max-width: 600px) { .opt dl { grid-template-columns: 1fr; } .opt dd { margin-bottom: 6px; } }
+.opt details summary { cursor: pointer; font-weight: 800; color: var(--focus); min-height: 32px; }
+.opt iframe { width: 100%; height: 620px; border: 1px solid var(--line); border-radius: 12px; margin-top: 6px; background: #fff; }
+.choose { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0 8px; }
+.choose label { font-weight: 700; font-size: 14.5px; }
+.choose select { border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 44px; max-width: 100%; background: #fff; }
+.note-field { margin: 18px 0 10px; }
+.note-field label { display: block; font-weight: 800; margin-bottom: 4px; }
+.note-field textarea { width: 100%; min-height: 70px; border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.after { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
+.empty { border: 1px dashed var(--line); border-radius: 14px; padding: 16px; }
+.err { border-left: 5px solid var(--miss); background: #fbeaf3; padding: 10px 14px; border-radius: 0 10px 10px 0; }
+.summary table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.summary th, .summary td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pages-toggle { display: none; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { position: static; max-height: none; padding: 8px 0 0; display: none; }
+  .side.open { display: block; }
+  .pages-toggle { display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <h1>Supporting People Through Grief and Loss</h1>
+  <div class="prog"><span id="prog-n"></span><div class="bar" aria-hidden="true"><span id="prog-bar"></span></div></div>
+  <button type="button" class="btn sec pages-toggle" data-act="pages" aria-expanded="false" aria-controls="side">All pages</button>
+  <button type="button" class="btn sec" data-act="copy">Copy choices</button>
+  <button type="button" class="btn" data-act="save">Save choices.json</button>
+</div></header>
+<div class="layout">
+  <nav class="side" id="side" aria-label="Pages in the course"></nav>
+  <main id="main" aria-live="off"></main>
+</div>
+<p id="live" class="sr" aria-live="polite"></p>
+<script>(function app(D) {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var main = $('main');
+  var live = $('live');
+  var byModule = [];
+  D.pages.forEach(function (p) {
+    var m = byModule[byModule.length - 1];
+    if (!m || m.title !== p.module) byModule.push(m = { title: p.module, pages: [] });
+    m.pages.push(p);
+  });
+
+  // Choices: what was saved to choices.json, with anything done since in this
+  // browser on top.
+  var state = {};
+  Object.keys(D.saved || {}).forEach(function (k) { state[k] = D.saved[k]; });
+  try {
+    var local = JSON.parse(window.localStorage.getItem(D.key) || '{}');
+    Object.keys(local).forEach(function (k) { state[k] = local[k]; });
+  } catch (e) { /* storage unavailable: choices still work, and can be saved */ }
+  function persist() {
+    try { window.localStorage.setItem(D.key, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  function decided(p) { return state[p.slug] && state[p.slug].decision; }
+  function progress() {
+    var n = D.pages.filter(decided).length;
+    $('prog-n').textContent = n + ' of ' + D.pages.length + ' pages decided';
+    $('prog-bar').style.width = (n / D.pages.length * 100) + '%';
+  }
+
+  function sideNav(current) {
+    $('side').innerHTML = byModule.map(function (m) {
+      return '<h2>' + esc(m.title) + '</h2><ol>' + m.pages.map(function (p) {
+        var d = decided(p);
+        var mark = d === 'build' ? '&#10003;' : d === 'skip' ? '&minus;' : d === 'options' ? '?' : '';
+        var cls = d || (p.status === 'missing' ? 'none' : '');
+        var word = d === 'build' ? 'activity chosen' : d === 'skip' ? 'no activity' : d === 'options' ? 'asked for other options' : p.status === 'missing' ? 'no options yet' : 'not decided';
+        return '<li><button type="button" data-slug="' + esc(p.slug) + '"' + (current && current.slug === p.slug ? ' aria-current="page"' : '') + '>'
+          + '<span class="dot ' + cls + '" aria-hidden="true">' + mark + '</span><span>' + p.n + '. ' + esc(p.title) + '<span class="sr">, ' + word + '</span></span></button></li>';
+      }).join('') + '</ol>';
+    }).join('');
+  }
+
+  // Page text arrives as light Markdown: # headings, - and 1. lists, | tables.
+  function renderText(t) {
+    return t.split('\n').map(function (line) {
+      var h = line.match(/^(#{1,6})\s+(.*)$/);
+      if (h) return '<h' + Math.min(5, h[1].length + 2) + '>' + esc(h[2]) + '</h' + Math.min(5, h[1].length + 2) + '>';
+      if (/^\[(Image|Embedded)/.test(line)) return '<p class="note">' + esc(line) + '</p>';
+      if (!line.trim()) return '';
+      return '<p>' + esc(line) + '</p>';
+    }).join('');
+  }
+
+  function placeOptions(p, o) {
+    var cur = state[p.slug] && state[p.slug].decision === 'build' && state[p.slug].candidate === o.index ? state[p.slug].insert : o.insert;
+    var val = function (v) { return typeof v === 'object' && v ? 'after:' + v.after : v; };
+    var c = val(cur);
+    var opts = [['end', 'At the end of the page'], ['start', 'At the top of the page']].concat(p.headings.map(function (h) { return ['after:' + h, 'At the end of the section "' + h + '"']; }));
+    if (c && c.indexOf('after:') === 0 && p.headings.indexOf(c.slice(6)) < 0) opts.push([c, 'After "' + c.slice(6) + '" (not found on the page)']);
+    return opts.map(function (x) { return '<option value="' + esc(x[0]) + '"' + (x[0] === c ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join('');
+  }
+
+  function show(slug, focus) {
+    var p = D.pages.filter(function (x) { return x.slug === slug; })[0];
+    if (!p) { summary(); return; }
+    if (location.hash !== '#' + slug) history.replaceState(null, '', '#' + slug);
+    sideNav(p);
+    var d = state[p.slug];
+    var idx = D.pages.indexOf(p);
+    var h = '<p class="kicker">' + esc(p.module) + ' &middot; Page ' + p.n + ' of ' + D.pages.length + (p.state !== 'published' ? ' &middot; unpublished' : '') + '</p>'
+      + '<h2 class="title" id="page-h" tabindex="-1">' + esc(p.title) + '</h2>';
+    if (d && d.decision) {
+      var words = d.decision === 'build' ? '<strong>Chosen:</strong> ' + esc(d.name) + ' (' + esc(d.label || d.pattern) + ')'
+        : d.decision === 'skip' ? '<strong>No activity for this page.</strong>' : '<strong>Asked for other options.</strong>';
+      h += '<div class="decided ' + d.decision + '">' + words + (d.note ? '<span>Note: ' + esc(d.note) + '</span>' : '') + '<button type="button" class="btn ghost" data-act="undo">Undo this decision</button></div>';
+    }
+    h += '<details class="page"' + (p.status === 'ready' ? '' : ' open') + '><summary>What the page says (' + p.words + ' words)</summary><div class="page-text">' + renderText(p.text) + '</div></details>';
+
+    if (p.status === 'missing') {
+      h += '<div class="empty"><p><strong>No options yet.</strong> Claude has not written a proposal for this page. Skip it, or move on and come back once options are in.</p></div>';
+    } else if (p.status === 'invalid') {
+      h += '<div class="err"><p><strong>The proposal for this page has a problem.</strong> ' + esc(p.error) + '</p></div>';
+    } else if (p.status === 'skip') {
+      h += '<div class="why"><p><strong>Suggested: no activity.</strong> ' + esc(p.reason) + '</p></div>'
+        + '<div class="after"><button type="button" class="btn" data-act="skip">Agree, no activity</button><button type="button" class="btn sec" data-act="options">Ask for options for this page</button></div>';
+    } else {
+      var a = p.analysis || {};
+      h += '<div class="why">' + (a.threshold ? '<p><strong>The idea that unlocks this page.</strong> ' + esc(a.threshold) + '</p>' : '')
+        + ((a.misconceptions || []).length ? '<p><strong>What learners often believe.</strong></p><ul>' + a.misconceptions.map(function (m) { return '<li>' + esc(m.belief) + ' <em>' + esc(m.reality) + '</em></li>'; }).join('') + '</ul>' : '')
+        + '</div><h3 class="opts">Options for this page</h3>';
+      h += p.options.map(function (o) {
+        var chosen = d && d.decision === 'build' && d.candidate === o.index;
+        return '<article class="opt' + (o.recommended ? ' is-rec' : '') + (chosen ? ' is-chosen' : '') + '" aria-labelledby="o-' + o.n + '">'
+          + '<h4 id="o-' + o.n + '">' + o.n + '. ' + esc(o.name) + '</h4>'
+          + '<ul class="chips">' + (o.recommended ? '<li class="chip rec">Recommended</li>' : '') + (chosen ? '<li class="chip rec" style="background:var(--ok)">Chosen</li>' : '')
+          + '<li class="chip pat">' + (D.icons[o.pattern] || '') + ' ' + esc(o.label) + '</li><li class="chip">' + esc(o.placement === 'any' ? 'Any time' : o.placement[0].toUpperCase() + o.placement.slice(1) + ' class') + '</li>'
+          + '<li class="chip' + (o.data.blocking ? ' block' : '') + '">' + esc(o.data.label) + '</li><li class="chip">' + esc(o.effort) + ' effort</li>'
+          + '<li class="chip">' + (o.scored ? 'Scored in Canvas' : 'Completion only') + '</li></ul>'
+          + '<dl><dt>The angle</dt><dd>' + esc(o.angle) + '</dd><dt>Afterwards</dt><dd>' + esc(o.payoff) + '</dd>'
+          + (o.addresses ? '<dt>Works on</dt><dd>' + esc(o.addresses) + '</dd>' : '')
+          + (o.data.needs ? '<dt>Needs</dt><dd>' + esc(o.data.needs) + '</dd>' : '') + '</dl>'
+          + '<div class="choose"><label for="where-' + o.n + '">Place it</label><select id="where-' + o.n + '">' + placeOptions(p, o) + '</select>'
+          + '<button type="button" class="btn" data-act="build" data-n="' + o.n + '">' + (chosen ? 'Keep this one' : 'Build this one') + '</button></div>'
+          + (o.sketch ? '<details data-sketch="' + esc(o.sketch) + '"' + (o.recommended && !chosen ? ' open' : '') + '><summary>Try it as a learner</summary></details>' : '<p><em>No sketch yet. It will be drafted if you choose it.</em></p>')
+          + '</article>';
+      }).join('');
+      h += '<div class="note-field"><label for="note">Note for whoever builds it (optional)</label><textarea id="note" placeholder="For example: use a Vietnamese family name, or keep it under five minutes.">' + esc(d && d.note || '') + '</textarea></div>'
+        + '<div class="after"><button type="button" class="btn sec" data-act="skip">No activity for this page</button><button type="button" class="btn sec" data-act="options">None of these, ask for others</button></div>';
+    }
+    h += '<div class="after" style="border:0;margin-top:10px">'
+      + (idx > 0 ? '<button type="button" class="btn ghost" data-act="prev">&larr; Previous page</button>' : '')
+      + (idx < D.pages.length - 1 ? '<button type="button" class="btn ghost" data-act="next">Next page without deciding &rarr;</button>' : '')
+      + '<button type="button" class="btn ghost" data-act="summary">See all choices</button></div>';
+    main.innerHTML = h;
+    main.dataset.slug = p.slug;
+    main.querySelectorAll('details[data-sketch]').forEach(function (det) {
+      var load = function () {
+        if (det.querySelector('iframe')) return;
+        var f = document.createElement('iframe');
+        f.src = det.getAttribute('data-sketch');
+        f.title = 'Sketch: ' + det.parentNode.querySelector('h4').textContent;
+        f.loading = 'lazy';
+        det.appendChild(f);
+      };
+      if (det.open) load();
+      det.addEventListener('toggle', function () { if (det.open) load(); });
+    });
+    if (focus) $('page-h').focus();
+    window.scrollTo(0, 0);
+  }
+
+  function nextUndecided(from) {
+    var i = D.pages.findIndex(function (p) { return p.slug === from; });
+    for (var k = 1; k <= D.pages.length; k += 1) {
+      var p = D.pages[(i + k) % D.pages.length];
+      if (!decided(p)) return p.slug;
+    }
+    return null;
+  }
+
+  function decide(slug, entry) {
+    var note = $('note');
+    if (note && note.value.trim()) entry.note = note.value.trim();
+    state[slug] = entry;
+    persist();
+    progress();
+    var next = nextUndecided(slug);
+    live.textContent = (entry.decision === 'build' ? 'Chosen: ' + entry.name + '.' : entry.decision === 'skip' ? 'No activity for this page.' : 'Asked for other options.') + (next ? ' Moving to the next page.' : ' Every page is decided.');
+    if (next) show(next, true); else summary();
+  }
+
+  function summary() {
+    history.replaceState(null, '', '#summary');
+    sideNav(null);
+    var n = { build: 0, skip: 0, options: 0 };
+    D.pages.forEach(function (p) { var d = decided(p); if (d) n[d] += 1; });
+    var left = D.pages.length - n.build - n.skip - n.options;
+    main.innerHTML = '<p class="kicker">Summary</p><h2 class="title" id="page-h" tabindex="-1">' + (left ? left + ' page' + (left === 1 ? '' : 's') + ' still to decide' : 'Every page is decided') + '</h2>'
+      + '<p>' + n.build + ' activit' + (n.build === 1 ? 'y' : 'ies') + ' to build, ' + n.skip + ' page' + (n.skip === 1 ? '' : 's') + ' with none, ' + n.options + ' waiting for other options.</p>'
+      + '<p>Save your choices, then give them to Claude to build: put <code>choices.json</code> in the course folder, or copy them and paste them into the conversation.</p>'
+      + '<p><button type="button" class="btn" data-act="save">Save choices.json</button> <button type="button" class="btn sec" data-act="copy">Copy choices for Claude</button></p>'
+      + '<div class="summary"><table><thead><tr><th scope="col">Page</th><th scope="col">Decision</th><th scope="col">Where</th></tr></thead><tbody>'
+      + D.pages.map(function (p) {
+        var d = state[p.slug] || {};
+        var what = d.decision === 'build' ? esc(d.name) + ' (' + esc(d.label || d.pattern) + ')' : d.decision === 'skip' ? 'No activity' : d.decision === 'options' ? 'Asked for other options' : '<em>Not decided</em>';
+        var where = d.decision === 'build' ? (d.insert === 'start' ? 'Top of the page' : d.insert && d.insert.after ? 'End of "' + esc(d.insert.after) + '"' : 'End of the page') : '';
+        return '<tr><td><button type="button" class="btn ghost" data-go="' + esc(p.slug) + '">' + p.n + '. ' + esc(p.title) + '</button></td><td>' + what + (d.note ? '<br><small>Note: ' + esc(d.note) + '</small>' : '') + '</td><td>' + where + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    $('page-h').focus();
+  }
+
+  function payload() {
+    return JSON.stringify({ kind: 'course-choices', course: D.title, key: D.key, pages: state }, null, 2);
+  }
+  function save() {
+    var blob = new Blob([payload() + '\n'], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'choices.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    live.textContent = 'Saved choices.json.';
+  }
+  function copy() {
+    var text = 'Here are my choices for ' + D.title + '. Save them as choices.json in the course folder and build.\n\n```json\n' + payload() + '\n```';
+    var done = function () { live.textContent = 'Copied. Paste it into the conversation with Claude.'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { live.textContent = 'Could not copy. Use Save choices.json instead.'; });
+    else live.textContent = 'Copying is not available here. Use Save choices.json instead.';
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.slug) { show(b.dataset.slug, true); $('side').classList.remove('open'); return; }
+    if (b.dataset.go) { show(b.dataset.go, true); return; }
+    var act = b.dataset.act;
+    var slug = main.dataset.slug;
+    var p = D.pages.filter(function (x) { return x.slug === slug; })[0];
+    if (act === 'save') save();
+    else if (act === 'copy') copy();
+    else if (act === 'summary') summary();
+    else if (act === 'pages') { $('side').classList.toggle('open'); b.setAttribute('aria-expanded', $('side').classList.contains('open')); }
+    else if (!p) return;
+    else if (act === 'build') {
+      var o = p.options.filter(function (x) { return String(x.n) === b.dataset.n; })[0];
+      var w = $('where-' + o.n).value;
+      decide(p.slug, { decision: 'build', candidate: o.index, option: o.n, name: o.name, pattern: o.pattern, label: o.label, insert: w.indexOf('after:') === 0 ? { after: w.slice(6) } : w });
+    } else if (act === 'skip') decide(p.slug, { decision: 'skip' });
+    else if (act === 'options') decide(p.slug, { decision: 'options' });
+    else if (act === 'undo') { delete state[p.slug]; persist(); progress(); show(p.slug, true); live.textContent = 'Decision undone.'; }
+    else if (act === 'prev') show(D.pages[D.pages.indexOf(p) - 1].slug, true);
+    else if (act === 'next') show(D.pages[D.pages.indexOf(p) + 1].slug, true);
+  });
+
+  progress();
+  var start = location.hash.slice(1);
+  if (start === 'summary') summary();
+  else show(D.pages.some(function (p) { return p.slug === start; }) ? start : (nextUndecided(D.pages[D.pages.length - 1].slug) || D.pages[0].slug), false);
+})({"title":"Supporting People Through Grief and Loss","key":"learnviz:d2c193b426c0ec2f","pages":[{"slug":"welcome-to-the-unit","n":1,"title":"Welcome to the unit","module":"Getting started","state":"published","words":124,"headings":["Welcome","How this unit runs","Before you start"],"text":"## Welcome\nWelcome to Supporting People Through Grief and Loss. Over the next eight weeks you will learn to recognise how people respond to loss, talk with grieving families on placement, and know when to pass a concern on.\n### How this unit runs\n- One module every two weeks, each with readings, a short activity and a discussion.\n- A weekly drop-in session on Tuesdays at 5.30pm, recorded for anyone who cannot attend.\n- Your teacher answers questions in the Q and A discussion within two working days.\n### Before you start\nSome of this unit deals with death and loss. If a topic brings up something difficult for you, contact your teacher or the student counselling service. You will not be asked to share personal experiences.","status":"skip","reason":"An orientation page. Its job is to tell learners how the unit runs and where to get help, and an activity here would slow them down on the way to the content."},{"slug":"assessment-overview","n":2,"title":"Assessment overview","module":"Getting started","state":"published","words":86,"headings":["How you are assessed"],"text":"## How you are assessed\nThere are three assessment tasks. You must complete all three to be deemed competent.\nTask | What you do | When\nTask 1: Knowledge questions | Short written answers on grief responses and your role | Week 3\nTask 2: Case study report | Plan the support for a family in a written case study | Week 6\nTask 3: Placement observation | Your supervisor observes a conversation with a family member | Week 8\nEach task is marked satisfactory or not yet satisfactory. You can resubmit a task once.","status":"skip","reason":"Every task is marked satisfactory or not yet satisfactory, so there is no weighting to estimate or compare. Learners come back to this page as a reference, and it works best as the plain table it is."},{"slug":"what-is-grief","n":3,"title":"What is grief?","module":"Understanding grief","state":"published","words":192,"headings":["Grief is a response to loss","The five stages","Not a sequence"],"text":"## Grief is a response to loss\nGrief is the set of thoughts, feelings and behaviours that follow a loss. In aged care you will most often meet it in residents who are dying and in the families who visit them. It can begin before a death, when a diagnosis is given.\n## The five stages\nIn 1969 the psychiatrist Elisabeth Kübler-Ross described five responses she saw in people facing their own death: denial, anger, bargaining, depression and acceptance. They became known as the five stages of grief.\nDenial. Not accepting the information itself.\nAnger. Blame, often aimed at whoever is in the room.\nBargaining. If I do this, then that. Or if only.\nDepression. Withdrawal and loss of meaning.\nAcceptance. Planning around what is real.\n## Not a sequence\nThe five are often taught as steps that everyone passes through in order. Kübler-Ross later said this was a misreading. People move between the responses, skip some, and show several at once. Treat them as a vocabulary for what someone might be feeling, not a map of where they should be.\n[Image: A family member talking with a care worker in a corridor]","status":"ready","analysis":{"keyIdeas":["Grief is a response to loss, and can begin at a diagnosis.","Kübler-Ross named five responses: denial, anger, bargaining, depression and acceptance.","They are not a sequence."],"threshold":"The five are a vocabulary, not a map. A learner who gets this stops trying to move people along.","misconceptions":[{"belief":"Grief happens in five stages, in order.","reality":"People move between the responses, skip some and show several at once."}]},"options":[{"n":1,"index":0,"name":"Put the five stages in order","pattern":"predict","label":"Predict, then check","why":"Generating an answer first makes the real one stick, and surfaces the belief the learner walked in with.","scored":false,"placement":"before","angle":"At the top of the page, before the list: learners put the five in the order they think people go through them. Most produce the textbook sequence, and the reveal shows why that is the misconception the page is about to correct.","payoff":"Explain why the five responses are not a sequence.","addresses":"The belief that grief happens in five stages, in order.","effort":"low","recommended":true,"data":{"label":"Needs sourcing and checking","blocking":true,"needs":"Check the reveal's wording against On Death and Dying (1969) and On Grief and Grieving (2005)."},"insert":"start","sketch":"sketches/what-is-grief-1.html"},{"n":2,"index":1,"name":"The five responses, one at a time","pattern":"stepthrough","label":"Step by step","why":"Showing one part at a time, with a sentence about each, removes the work of finding where to start and what to read next.","scored":false,"placement":"during","angle":"Replaces the grey list with a step-through: each response, what it can sound like, and the reply that shuts the conversation down. Built for the teacher to walk through in class.","payoff":"Name each response from what someone says.","addresses":"","effort":"low","recommended":false,"data":{"label":"Needs content from you","blocking":true,"needs":"The replies were written for the activity. Check them against your service's communication guidance."},"insert":{"after":"The five stages"},"sketch":"sketches/what-is-grief-2.html"}]},{"slug":"recognising-grief-responses","n":4,"title":"Recognising grief responses","module":"Understanding grief","state":"published","words":153,"headings":["What each response can sound like","Denial","Anger","Bargaining","Depression","Acceptance","Why it matters"],"text":"## What each response can sound like\nYou will rarely hear someone name what they are feeling. You will hear it in what they say. These are the kinds of things family members say in aged care.\n### Denial\n\"The scan must have been someone else's. These things get mixed up all the time.\"\n### Anger\n\"Why did it take three months for anyone to send him for a scan?\"\n### Bargaining\n\"If I get him walking every day and off the sugar, that will buy him more time, won't it?\"\n### Depression\n\"I haven't been sleeping. I just sit in his room.\"\n### Acceptance\n\"I want to sit down with the kids this weekend and talk about what he would want.\"\n## Why it matters\nRecognising the response helps you choose what to say. Arguing with denial closes a conversation. Taking anger personally escalates it. Bargaining sounds hopeful, which makes it easy to agree with something you cannot promise.","status":"ready","analysis":{"keyIdeas":["People rarely name what they feel. You hear it in what they say.","Recognising the response helps you choose what to say."],"threshold":"Bargaining sounds hopeful, which is exactly why it is easy to agree with something you cannot promise.","misconceptions":[{"belief":"An angry family member is angry at me.","reality":"Anger is often aimed at whoever is in the room."}]},"options":[{"n":1,"index":0,"name":"Which response is this?","pattern":"sort","label":"Sort it","why":"Recognition is learned from contrasting examples, not from definitions, and the reason given for each item teaches the cue to look for.","scored":true,"placement":"after","angle":"Nine new things a family member might say, each sorted into the response it shows most clearly. A first miss gets a nudge, a second gets the answer and the cue to listen for. The page's own five examples become the worked examples.","payoff":"Recognise each response in everyday speech.","addresses":"Hearing the responses, including the ones that sound hopeful.","effort":"medium","recommended":true,"data":{"label":"Needs content from you","blocking":true,"needs":"The nine statements were written for this activity. A practitioner should confirm they read as realistic."},"insert":"end","sketch":"sketches/recognising-grief-responses-1.html"},{"n":2,"index":1,"name":"Quick-fire recognition cards","pattern":"cards","label":"Recall practice","why":"Recalling an answer strengthens memory far more than rereading it, and meeting the misses again a few cards later spaces the practice.","scored":false,"placement":"after","angle":"The same idea as recall practice: a statement on the front, the response and its cue on the back, with misses coming round again. Lighter than the sort, and good for revision before Task 1.","payoff":"Name the response from a statement without hesitating.","addresses":"","effort":"low","recommended":false,"data":{"label":"Data is in the source","blocking":false,"needs":""},"insert":"end","sketch":null}]},{"slug":"talking-with-grieving-families","n":5,"title":"Talking with grieving families","module":"Supporting families","state":"published","words":139,"headings":["Keep the conversation open","Things that help","Things that shut a conversation down","When a family member asks you to do something outside your role"],"text":"## Keep the conversation open\nYour job is not to fix grief or to move someone along. It is to listen, stay within your role, and make sure the family knows who can help with what you cannot.\n### Things that help\n- Naming the feeling: \"It sounds like this has been a real shock.\"\n- Asking what they understand before explaining anything.\n- Saying what you will do, and doing it.\n### Things that shut a conversation down\n- \"Everything happens for a reason.\"\n- \"At least he had a long life.\"\n- \"I know exactly how you feel.\"\n- Promising a medical outcome, such as a new test, that is not yours to promise.\n## When a family member asks you to do something outside your role\nAcknowledge the request, explain who can help, and pass it on the same day. Tell the family you have done so.","status":"ready","analysis":{"keyIdeas":["The job is to listen and stay within your role, not to fix grief.","Some well-meant phrases shut a conversation down.","A request outside your role is acknowledged, passed on the same day, and followed up."],"threshold":"Keeping the conversation open matters more than saying the right thing.","skill":"Respond to a grieving family member without arguing, over-promising or stepping outside the student role."},"options":[{"n":1,"index":0,"name":"A conversation in the corridor","pattern":"scenario","label":"Scenario","why":"Judgement is learned by practising it in context, and in a scenario the wrong call costs nothing and teaches the most.","scored":true,"placement":"during","angle":"A resident's daughter asks the learner to get the scan redone. Each reply leads somewhere different, with coaching, and one path shows what over-promising costs. Good to vote through in class.","payoff":"Handle a request outside their role while keeping the conversation open.","addresses":"The request outside your role, and denial.","effort":"high","recommended":true,"data":{"label":"Needs content from you","blocking":true,"needs":"A practitioner should check the dialogue and the escalation advice against your service's procedures."},"insert":"end","sketch":"sketches/talking-with-grieving-families-1.html"},{"n":2,"index":1,"name":"What to say instead","pattern":"cards","label":"Recall practice","why":"Recalling an answer strengthens memory far more than rereading it, and meeting the misses again a few cards later spaces the practice.","scored":false,"placement":"after","angle":"Each card shows one of the phrases that shut a conversation down. Learners think of a better reply before turning it.","payoff":"Have a better phrase ready for the moments that usually go wrong.","addresses":"","effort":"low","recommended":false,"data":{"label":"Needs content from you","blocking":true,"needs":"Check the replacement phrases suit the tone and cultural context of your placements."},"insert":{"after":"Things that shut a conversation down"},"sketch":"sketches/talking-with-grieving-families-2.html"}]},{"slug":"knowing-your-role","n":6,"title":"Knowing your role and when to refer","module":"Supporting families","state":"published","words":130,"headings":["Your role on placement","Passing on a concern","Always refer straight away"],"text":"## Your role on placement\nAs a student on placement you support residents and families under supervision. You do not give medical information, and you do not provide counselling.\n## Passing on a concern\nWhen a family member says something that worries you, follow these steps.\n1. Listen without interrupting.\n2. Acknowledge what they have said.\n3. Tell them you will pass it on, and to whom.\n4. Tell your supervisor the same shift, in person.\n5. Record it in the progress notes, as your service requires.\n6. Check back with the family that someone has followed up.\n### Always refer straight away\nAny mention of self-harm, of not wanting to go on, or of a risk to someone else goes to your supervisor immediately, not at the end of the shift.","status":"ready","analysis":{"keyIdeas":["Students on placement do not give medical information or counselling.","A concern is passed on in six steps, the same shift, in person.","Any mention of self-harm or risk to others goes to a supervisor immediately."],"threshold":"Passing something on is part of the job done well, not a failure to handle it.","skill":"Pass on a concern in the right order, and know what cannot wait."},"options":[{"n":1,"index":0,"name":"Passing on a concern, in order","pattern":"order","label":"Put it in order","why":"Recalling a procedure is more durable than recognising one, and each misplaced step exposes a dependency the reason can teach.","scored":true,"placement":"after","angle":"The six steps shuffled. Learners put them in order, and each misplaced step explains what goes wrong when it comes too early or too late. It rehearses the procedure Task 3 observes.","payoff":"Pass on a concern in the right order.","addresses":"","effort":"low","recommended":true,"data":{"label":"Data is in the source","blocking":false,"needs":""},"insert":{"after":"Passing on a concern"},"sketch":"sketches/knowing-your-role-1.html"},{"n":2,"index":1,"name":"What cannot wait?","pattern":"predict","label":"Predict, then check","why":"Generating an answer first makes the real one stick, and surfaces the belief the learner walked in with.","scored":false,"placement":"before","angle":"Before the steps, learners pick which of three things a family member might say must go to a supervisor immediately. The two that can wait make the one that cannot stand out.","payoff":"Recognise a concern that must be referred straight away.","addresses":"","effort":"low","recommended":false,"data":{"label":"Data is in the source","blocking":false,"needs":""},"insert":{"after":"Your role on placement"},"sketch":"sketches/knowing-your-role-2.html"}]},{"slug":"looking-after-yourself","n":7,"title":"Looking after yourself","module":"Looking after yourself","state":"published","words":84,"headings":["Grief work affects workers too","Signs to watch for in yourself","What helps"],"text":"## Grief work affects workers too\nSpending time with dying residents and grieving families is meaningful work, and it takes something out of you. Noticing that is part of doing the job well.\n### Signs to watch for in yourself\n- Dreading particular shifts or residents.\n- Thinking about work situations when you are trying to rest.\n- Feeling numb where you used to feel moved.\n### What helps\n- Debriefing with your supervisor after a death.\n- Keeping routines outside work.\n- Using the employee assistance program, which is free and confidential.","status":"skip","reason":"This is reflective, personal content. A marked activity would sit badly with it. A private reflection prompt or a discussion would suit it better, and neither needs building here. Ask for options if you want recall cards on the warning signs."}],"saved":{"welcome-to-the-unit":{"decision":"skip"},"assessment-overview":{"decision":"skip"},"what-is-grief":{"decision":"build","candidate":0,"option":1,"name":"Put the five stages in order","pattern":"predict","label":"Predict, then check","insert":"start","note":"Keep the reveal short for the first week."},"recognising-grief-responses":{"decision":"build","candidate":0,"option":1,"name":"Which response is this?","pattern":"sort","label":"Sort it","insert":"end"},"talking-with-grieving-families":{"decision":"build","candidate":0,"option":1,"name":"A conversation in the corridor","pattern":"scenario","label":"Scenario","insert":"end"},"knowing-your-role":{"decision":"build","candidate":0,"option":1,"name":"Passing on a concern, in order","pattern":"order","label":"Put it in order","insert":{"after":"Passing on a concern"}},"looking-after-yourself":{"decision":"skip"}},"icons":{"predict":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003ccircle cx=\"8\" cy=\"8\" r=\"6.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/\u003e\u003cpath d=\"M6.2 6.1a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.6-.8 1.3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/\u003e\u003ccircle cx=\"8\" cy=\"11.6\" r=\".9\" fill=\"currentColor\"/\u003e\u003c/svg\u003e","stepthrough":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003crect x=\"1.5\" y=\"10\" width=\"4\" height=\"4.5\" rx=\"1\" fill=\"currentColor\"/\u003e\u003crect x=\"6\" y=\"6\" width=\"4\" height=\"8.5\" rx=\"1\" fill=\"currentColor\" opacity=\".7\"/\u003e\u003crect x=\"10.5\" y=\"2\" width=\"4\" height=\"12.5\" rx=\"1\" fill=\"currentColor\" opacity=\".4\"/\u003e\u003c/svg\u003e","sort":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003crect x=\"1.5\" y=\"1.5\" width=\"5.5\" height=\"5.5\" rx=\"1.2\" fill=\"currentColor\"/\u003e\u003crect x=\"9\" y=\"1.5\" width=\"5.5\" height=\"5.5\" rx=\"1.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/\u003e\u003crect x=\"1.5\" y=\"9\" width=\"5.5\" height=\"5.5\" rx=\"1.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/\u003e\u003crect x=\"9\" y=\"9\" width=\"5.5\" height=\"5.5\" rx=\"1.2\" fill=\"currentColor\"/\u003e\u003c/svg\u003e","cards":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003crect x=\"4\" y=\"1.5\" width=\"10\" height=\"11\" rx=\"1.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/\u003e\u003crect x=\"2\" y=\"3.5\" width=\"10\" height=\"11\" rx=\"1.6\" fill=\"currentColor\"/\u003e\u003c/svg\u003e","scenario":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003cpath d=\"M2 3.5A2 2 0 0 1 4 1.5h8a2 2 0 0 1 2 2V9a2 2 0 0 1-2 2H7l-3.5 3v-3H4a2 2 0 0 1-2-2z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/\u003e\u003c/svg\u003e","order":"\u003csvg class=\"lv-icon\" width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"\u003e\u003cpath d=\"M2 3.5h8M2 8h8M2 12.5h8\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"/\u003e\u003cpath d=\"M13 2.5v11M11 11l2 2.5 2-2.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/\u003e\u003c/svg\u003e"}});</script>
+</body>
+</html>

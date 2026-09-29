@@ -5,6 +5,9 @@
  *   learnviz propose <proposal.json> [--out DIR]
  *   learnviz build <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png] [--video]
  *   learnviz validate <spec.json...>
+ *   learnviz course import <export.imscc> --out DIR
+ *   learnviz course status|review DIR
+ *   learnviz course build DIR [--release] [--no-png] [--video]
  *   learnviz patterns
  *   learnviz types
  *   learnviz doctor
@@ -25,6 +28,8 @@ import { diagramBlock, genericBlock } from '../src/emble.js';
 import { svgToPng, pageToVideo, capabilities } from '../src/raster.js';
 import { validateLO, buildLO, PATTERNS } from '../src/lo/index.js';
 import { writeBundle, dashboard, slugify } from '../src/delivery/bundle.js';
+import { importCourse, loadWorkspace, status as courseStatus, reviewData, buildCourse } from '../src/course/workspace.js';
+import { reviewApp } from '../src/course/review.js';
 import { assertPaletteAccessible } from '../src/theme.js';
 import { validateProposal, renderProposal, renderGallery, summariseProposal, DATA_STATUS } from '../src/proposal.js';
 
@@ -357,6 +362,100 @@ async function buildFigure(spec, file, flags) {
   return problems.length === 0;
 }
 
+/* ------------------------------------------------------------------ */
+/* A whole course                                                      */
+/* ------------------------------------------------------------------ */
+
+async function cmdCourse(args) {
+  const [sub, ...rest] = args;
+  const { flags, files } = parseFlags(rest);
+  if (sub === 'import') {
+    if (files.length !== 1 || flags.out === 'out') {
+      console.error('Try: learnviz course import my-course.imscc --out my-course');
+      process.exitCode = 1;
+      return;
+    }
+    const meta = importCourse(files[0], flags.out);
+    console.log(`${green('OK   ')} ${bold(meta.title)}: ${meta.pages.length} pages in ${meta.modules.length} modules`);
+    for (const m of meta.modules) {
+      const n = m.items.filter((i) => i.kind === 'page').length;
+      console.log(`      ${m.title} ${dim(`${n} page${n === 1 ? '' : 's'}, ${m.items.length - n} other item${m.items.length - n === 1 ? '' : 's'}`)}`);
+    }
+    console.log(`\nWorkspace: ${bold(resolve(flags.out))}`);
+    console.log(dim('Next: write proposals/<slug>.json for each page, then run learnviz course review.'));
+    return;
+  }
+
+  const dir = files[0];
+  if (!dir) {
+    console.error(`Try: learnviz course ${sub || 'status'} <workspace>`);
+    process.exitCode = 1;
+    return;
+  }
+  const ws = loadWorkspace(dir);
+
+  if (sub === 'status') {
+    const rows = courseStatus(ws);
+    let module = null;
+    for (const r of rows) {
+      if (r.module !== module) { module = r.module; console.log(`\n${bold(module)}`); }
+      const mark = r.next.startsWith('ready to build') || r.next === 'nothing, skipped' ? green('  ok ') : r.error ? red('  !  ') : yellow('  -  ');
+      console.log(`${mark} ${String(r.n).padStart(2)}. ${r.title} ${dim(`(${r.slug})`)} ${dim('·')} ${r.next}`);
+      if (r.error) console.log(`         ${red(r.error)}`);
+    }
+    const todo = rows.filter((r) => r.next === 'write options' || r.next.startsWith('write options')).length;
+    const waiting = rows.filter((r) => r.next === 'waiting for the designer').length;
+    console.log(`\n${rows.length} pages: ${todo} need options, ${waiting} waiting for the designer, ${rows.filter((r) => r.next.startsWith('ready to build')).length} ready to build.`);
+    return;
+  }
+
+  if (sub === 'review') {
+    const { data, sketches } = reviewData(ws);
+    const out = join(dir, 'review');
+    await mkdir(join(out, 'sketches'), { recursive: true });
+    for (const s of sketches) await writeFile(join(out, s.file), s.html);
+    await writeFile(join(out, 'index.html'), reviewApp(data));
+    const ready = data.pages.filter((p) => p.status === 'ready').length;
+    const skips = data.pages.filter((p) => p.status === 'skip').length;
+    const bad = data.pages.filter((p) => p.status === 'invalid');
+    console.log(`${green('OK   ')} ${data.pages.length} pages: ${ready} with options, ${skips} suggested for no activity, ${data.pages.length - ready - skips - bad.length} without options yet`);
+    for (const p of bad) console.log(`      ${red('!')} ${p.slug}: ${p.error}`);
+    console.log(`\nReview app: ${bold(resolve(join(out, 'index.html')))}`);
+    return;
+  }
+
+  if (sub === 'build') {
+    const out = flags.out === 'out' ? join(dir, 'build') : flags.out;
+    if (!ws.choices) {
+      console.error(`No choices yet. Save choices.json from the review app into ${dir}, then build.`);
+      process.exitCode = 1;
+      return;
+    }
+    const r = await buildCourse(ws, { out, release: flags.release, png: rasterise(flags), video: recorder(flags) });
+    if (r.refused.length) {
+      for (const x of r.refused) console.error(`${red('REFUSED')} ${x.page.slug}: ${x.reasons.join(' ')}`);
+      console.error('\nNothing was written. Resolve the drafts, or build without --release to get drafts for review.');
+      process.exitCode = 1;
+      return;
+    }
+    for (const b of r.built) {
+      const tag = b.problems.length ? red('CHECK') : b.draft.isDraft ? yellow('DRAFT') : green('OK   ');
+      console.log(`${tag} ${b.pattern.padEnd(11)} ${String(b.page.n).padStart(2)}. ${b.page.title} ${dim(`${b.placed}${b.fromSketch ? ', from the sketch' : ''}`)}`);
+      for (const p of b.problems) console.log(`      ${red('!')} ${p}`);
+    }
+    for (const x of r.problems) console.error(`${red('FAILED')} ${x.page.slug}: ${x.message}`);
+    if (r.built.length) await writeDashboard(join(out, 'activities'));
+    console.log(`\n${r.built.length} built, ${r.skipped.length} skipped, ${r.waiting.length} undecided.`);
+    console.log(`Course package: ${bold(join(resolve(out), r.package))}`);
+    console.log(`Checklist:      ${bold(join(resolve(out), 'upload-checklist.html'))}`);
+    if (r.problems.length || r.built.some((b) => b.problems.length)) process.exitCode = 1;
+    return;
+  }
+
+  console.error('Try: learnviz course import | status | review | build');
+  process.exitCode = 1;
+}
+
 function report(spec, stem, problems, extra = '') {
   const tag = problems.length ? red('CHECK') : green('OK   ');
   console.log(`${tag} ${spec.type.padEnd(11)} ${stem}${extra}`);
@@ -431,6 +530,8 @@ function usage() {
   ${bold('learnviz propose')} <proposal.json> [--out DIR]
   ${bold('learnviz build')} <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png] [--video]
   ${bold('learnviz validate')} <spec.json...>
+  ${bold('learnviz course import')} <export.imscc> --out DIR   a whole Canvas course, page by page
+  ${bold('learnviz course status')} DIR | ${bold('review')} DIR | ${bold('build')} DIR [--release]
   ${bold('learnviz patterns')}     the eight activity patterns
   ${bold('learnviz types')}        the figure types
   ${bold('learnviz doctor')}
@@ -450,6 +551,7 @@ try {
     case 'propose': await cmdPropose(argv.slice(1)); break;
     case 'build': await cmdBuild(argv.slice(1)); break;
     case 'validate': await cmdValidate(argv.slice(1)); break;
+    case 'course': await cmdCourse(argv.slice(1)); break;
     case 'patterns': cmdPatterns(); break;
     case 'types': cmdTypes(); break;
     case 'doctor': cmdDoctor(); break;

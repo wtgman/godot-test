@@ -69,9 +69,12 @@ export const olist = (items) => `<ol>${items.map((i) => `<li>${esc(i)}</li>`).jo
  * the instructions in a grey block, the pattern's own content, and a pointer to
  * the interactive version for teachers who can host it or upload it as SCORM.
  */
+/** The note left for the teacher on a pasted page. A course build replaces it with one naming the file. */
+export const TEACHER_NOTE = 'For the teacher: a fuller interactive version of this activity is in the build folder, as a SCORM package for the Canvas SCORM tool and as a single web page. Delete this line if you are using only this version.';
+
 export function nativeActivity({ title, iconClass, instructions, content, interactiveNote = true }) {
   const note = interactiveNote
-    ? `<p><span style="background-color: #fdf223;">For the teacher: a fuller interactive version of this activity is in the build folder, as a SCORM package for the Canvas SCORM tool and as a single web page. Delete this line if you are using only this version.</span></p>
+    ? `<p><span style="background-color: #fdf223;">${TEACHER_NOTE}</span></p>
 ${spacer}`
     : '';
   return [

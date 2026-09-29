@@ -1,0 +1,45 @@
+{
+  "kind": "learning-object",
+  "pattern": "order",
+  "title": "Passing on a concern",
+  "intent": "Learners can pass on a family member's concern in the order their service expects.",
+  "goal": "pass on a family member's concern in the right order.",
+  "placement": "after",
+  "passMark": 0.8,
+  "prompt": "A family member tells you something that worries you. Put these steps in the order you would take them.",
+  "items": [
+    {
+      "label": "Listen without interrupting",
+      "why": "You cannot pass on accurately what you did not hear in full."
+    },
+    {
+      "label": "Acknowledge what they have said",
+      "why": "It tells them they were heard before anything else happens."
+    },
+    {
+      "label": "Tell them you will pass it on, and to whom",
+      "why": "They should never be surprised that someone else knows."
+    },
+    {
+      "label": "Tell your supervisor the same shift, in person",
+      "why": "A note alone can sit unread. In person, the same shift, it gets acted on."
+    },
+    {
+      "label": "Record it in the progress notes",
+      "why": "The record comes after the conversation with your supervisor, as your service requires."
+    },
+    {
+      "label": "Check back with the family that someone has followed up",
+      "why": "Closing the loop is what the family remembers, and it catches the follow-ups that did not happen."
+    }
+  ],
+  "sources": [
+    {
+      "label": "Course page: Knowing your role and when to refer",
+      "kind": "supplied",
+      "status": "to-check",
+      "note": "The order of steps is from the page. The reasons were written for this activity."
+    }
+  ],
+  "mode": "order"
+}

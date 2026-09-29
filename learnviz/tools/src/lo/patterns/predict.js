@@ -385,7 +385,7 @@ export function native(s, ctx) {
   if (r.kind === 'choice' && r.options.some((o) => o.feedback)) {
     inside += `<p><strong>About each option:</strong></p><ul>${r.options.map((o) => `<li><strong>${esc(o.label)}.</strong> ${esc(o.feedback || '')}</li>`).join('')}</ul>`;
   }
-  if (s.reveal.figure) inside += diagramBlock({ a11y: ctx.figureA11y });
+  if (s.reveal.figure) inside += diagramBlock({ a11y: ctx.figureA11y, fileUrl: ctx.figureUrl });
 
   const content = accordion(`Decided? Open to check: ${s.reveal.heading || 'the answer'}`, inside) + `\n${spacer}`;
   return nativeActivity({ title: `Predict: ${s.title}`, iconClass: meta.embleIcon, instructions, content });

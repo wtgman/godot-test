@@ -373,7 +373,7 @@ export function native(s, ctx) {
     <p>Write down a time, in ${esc(s.timeUnit)}, for each step. Then open the box to check.</p>
     ${list(s.items.map((it) => it.label))}`;
     const inside = `<ul>${s.items.map((it) => `<li><strong>${esc(it.label)}: ${it.at} ${esc(s.timeUnit)}.</strong> ${esc(it.why)}</li>`).join('')}</ul>`
-      + (ctx.figureA11y ? diagramBlock({ a11y: ctx.figureA11y }) : '');
+      + (ctx.figureA11y ? diagramBlock({ a11y: ctx.figureA11y, fileUrl: ctx.figureUrl }) : '');
     return nativeActivity({ title: `Timing: ${s.title}`, iconClass: meta.embleIcon, instructions, content: `${accordion('Check your timings against the model', inside)}\n${spacer}` });
   }
   const shown = ctx.shuffleIndices(s.items.length, `${s.title}/order`, { notIdentity: true }).map((i) => s.items[i].label);

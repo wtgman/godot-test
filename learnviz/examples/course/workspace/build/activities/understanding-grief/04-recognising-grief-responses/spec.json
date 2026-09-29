@@ -1,0 +1,106 @@
+{
+  "kind": "learning-object",
+  "pattern": "sort",
+  "title": "Which response is this?",
+  "lede": "A family member says each of these to you on placement. Real people often show more than one response at once, so pick the one each shows most clearly.",
+  "intent": "Learners can recognise each of the five responses from what a family member actually says.",
+  "goal": "recognise each of the five responses from what a family member actually says.",
+  "placement": "after",
+  "passMark": 0.7,
+  "prompt": "Which response does each of these show most clearly?",
+  "categories": [
+    {
+      "key": "denial",
+      "label": "Denial",
+      "hint": "Not accepting the information itself."
+    },
+    {
+      "key": "anger",
+      "label": "Anger",
+      "hint": "Blame, often aimed at whoever is in the room."
+    },
+    {
+      "key": "bargaining",
+      "label": "Bargaining",
+      "hint": "If I do this, then that. Or if only."
+    },
+    {
+      "key": "depression",
+      "label": "Depression",
+      "hint": "Withdrawal and loss of meaning."
+    },
+    {
+      "key": "acceptance",
+      "label": "Acceptance",
+      "hint": "Planning around what is real."
+    }
+  ],
+  "items": [
+    {
+      "text": "\"The scan must have been someone else's. These things get mixed up all the time.\"",
+      "category": "denial",
+      "why": "It rejects the information itself. The cue is disbelief about the facts, rather than distress about them."
+    },
+    {
+      "text": "\"Why did it take three months for anyone to send him for a scan?\"",
+      "category": "anger",
+      "why": "The blame points outward, at the system. It accepts the diagnosis and is furious about how it arrived."
+    },
+    {
+      "text": "\"If I get him walking every day and off the sugar, that will buy him more time, won't it?\"",
+      "category": "bargaining",
+      "why": "A deal: if I do this, then that. It sounds practical and hopeful, which is exactly why it is easy to miss."
+    },
+    {
+      "text": "\"I don't see the point in getting dressed any more.\"",
+      "category": "depression",
+      "why": "Loss of meaning in ordinary things. Listen, and pass it on to your supervisor. This is where you watch for risk."
+    },
+    {
+      "text": "\"I want to sit down with the kids this weekend and talk about what he would want.\"",
+      "category": "acceptance",
+      "why": "Planning around the reality rather than against it. Acceptance is not happiness. It is engaging with what is."
+    },
+    {
+      "text": "\"You people are useless. Nobody tells us anything.\"",
+      "category": "anger",
+      "why": "Aimed at the person in the room. It is almost never about that person, so it is worth not taking it personally."
+    },
+    {
+      "text": "\"I keep thinking if I had made him go to the doctor sooner, none of this would be happening.\"",
+      "category": "bargaining",
+      "why": "\"If only\" looks backwards, but it is the same move as a deal: searching for the lever that would have changed the outcome. It often comes with guilt."
+    },
+    {
+      "text": "\"He's fine. He was up and about this morning. He just needs a good rest.\"",
+      "category": "denial",
+      "why": "The evidence of the morning is used to push away the diagnosis. Denial often protects someone while the news sinks in."
+    },
+    {
+      "text": "\"I haven't been sleeping. I just sit in his room.\"",
+      "category": "depression",
+      "why": "Withdrawal, and a sign of how much this is costing them. Worth mentioning to the team so someone checks on the family as well as the resident."
+    }
+  ],
+  "teach": {
+    "watchFor": "Learners who treat the sort as a diagnosis. It is practice in noticing, not in labelling people. On placement, nobody should be told which stage they are in.",
+    "ask": [
+      "Which two were hardest to tell apart? What was the cue that settled it?",
+      "Bargaining sounds hopeful. Why might that make it easy to miss?"
+    ]
+  },
+  "sources": [
+    {
+      "label": "Client statements written for this activity",
+      "kind": "constructed",
+      "status": "to-check",
+      "note": "Check with a practitioner that each reads as realistic for an aged care or palliative setting."
+    },
+    {
+      "label": "Kübler-Ross, E. (1969). On Death and Dying.",
+      "kind": "general",
+      "status": "to-check",
+      "note": "Check the descriptions of each response against the unit's prescribed reading."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "kind": "proposal",
+  "topic": "Talking with grieving families",
+  "sourceSummary": "Page 5. Lists things that help and things that shut a conversation down, and what to do when asked for something outside your role. It tells learners what to say, but never asks them to say anything.",
+  "analysis": {
+    "keyIdeas": [
+      "The job is to listen and stay within your role, not to fix grief.",
+      "Some well-meant phrases shut a conversation down.",
+      "A request outside your role is acknowledged, passed on the same day, and followed up."
+    ],
+    "threshold": "Keeping the conversation open matters more than saying the right thing.",
+    "skill": "Respond to a grieving family member without arguing, over-promising or stepping outside the student role."
+  },
+  "candidates": [
+    {
+      "name": "A conversation in the corridor",
+      "pattern": "scenario",
+      "placement": "during",
+      "insert": "end",
+      "recommended": true,
+      "angle": "A resident's daughter asks the learner to get the scan redone. Each reply leads somewhere different, with coaching, and one path shows what over-promising costs. Good to vote through in class.",
+      "payoff": "Handle a request outside their role while keeping the conversation open.",
+      "addresses": "The request outside your role, and denial.",
+      "effort": "high",
+      "data": { "status": "needs-teacher", "needs": "A practitioner should check the dialogue and the escalation advice against your service's procedures." },
+      "sketchFile": "sketches/3-first-conversation.json"
+    },
+    {
+      "name": "What to say instead",
+      "pattern": "cards",
+      "placement": "after",
+      "insert": { "after": "Things that shut a conversation down" },
+      "angle": "Each card shows one of the phrases that shut a conversation down. Learners think of a better reply before turning it.",
+      "payoff": "Have a better phrase ready for the moments that usually go wrong.",
+      "effort": "low",
+      "data": { "status": "needs-teacher", "needs": "Check the replacement phrases suit the tone and cultural context of your placements." },
+      "sketchFile": "sketches/4-what-to-say-instead.json"
+    }
+  ]
+}

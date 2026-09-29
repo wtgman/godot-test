@@ -11,7 +11,7 @@
  * that changes every time it is rebuilt cannot be diffed or reviewed.
  */
 
-import { deflateRawSync } from 'node:zlib';
+import { deflateRawSync, inflateRawSync } from 'node:zlib';
 import { crc32 } from '../png.js';
 
 const DOS_TIME = 0; // 00:00:00
@@ -19,9 +19,11 @@ const DOS_DATE = (0 << 9) | (1 << 5) | 1; // 1980-01-01
 
 /**
  * @param {{ name: string, data: Buffer | string }[]} entries
+ * @param {{ store?: boolean }} [options] store: never compress. Canvas course
+ *   imports are known to fail silently on rebuilt packages that are deflated.
  * @returns {Buffer}
  */
-export function zip(entries) {
+export function zip(entries, { store = false } = {}) {
   const locals = [];
   const centrals = [];
   let offset = 0;
@@ -36,10 +38,10 @@ export function zip(entries) {
 
     const name = Buffer.from(entry.name, 'utf8');
     const raw = Buffer.isBuffer(entry.data) ? entry.data : Buffer.from(entry.data, 'utf8');
-    const deflated = deflateRawSync(raw, { level: 9 });
+    const deflated = store ? null : deflateRawSync(raw, { level: 9 });
     // Store instead of deflate when compression does not help, which is the
     // rule every unzip tool expects to cope with.
-    const stored = deflated.length >= raw.length;
+    const stored = store || deflated.length >= raw.length;
     const body = stored ? raw : deflated;
     const method = stored ? 0 : 8;
     const crc = crc32(raw);
@@ -93,4 +95,42 @@ export function zip(entries) {
   end.writeUInt16LE(0, 20);
 
   return Buffer.concat([...locals, directory, end]);
+}
+
+/**
+ * Read a zip into { name, data } entries, in the order of its central
+ * directory. Handles stored and deflated entries, which covers what Canvas and
+ * every common tool writes. Refuses Zip64 and encryption with a clear message
+ * rather than returning garbage.
+ */
+export function unzip(buf) {
+  const sig = Buffer.from([0x50, 0x4b, 0x05, 0x06]);
+  const eocd = buf.lastIndexOf(sig);
+  if (eocd < 0) throw new Error('This is not a zip file. A Canvas export ends in .imscc and is a zip.');
+  const count = buf.readUInt16LE(eocd + 10);
+  let p = buf.readUInt32LE(eocd + 16);
+  if (count === 0xffff || p === 0xffffffff) throw new Error('This zip uses Zip64, for archives over 4 GB. Export the course without its largest files, or unzip it first.');
+  const out = [];
+  for (let i = 0; i < count; i += 1) {
+    if (buf.readUInt32LE(p) !== 0x02014b50) throw new Error('The zip directory is damaged.');
+    const flags = buf.readUInt16LE(p + 8);
+    const method = buf.readUInt16LE(p + 10);
+    const size = buf.readUInt32LE(p + 20);
+    const nameLen = buf.readUInt16LE(p + 28);
+    const extra = buf.readUInt16LE(p + 30);
+    const comment = buf.readUInt16LE(p + 32);
+    const local = buf.readUInt32LE(p + 42);
+    const name = buf.toString(flags & 0x0800 ? 'utf8' : 'latin1', p + 46, p + 46 + nameLen);
+    p += 46 + nameLen + extra + comment;
+    if (flags & 0x1) throw new Error(`${name} is encrypted.`);
+    if (name.endsWith('/')) continue;
+    const start = local + 30 + buf.readUInt16LE(local + 26) + buf.readUInt16LE(local + 28);
+    const body = buf.subarray(start, start + size);
+    let data;
+    if (method === 0) data = Buffer.from(body);
+    else if (method === 8) data = inflateRawSync(body);
+    else throw new Error(`${name} uses compression method ${method}, which is not supported.`);
+    out.push({ name, data });
+  }
+  return out;
 }

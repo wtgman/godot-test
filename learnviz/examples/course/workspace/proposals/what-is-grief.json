@@ -1,0 +1,42 @@
+{
+  "kind": "proposal",
+  "topic": "What is grief?",
+  "sourceSummary": "Page 3 of the course. Introduces grief, names Kübler-Ross's five responses, then says they are not a sequence. The misconception is on the page, but it arrives after learners have already read the list in order.",
+  "analysis": {
+    "keyIdeas": [
+      "Grief is a response to loss, and can begin at a diagnosis.",
+      "Kübler-Ross named five responses: denial, anger, bargaining, depression and acceptance.",
+      "They are not a sequence."
+    ],
+    "threshold": "The five are a vocabulary, not a map. A learner who gets this stops trying to move people along.",
+    "misconceptions": [
+      { "belief": "Grief happens in five stages, in order.", "reality": "People move between the responses, skip some and show several at once." }
+    ]
+  },
+  "candidates": [
+    {
+      "name": "Put the five stages in order",
+      "pattern": "predict",
+      "placement": "before",
+      "insert": "start",
+      "recommended": true,
+      "angle": "At the top of the page, before the list: learners put the five in the order they think people go through them. Most produce the textbook sequence, and the reveal shows why that is the misconception the page is about to correct.",
+      "payoff": "Explain why the five responses are not a sequence.",
+      "addresses": "The belief that grief happens in five stages, in order.",
+      "effort": "low",
+      "data": { "status": "needs-research", "needs": "Check the reveal's wording against On Death and Dying (1969) and On Grief and Grieving (2005)." },
+      "sketchFile": "sketches/1-predict-the-order.json"
+    },
+    {
+      "name": "The five responses, one at a time",
+      "pattern": "stepthrough",
+      "placement": "during",
+      "insert": { "after": "The five stages" },
+      "angle": "Replaces the grey list with a step-through: each response, what it can sound like, and the reply that shuts the conversation down. Built for the teacher to walk through in class.",
+      "payoff": "Name each response from what someone says.",
+      "effort": "low",
+      "data": { "status": "needs-teacher", "needs": "The replies were written for the activity. Check them against your service's communication guidance." },
+      "sketchFile": "sketches/5-walk-through-the-responses.json"
+    }
+  ]
+}

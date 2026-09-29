@@ -290,7 +290,7 @@ export function native(s, ctx) {
     <p>Write down your estimate for ${esc(hidden.join(' and '))} before you open the box.</p>`;
   const inside = `${list(s.bars.map((b) => `${b.label}: ${fmt(s, b.value)} ${s.unit}${b.note ? `. ${b.note}` : ''}`))}<p>${esc(s.reveal.explanation)}</p>`
     + (s.reveal.points ? list(s.reveal.points) : '')
-    + diagramBlock({ a11y: ctx.figureA11y });
+    + diagramBlock({ a11y: ctx.figureA11y, fileUrl: ctx.figureUrl });
   return nativeActivity({ title: `Estimate: ${s.title}`, iconClass: meta.embleIcon, instructions, content: `${accordion(`Guessed? Open to see ${s.reveal.heading ? s.reveal.heading.toLowerCase() : 'the real values'}`, inside)}\n${spacer}` });
 }
 

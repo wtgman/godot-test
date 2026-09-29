@@ -1,0 +1,14 @@
+Put the five stages of grief in order
+=====================================
+
+What this shows: A prediction activity. The learner answers a question before the answer is shown, then sees the answer and the reasoning.
+How it is arranged: Question first, then the learner's answer, then the reveal.
+
+Contents:
+  - Question: In what order do people move through these five stages of grief?
+  - Items to put in order: Denial, Anger, Bargaining, Depression, Acceptance.
+  - There is no correct order: There is no correct order.
+  - Why: It was a trick question. Elisabeth Kübler-Ross described these five responses in 1969, from interviews with people who were dying. She did not claim that people pass through them in sequence, and in 2005 she wrote that they are not stops on a linear timeline. People move between them, return to one they seemed to have left, and some never show one or more of them at all.
+  - Point 1: If you ranked them denial first and acceptance last, you hold the version that is usually taught, and the one families usually bring with them. Expect to meet it on placement.
+  - Point 2: A client who is angry in week one and angry again in week six has not gone backwards.
+  - Point 3: The five describe responses you may see. They are not a checklist of progress.

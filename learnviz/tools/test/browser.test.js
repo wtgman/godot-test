@@ -19,6 +19,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createServer } from 'node:http';
 
 import { validateLO, buildLO } from '../src/lo/index.js';
+import { loadWorkspace, reviewData } from '../src/course/workspace.js';
+import { reviewApp } from '../src/course/review.js';
 import { findChromium } from '../src/raster.js';
 
 const EX = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'examples');
@@ -130,6 +132,12 @@ describe('every example in a browser', { skip }, () => {
       assert.ok(reached, 'no control reachable by Tab');
       assert.deepEqual(page.errors, []);
       await page.close();
+
+      // Loading must not move focus: in a gallery, a review app or an LMS
+      // frame, that would pull a keyboard user out of the host page.
+      const fresh = await open(html);
+      assert.equal(await fresh.evaluate(() => document.activeElement.tagName), 'BODY', 'focus moved on load');
+      await fresh.close();
 
       const phone = await open(html, { width: 375 });
       assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'scrolls sideways on a phone');
@@ -278,5 +286,52 @@ describe('SCORM round trip against a fake LMS', { skip }, () => {
     assert.equal(s['cmi.core.lesson_status'], 'completed');
     assert.equal(s['cmi.core.score.raw'], undefined);
     await page.close();
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* The course review app                                               */
+/* ------------------------------------------------------------------ */
+
+describe('the course review app', { skip }, () => {
+  test('a designer can work through the course one page at a time and save the choices', async () => {
+    const { data, sketches } = reviewData(loadWorkspace(join(EX, 'course', 'workspace')));
+    data.saved = {};
+    const app = mkdtempSync(join(tmpdir(), 'learnviz-review-'));
+    try {
+      const { mkdirSync } = await import('node:fs');
+      mkdirSync(join(app, 'sketches'));
+      for (const sk of sketches) writeFileSync(join(app, sk.file), sk.html);
+      writeFileSync(join(app, 'index.html'), reviewApp(data));
+      const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
+      const page = await ctx.newPage();
+      const errors = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+      await page.goto(pathToFileURL(join(app, 'index.html')).href);
+
+      const heading = () => page.textContent('#page-h');
+      assert.equal(await heading(), 'Welcome to the unit');
+      await page.click('[data-act="skip"]');
+      assert.equal(await heading(), 'Assessment overview', 'did not move on after deciding');
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'page-h');
+      await page.click('[data-act="skip"]');
+      assert.equal(await heading(), 'What is grief?');
+      await page.waitForSelector('.opt iframe');
+      await page.click('[data-act="build"][data-n="2"]');
+      assert.equal(await heading(), 'Recognising grief responses');
+      assert.match(await page.textContent('#prog-n'), /^3 of 7/);
+
+      await page.reload();
+      assert.match(await page.textContent('#prog-n'), /^3 of 7/, 'choices lost on reload');
+
+      const [download] = await Promise.all([page.waitForEvent('download'), page.click('.top [data-act="save"]')]);
+      const saved = JSON.parse(readFileSync(await download.path(), 'utf8'));
+      assert.equal(saved.kind, 'course-choices');
+      assert.deepEqual(saved.pages['what-is-grief'], { decision: 'build', candidate: 1, option: 2, name: 'The five responses, one at a time', pattern: 'stepthrough', label: 'Step by step', insert: { after: 'The five stages' } });
+      assert.deepEqual(errors, []);
+      await ctx.close();
+    } finally {
+      rmSync(app, { recursive: true, force: true });
+    }
   });
 });

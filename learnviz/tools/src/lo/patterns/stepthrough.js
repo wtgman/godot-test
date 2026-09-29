@@ -178,7 +178,7 @@ export function interactive(s, ctx) {
 export function native(s, ctx) {
   const instructions = `<p><strong>Look at the whole diagram first, then work through it step by step.</strong> Open the walkthrough and read each step while looking at the matching part of the diagram.</p>`;
   const walk = `${s.intro ? `<p>${esc(s.intro)}</p>` : ''}<ol>${s.steps.map((st) => `<li>${esc(st.say)}</li>`).join('')}</ol>`;
-  const content = diagramBlock({ a11y: ctx.figureA11y }) + '\n' + accordion('Walk through it step by step', walk) + `\n${spacer}`;
+  const content = diagramBlock({ a11y: ctx.figureA11y, fileUrl: ctx.figureUrl }) + '\n' + accordion('Walk through it step by step', walk) + `\n${spacer}`;
   return nativeActivity({ title: `Step by step: ${s.title}`, iconClass: meta.embleIcon, instructions: `${instructions}`, content });
 }
 

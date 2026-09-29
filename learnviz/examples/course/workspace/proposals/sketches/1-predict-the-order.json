@@ -1,0 +1,45 @@
+{
+  "kind": "learning-object",
+  "pattern": "predict",
+  "title": "Put the five stages of grief in order",
+  "lede": "You have probably heard of the five stages of grief. Before you read anything about them, put them in the order you think people go through them.",
+  "intent": "Learners can explain why grief does not follow a fixed sequence, and what that changes about how they respond to a grieving client.",
+  "goal": "explain why grief does not follow a fixed order, and what that changes about how you respond to a grieving client.",
+  "placement": "before",
+  "question": "In what order do people move through these five stages of grief?",
+  "response": {
+    "kind": "order",
+    "items": ["Denial", "Anger", "Bargaining", "Depression", "Acceptance"],
+    "fixedOrder": false
+  },
+  "reveal": {
+    "heading": "There is no correct order",
+    "explanation": "It was a trick question. Elisabeth Kübler-Ross described these five responses in 1969, from interviews with people who were dying. She did not claim that people pass through them in sequence, and in 2005 she wrote that they are not stops on a linear timeline. People move between them, return to one they seemed to have left, and some never show one or more of them at all.",
+    "points": [
+      "If you ranked them denial first and acceptance last, you hold the version that is usually taught, and the one families usually bring with them. Expect to meet it on placement.",
+      "A client who is angry in week one and angry again in week six has not gone backwards.",
+      "The five describe responses you may see. They are not a checklist of progress."
+    ],
+    "figure": {
+      "type": "timeline",
+      "title": "How five responses became five steps",
+      "events": [
+        { "date": "1969", "label": "On Death and Dying is published", "detail": "Five responses observed in people who were facing their own death." },
+        { "date": "1970s and 1980s", "label": "Borrowed for bereavement, flattened into steps", "detail": "Applied to grieving someone else's death, and taught as a sequence.", "emphasis": true },
+        { "date": "2005", "label": "Kübler-Ross says they are not a sequence", "detail": "On Grief and Grieving: not stops on a linear timeline, and not everyone experiences all of them.", "emphasis": true },
+        { "date": "Now", "label": "The five-step version is still the one most people arrive with", "detail": "Which is why it is worth correcting before anything else is taught." }
+      ]
+    }
+  },
+  "teach": {
+    "watchFor": "Learners who get the trick and then swing to 'so the model is useless'. It is still a useful vocabulary for responses you may see. It is only the sequence that is wrong.",
+    "ask": [
+      "Who put denial first? Why did that feel obvious?",
+      "If a family member asks you why their father is 'going backwards', what would you say?"
+    ]
+  },
+  "sources": [
+    { "label": "Kübler-Ross, E. (1969). On Death and Dying.", "kind": "general", "status": "to-check", "note": "Check the date and the claim that the interviews were with dying patients against the unit's reading list." },
+    { "label": "Kübler-Ross, E. and Kessler, D. (2005). On Grief and Grieving.", "kind": "general", "status": "to-check", "note": "Check the 'not stops on a linear timeline' wording against the text." }
+  ]
+}

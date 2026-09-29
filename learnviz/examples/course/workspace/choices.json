@@ -1,0 +1,55 @@
+{
+  "kind": "course-choices",
+  "course": "Supporting People Through Grief and Loss",
+  "key": "learnviz:d2c193b426c0ec2f",
+  "pages": {
+    "welcome-to-the-unit": {
+      "decision": "skip"
+    },
+    "assessment-overview": {
+      "decision": "skip"
+    },
+    "what-is-grief": {
+      "decision": "build",
+      "candidate": 0,
+      "option": 1,
+      "name": "Put the five stages in order",
+      "pattern": "predict",
+      "label": "Predict, then check",
+      "insert": "start",
+      "note": "Keep the reveal short for the first week."
+    },
+    "recognising-grief-responses": {
+      "decision": "build",
+      "candidate": 0,
+      "option": 1,
+      "name": "Which response is this?",
+      "pattern": "sort",
+      "label": "Sort it",
+      "insert": "end"
+    },
+    "talking-with-grieving-families": {
+      "decision": "build",
+      "candidate": 0,
+      "option": 1,
+      "name": "A conversation in the corridor",
+      "pattern": "scenario",
+      "label": "Scenario",
+      "insert": "end"
+    },
+    "knowing-your-role": {
+      "decision": "build",
+      "candidate": 0,
+      "option": 1,
+      "name": "Passing on a concern, in order",
+      "pattern": "order",
+      "label": "Put it in order",
+      "insert": {
+        "after": "Passing on a concern"
+      }
+    },
+    "looking-after-yourself": {
+      "decision": "skip"
+    }
+  }
+}

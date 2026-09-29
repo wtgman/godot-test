@@ -1,0 +1,315 @@
+{
+  "kind": "course",
+  "title": "Supporting People Through Grief and Loss",
+  "source": "sample-course.imscc",
+  "sourceHash": "d2c193b426c0ec2f",
+  "modules": [
+    {
+      "title": "Getting started",
+      "state": "active",
+      "items": [
+        {
+          "kind": "page",
+          "title": "Welcome to the unit",
+          "state": "active",
+          "indent": 0,
+          "slug": "welcome-to-the-unit"
+        },
+        {
+          "kind": "page",
+          "title": "Assessment overview",
+          "state": "active",
+          "indent": 0,
+          "slug": "assessment-overview"
+        }
+      ]
+    },
+    {
+      "title": "Understanding grief",
+      "state": "active",
+      "items": [
+        {
+          "kind": "heading",
+          "title": "Read",
+          "state": "active",
+          "indent": 0
+        },
+        {
+          "kind": "page",
+          "title": "What is grief?",
+          "state": "active",
+          "indent": 0,
+          "slug": "what-is-grief"
+        },
+        {
+          "kind": "page",
+          "title": "Recognising grief responses",
+          "state": "active",
+          "indent": 0,
+          "slug": "recognising-grief-responses"
+        },
+        {
+          "kind": "heading",
+          "title": "Discuss",
+          "state": "active",
+          "indent": 0
+        },
+        {
+          "kind": "discussion",
+          "title": "Share what you noticed",
+          "state": "active",
+          "indent": 0
+        }
+      ]
+    },
+    {
+      "title": "Supporting families",
+      "state": "active",
+      "items": [
+        {
+          "kind": "page",
+          "title": "Talking with grieving families",
+          "state": "active",
+          "indent": 0,
+          "slug": "talking-with-grieving-families"
+        },
+        {
+          "kind": "page",
+          "title": "Knowing your role and when to refer",
+          "state": "active",
+          "indent": 0,
+          "slug": "knowing-your-role"
+        },
+        {
+          "kind": "assignment",
+          "title": "Task 2: Case study report",
+          "state": "active",
+          "indent": 0
+        }
+      ]
+    },
+    {
+      "title": "Looking after yourself",
+      "state": "active",
+      "items": [
+        {
+          "kind": "page",
+          "title": "Looking after yourself",
+          "state": "active",
+          "indent": 0,
+          "slug": "looking-after-yourself"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "slug": "welcome-to-the-unit",
+      "n": 1,
+      "title": "Welcome to the unit",
+      "module": "Getting started",
+      "state": "published",
+      "file": "wiki_content/welcome-to-the-unit.html",
+      "words": 124,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Welcome"
+        },
+        {
+          "level": 3,
+          "text": "How this unit runs"
+        },
+        {
+          "level": 3,
+          "text": "Before you start"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/01-welcome-to-the-unit.md"
+    },
+    {
+      "slug": "assessment-overview",
+      "n": 2,
+      "title": "Assessment overview",
+      "module": "Getting started",
+      "state": "published",
+      "file": "wiki_content/assessment-overview.html",
+      "words": 86,
+      "headings": [
+        {
+          "level": 2,
+          "text": "How you are assessed"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/02-assessment-overview.md"
+    },
+    {
+      "slug": "what-is-grief",
+      "n": 3,
+      "title": "What is grief?",
+      "module": "Understanding grief",
+      "state": "published",
+      "file": "wiki_content/what-is-grief.html",
+      "words": 192,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Grief is a response to loss"
+        },
+        {
+          "level": 2,
+          "text": "The five stages"
+        },
+        {
+          "level": 2,
+          "text": "Not a sequence"
+        }
+      ],
+      "media": {
+        "images": 1,
+        "embeds": []
+      },
+      "text": "pages/03-what-is-grief.md"
+    },
+    {
+      "slug": "recognising-grief-responses",
+      "n": 4,
+      "title": "Recognising grief responses",
+      "module": "Understanding grief",
+      "state": "published",
+      "file": "wiki_content/recognising-grief-responses.html",
+      "words": 153,
+      "headings": [
+        {
+          "level": 2,
+          "text": "What each response can sound like"
+        },
+        {
+          "level": 3,
+          "text": "Denial"
+        },
+        {
+          "level": 3,
+          "text": "Anger"
+        },
+        {
+          "level": 3,
+          "text": "Bargaining"
+        },
+        {
+          "level": 3,
+          "text": "Depression"
+        },
+        {
+          "level": 3,
+          "text": "Acceptance"
+        },
+        {
+          "level": 2,
+          "text": "Why it matters"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/04-recognising-grief-responses.md"
+    },
+    {
+      "slug": "talking-with-grieving-families",
+      "n": 5,
+      "title": "Talking with grieving families",
+      "module": "Supporting families",
+      "state": "published",
+      "file": "wiki_content/talking-with-grieving-families.html",
+      "words": 139,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Keep the conversation open"
+        },
+        {
+          "level": 3,
+          "text": "Things that help"
+        },
+        {
+          "level": 3,
+          "text": "Things that shut a conversation down"
+        },
+        {
+          "level": 2,
+          "text": "When a family member asks you to do something outside your role"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/05-talking-with-grieving-families.md"
+    },
+    {
+      "slug": "knowing-your-role",
+      "n": 6,
+      "title": "Knowing your role and when to refer",
+      "module": "Supporting families",
+      "state": "published",
+      "file": "wiki_content/knowing-your-role.html",
+      "words": 130,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Your role on placement"
+        },
+        {
+          "level": 2,
+          "text": "Passing on a concern"
+        },
+        {
+          "level": 3,
+          "text": "Always refer straight away"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/06-knowing-your-role.md"
+    },
+    {
+      "slug": "looking-after-yourself",
+      "n": 7,
+      "title": "Looking after yourself",
+      "module": "Looking after yourself",
+      "state": "published",
+      "file": "wiki_content/looking-after-yourself.html",
+      "words": 84,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Grief work affects workers too"
+        },
+        {
+          "level": 3,
+          "text": "Signs to watch for in yourself"
+        },
+        {
+          "level": 3,
+          "text": "What helps"
+        }
+      ],
+      "media": {
+        "images": 0,
+        "embeds": []
+      },
+      "text": "pages/07-looking-after-yourself.md"
+    }
+  ]
+}

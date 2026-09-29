@@ -1,0 +1,84 @@
+{
+  "kind": "proposal",
+  "topic": "Knowing your role and when to refer",
+  "sourceSummary": "Page 6. Sets out the student's role, six steps for passing on a concern, and what must go to a supervisor straight away. The steps are a procedure learners will be observed doing in Task 3.",
+  "analysis": {
+    "keyIdeas": [
+      "Students on placement do not give medical information or counselling.",
+      "A concern is passed on in six steps, the same shift, in person.",
+      "Any mention of self-harm or risk to others goes to a supervisor immediately."
+    ],
+    "threshold": "Passing something on is part of the job done well, not a failure to handle it.",
+    "skill": "Pass on a concern in the right order, and know what cannot wait."
+  },
+  "candidates": [
+    {
+      "name": "Passing on a concern, in order",
+      "pattern": "order",
+      "placement": "after",
+      "insert": { "after": "Passing on a concern" },
+      "recommended": true,
+      "angle": "The six steps shuffled. Learners put them in order, and each misplaced step explains what goes wrong when it comes too early or too late. It rehearses the procedure Task 3 observes.",
+      "payoff": "Pass on a concern in the right order.",
+      "effort": "low",
+      "data": { "status": "in-source", "needs": "" },
+      "sketch": {
+        "kind": "learning-object",
+        "pattern": "order",
+        "title": "Passing on a concern",
+        "intent": "Learners can pass on a family member's concern in the order their service expects.",
+        "goal": "pass on a family member's concern in the right order.",
+        "placement": "after",
+        "passMark": 0.8,
+        "prompt": "A family member tells you something that worries you. Put these steps in the order you would take them.",
+        "items": [
+          { "label": "Listen without interrupting", "why": "You cannot pass on accurately what you did not hear in full." },
+          { "label": "Acknowledge what they have said", "why": "It tells them they were heard before anything else happens." },
+          { "label": "Tell them you will pass it on, and to whom", "why": "They should never be surprised that someone else knows." },
+          { "label": "Tell your supervisor the same shift, in person", "why": "A note alone can sit unread. In person, the same shift, it gets acted on." },
+          { "label": "Record it in the progress notes", "why": "The record comes after the conversation with your supervisor, as your service requires." },
+          { "label": "Check back with the family that someone has followed up", "why": "Closing the loop is what the family remembers, and it catches the follow-ups that did not happen." }
+        ],
+        "sources": [
+          { "label": "Course page: Knowing your role and when to refer", "kind": "supplied", "status": "to-check", "note": "The order of steps is from the page. The reasons were written for this activity." }
+        ]
+      }
+    },
+    {
+      "name": "What cannot wait?",
+      "pattern": "predict",
+      "placement": "before",
+      "insert": { "after": "Your role on placement" },
+      "angle": "Before the steps, learners pick which of three things a family member might say must go to a supervisor immediately. The two that can wait make the one that cannot stand out.",
+      "payoff": "Recognise a concern that must be referred straight away.",
+      "effort": "low",
+      "data": { "status": "in-source", "needs": "" },
+      "sketch": {
+        "kind": "learning-object",
+        "pattern": "predict",
+        "title": "What cannot wait?",
+        "intent": "Learners can recognise a concern that must go to their supervisor immediately.",
+        "goal": "recognise a concern that must go to your supervisor straight away.",
+        "placement": "before",
+        "question": "Three things a family member says to you on one shift. Which one goes to your supervisor straight away, not at the end of the shift?",
+        "response": {
+          "kind": "choice",
+          "answer": 1,
+          "options": [
+            { "label": "\"Mum's cardigan has gone missing from the laundry again.\"", "feedback": "Worth passing on, but it can wait for the end of the shift." },
+            { "label": "\"Dad keeps saying he doesn't want to go on any more.\"", "feedback": "Right. Any mention of not wanting to go on goes to your supervisor immediately." },
+            { "label": "\"When is the doctor next visiting?\"", "feedback": "Find out or pass it on, but it is not urgent." }
+          ]
+        },
+        "reveal": {
+          "heading": "Some things cannot wait",
+          "explanation": "Any mention of self-harm, of not wanting to go on, or of a risk to someone else goes to your supervisor immediately, in person. Everything else still gets passed on, the same shift."
+        },
+        "sources": [
+          { "label": "Course page: Knowing your role and when to refer", "kind": "supplied", "status": "to-check" },
+          { "label": "The three statements were written for this activity", "kind": "constructed", "status": "to-check", "note": "Check they suit your placements." }
+        ]
+      }
+    }
+  ]
+}

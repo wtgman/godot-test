@@ -55,7 +55,7 @@ export function validateLO(raw) {
 }
 
 /** The context each pattern receives when it builds. */
-function context(lo, figureRender) {
+function context(lo, figureRender, options = {}) {
   return {
     safeJson,
     shuffle,
@@ -69,6 +69,10 @@ function context(lo, figureRender) {
     },
     render,
     figureA11y: figureRender ? figureRender.a11y : null,
+    // Where the figure image will live, when it is known. A course package
+    // knows it ($IMS-CC-FILEBASE$/...). A standalone build does not, and the
+    // Canvas block carries a placeholder instead.
+    figureUrl: options.figureUrl,
     lo,
   };
 }
@@ -77,7 +81,7 @@ function context(lo, figureRender) {
  * Build every rendition that comes from the spec alone. Rasterising, zipping
  * and writing files happen in the delivery layer, which has the file system.
  */
-export function buildLO(lo) {
+export function buildLO(lo, options = {}) {
   const pattern = PATTERNS[lo.pattern];
   const description = pattern.describe(lo);
   const a11y = accessibility({ ...lo, caption: undefined, source: undefined }, description);
@@ -86,7 +90,7 @@ export function buildLO(lo) {
 
   const figureSpecForImage = pattern.figure(lo);
   const figure = figureSpecForImage ? render(figureSpecForImage) : null;
-  const ctx = context(lo, figure);
+  const ctx = context(lo, figure, options);
 
   const built = pattern.interactive(lo, ctx);
   const html = page({

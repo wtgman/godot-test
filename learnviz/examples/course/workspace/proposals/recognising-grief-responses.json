@@ -1,0 +1,40 @@
+{
+  "kind": "proposal",
+  "topic": "Recognising grief responses",
+  "sourceSummary": "Page 4. Gives one example of what each response sounds like, then why recognising it matters. Learners read five examples but never have to recognise one.",
+  "analysis": {
+    "keyIdeas": [
+      "People rarely name what they feel. You hear it in what they say.",
+      "Recognising the response helps you choose what to say."
+    ],
+    "threshold": "Bargaining sounds hopeful, which is exactly why it is easy to agree with something you cannot promise.",
+    "misconceptions": [
+      { "belief": "An angry family member is angry at me.", "reality": "Anger is often aimed at whoever is in the room." }
+    ]
+  },
+  "candidates": [
+    {
+      "name": "Which response is this?",
+      "pattern": "sort",
+      "placement": "after",
+      "insert": "end",
+      "recommended": true,
+      "angle": "Nine new things a family member might say, each sorted into the response it shows most clearly. A first miss gets a nudge, a second gets the answer and the cue to listen for. The page's own five examples become the worked examples.",
+      "payoff": "Recognise each response in everyday speech.",
+      "addresses": "Hearing the responses, including the ones that sound hopeful.",
+      "effort": "medium",
+      "data": { "status": "needs-teacher", "needs": "The nine statements were written for this activity. A practitioner should confirm they read as realistic." },
+      "sketchFile": "sketches/2-recognise-the-response.json"
+    },
+    {
+      "name": "Quick-fire recognition cards",
+      "pattern": "cards",
+      "placement": "after",
+      "insert": "end",
+      "angle": "The same idea as recall practice: a statement on the front, the response and its cue on the back, with misses coming round again. Lighter than the sort, and good for revision before Task 1.",
+      "payoff": "Name the response from a statement without hesitating.",
+      "effort": "low",
+      "data": { "status": "in-source", "needs": "" }
+    }
+  ]
+}

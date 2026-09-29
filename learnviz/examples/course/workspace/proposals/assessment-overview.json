@@ -1,0 +1,4 @@
+{
+  "kind": "skip",
+  "reason": "Every task is marked satisfactory or not yet satisfactory, so there is no weighting to estimate or compare. Learners come back to this page as a reference, and it works best as the plain table it is."
+}

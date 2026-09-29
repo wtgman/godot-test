@@ -121,6 +121,12 @@ export function validateProposal(raw) {
     oneOf(c.placement, `${at}.placement`, PLACEMENTS, { what: 'placement' });
     oneOf(c.effort, `${at}.effort`, EFFORT, { what: 'effort level' });
     bool(c.recommended, `${at}.recommended`);
+    // For a page in a course: where on the page it belongs. "start", "end",
+    // or { "after": "Heading" } for the end of that heading's section.
+    if (c.insert !== undefined && c.insert !== 'start' && c.insert !== 'end') {
+      if (!c.insert || typeof c.insert !== 'object') fail(`${at}.insert`, 'must be "start", "end" or { "after": "Heading text" }');
+      str(c.insert.after, `${at}.insert.after`, { max: 200 });
+    }
 
     if (!c.data || typeof c.data !== 'object') {
       fail(`${at}.data`, 'is required. Every candidate must say where its content comes from before anyone builds it.');
@@ -172,8 +178,8 @@ export function validateProposal(raw) {
 /* ------------------------------------------------------------------ */
 
 /** Recommended first, then the rest, numbered across both so a reply can say "1 and 4". */
-function numbered(proposal) {
-  const all = proposal.candidates.map((c, i) => ({ c, sketch: proposal._sketches?.[i] || null }));
+export function numbered(proposal) {
+  const all = proposal.candidates.map((c, i) => ({ c, index: i, sketch: proposal._sketches?.[i] || null }));
   return [...all.filter((x) => x.c.recommended), ...all.filter((x) => !x.c.recommended)]
     .map((x, i) => ({ ...x, n: i + 1 }));
 }

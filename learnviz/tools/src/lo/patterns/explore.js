@@ -708,7 +708,7 @@ export function native(s, ctx) {
   </table>`;
   const instructions = `<p><strong>How it works.</strong></p>${how}<p>Here is what happens as ${esc(vary.label.toLowerCase())} changes, with everything else at its starting value.</p>${table}`;
   const chal = s.challenges.map((c, i) => accordion(`Challenge ${i + 1}: ${c.prompt}`, `${c.hint ? `<p><strong>Hint.</strong> ${esc(c.hint)}</p>` : ''}<p><strong>What you should find.</strong> ${esc(c.success)}</p>`)).join('\n');
-  const fig = ctx.figureA11y ? diagramBlock({ a11y: ctx.figureA11y }) : '';
+  const fig = ctx.figureA11y ? diagramBlock({ a11y: ctx.figureA11y, fileUrl: ctx.figureUrl }) : '';
   return nativeActivity({
     title: `Explore: ${s.title}`,
     iconClass: meta.embleIcon,

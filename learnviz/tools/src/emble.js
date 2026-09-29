@@ -46,9 +46,12 @@ function placeholder(instruction) {
  */
 export function diagramBlock({ fileUrl, apiEndpoint, a11y, width, height }) {
   const src = fileUrl || CANVAS_FILE_URL;
-  const api = apiEndpoint || API_ENDPOINT;
+  // A file in a course package ($IMS-CC-FILEBASE$) has no API endpoint yet:
+  // Canvas assigns one on import. Only a file already in Canvas has one.
+  const api = apiEndpoint === undefined ? (fileUrl ? null : API_ENDPOINT) : apiEndpoint;
+  const apiAttrs = api ? ` data-api-endpoint="${esc(api)}" data-api-returntype="File"` : '';
 
-  const imgTag = `<p><img style="display: block; margin-left: auto; margin-right: auto;" src="${esc(src)}" alt="${esc(a11y.shortAlt)}"${width ? ` width="${esc(width)}"` : ''}${height ? ` height="${esc(height)}"` : ''} data-ally-user-updated-alt="${esc(a11y.fullAlt)}" data-api-endpoint="${esc(api)}" data-api-returntype="File" /></p>`;
+  const imgTag = `<p><img style="display: block; margin-left: auto; margin-right: auto;" src="${esc(src)}" alt="${esc(a11y.shortAlt)}"${width ? ` width="${esc(width)}"` : ''}${height ? ` height="${esc(height)}"` : ''} data-ally-user-updated-alt="${esc(a11y.fullAlt)}"${apiAttrs} /></p>`;
 
   const imageOrPlaceholder = fileUrl
     ? imgTag

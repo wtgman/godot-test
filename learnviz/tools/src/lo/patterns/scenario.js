@@ -153,7 +153,10 @@ function client(D) {
     return el;
   }
 
-  function show(id) {
+  // Focus follows the conversation once the learner is in it, but never on
+  // first load: a page that grabs focus as it opens pulls a keyboard or screen
+  // reader user away from wherever they were, including out of a host page.
+  function show(id, quiet) {
     var n = nodes[id];
     var el = turn(speaker(n), n.say, 'is-them');
     el.setAttribute('tabindex', '-1');
@@ -163,7 +166,7 @@ function client(D) {
     }).join('');
     choicesEl.setAttribute('data-node', id);
     choicesEl.hidden = false;
-    el.focus();
+    if (!quiet) el.focus();
     LV.reportHeight();
   }
 
@@ -211,7 +214,7 @@ function client(D) {
     show(D.start);
   }
 
-  show(D.start);
+  show(D.start, true);
 }
 /* eslint-enable */
 
