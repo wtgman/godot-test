@@ -446,7 +446,9 @@ export async function buildPage(ws, slug, { out, release = false, png = null, vi
   if (!d || d.decision !== 'build') throw new Error(`Nothing chosen to build for ${p.slug}.`);
   const r = planPage(ws, p, d, release);
   const results = { page: p, built: [], problems: r.problems, refused: r.refused };
-  if ((release && r.refused.length) || !r.plans.length) return results;
+  // All or nothing: a package holding some of what was chosen could be
+  // imported without anyone noticing the rest is missing.
+  if (r.problems.length || r.refused.length || !r.plans.length) return results;
 
   const made = await makeActivities(ws, r.plans, {
     out, png, video,

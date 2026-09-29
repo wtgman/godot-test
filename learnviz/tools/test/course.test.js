@@ -410,6 +410,8 @@ describe('one page at a time', () => {
       recordDecision(ws, page.slug, decision);
       const r = await buildPage(ws, page.slug, { out });
       assert.match(r.problems[0].message, /Write specs\/recognising-grief-responses-2\.json/);
+      assert.equal(r.package, undefined, 'a package was written without every chosen activity');
+      assert.deepEqual(readdirSync(out), []);
     } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
   });
 
