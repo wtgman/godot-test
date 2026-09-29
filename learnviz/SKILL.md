@@ -1,6 +1,6 @@
 ---
 name: learnviz
-description: Turns a piece of course content into learning activities for Canvas LMS, things a learner does rather than pictures they look at. Reads pasted text, a document or a link, works out what matters and what learners get wrong, and proposes a short menu of activities (predict, estimate, step-through, sort, order or timing, branching scenario, explorable model, recall cards), each with a working sketch to try in a gallery before anything is built. Once chosen, it builds each activity as a self-contained page with a presenter view for class, a SCORM package that reports to the Canvas gradebook, a script-free Canvas page, a teacher guide and a review sheet, plus figures, alt text and text versions. Use it whenever someone hands over course content and wants it made more engaging, interactive or visual, wants ideas for how to teach it, or asks how to get an interactive, simulation, animation, timeline, chart or diagram into Canvas. Pairs with cove-canvas-page, which builds the page these drop into.
+description: Turns a piece of course content into learning activities for Canvas LMS, things a learner does rather than pictures they look at. Reads pasted text, a document or a link, works out what matters and what learners get wrong, and proposes a short menu of activities (predict, estimate, step-through, sort, order or timing, branching scenario, explorable model, recall cards), each with a working sketch to try in a gallery before anything is built. Once chosen, it builds each activity as a self-contained page with a presenter view for class, a SCORM package that reports to the Canvas gradebook, a script-free Canvas page, a teacher guide and a review sheet, plus figures, alt text and text versions. It also works through a whole Canvas course export page by page: the designer chooses an activity for each page in a review app, and everything chosen is built at once and written back into a course package to import. Use it whenever someone hands over course content or a Canvas course export and wants it made more engaging, interactive or visual, wants ideas for how to teach it, or asks how to get an interactive, simulation, animation, timeline, chart or diagram into Canvas. Pairs with cove-canvas-page, which builds the page these drop into.
 ---
 
 # Learning activity builder
@@ -187,6 +187,28 @@ questions to ask, and remind them that the reveal is where the talking happens.
 
 ---
 
+## A whole course
+
+When the input is a Canvas course export (`.imscc`), read
+`references/course-workflow.md` and follow it. The steps are the same, run
+across the course:
+
+```
+node bin/learnviz.js course import my-course.imscc --out my-course   # outline and page texts
+node bin/learnviz.js course status my-course                         # what each page needs next
+node bin/learnviz.js course review my-course                         # the review app for the designer
+node bin/learnviz.js course build my-course                          # activities, SCORM set, updated export
+```
+
+Read the whole course before proposing for any page. Write
+`proposals/<slug>.json` for every page: options with sketches and a place on
+the page, or `{ "kind": "skip", "reason": "..." }` for pages that need nothing.
+The designer works through the review app, choosing and moving on, and saves or
+pastes `choices.json`. Write finished specs for chosen options into `specs/`,
+then build. The course package is imported into a sandbox course first.
+
+---
+
 ## Rules that are not negotiable
 
 - **No invented data, dates, figures, quotations or citations.** Ask, research
@@ -227,6 +249,7 @@ questions to ask, and remind them that the reveal is where the talking happens.
 
 ## Reference files
 
+- **`references/course-workflow.md`.** A whole Canvas course: import, proposals per page, the review app, choices, the build, and importing the package. Read when given an export.
 - **`references/ideation.md`.** The analysis, the ten moves for finding an angle, questions worth asking, recommending an arc, recording what was ruled out. Read at steps 1 and 2.
 - **`references/patterns.md`.** Each pattern: what the learner does, why it works, how a teacher uses it, what Canvas receives, and the traps. Read at step 3.
 - **`references/spec-reference.md`.** Every field of every learning-object pattern, the proposal, and the figure types. Read before writing any spec.

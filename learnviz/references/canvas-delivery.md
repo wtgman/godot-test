@@ -195,6 +195,17 @@ works.
 
 **Do not paste the SVG into the editor.** Canvas strips inline SVG on save.
 
+### A whole course, as an export package
+
+**File:** `<course>-with-activities.imscc`, from `learnviz course build`
+
+When a whole course has been worked through, every activity arrives at once:
+the Canvas page version placed into its page, and its figure as a course file.
+Import it through **Settings, then Import Course Content, then Canvas Course
+Export Package**, into a blank sandbox course first. Re-importing into the
+course the export came from updates matching pages in place, and overwrites
+any edits made to them since the export. `course-workflow.md` has the steps.
+
 ### And H5P
 
 H5P, where Canvas has it configured, is the right choice when one of its

@@ -57,6 +57,24 @@ and a dashboard at `build/index.html`.
 A built copy of every example is in `examples/build/`. Open
 `examples/build/index.html` to try them.
 
+## A whole course at once
+
+Give it a Canvas course export and it works through the course page by page.
+
+```bash
+node bin/learnviz.js course import my-course.imscc --out my-course
+# Claude reads the course and writes options for every page
+node bin/learnviz.js course review my-course     # the designer chooses, page by page
+node bin/learnviz.js course build my-course      # everything chosen, built at once
+```
+
+The review app shows each page beside its options. The designer tries them,
+picks one and where on the page it goes, and moves straight on to the next
+page. The build writes the course back out as an export with every activity on
+its page and every figure as a course file, ready to import, plus the SCORM
+packages and an upload checklist. `examples/course/` has a sample export and a
+worked example. `references/course-workflow.md` has the detail.
+
 ## The eight patterns
 
 | Pattern | The learner | Scored |
@@ -129,13 +147,15 @@ build time. The build prints `CHECK` rather than `OK` if anything fails.
 
 ## Tests
 
-`npm test` runs 300 tests in about ten seconds. They build every example and
+`npm test` runs 329 tests in about twelve seconds. They build every example and
 check it is self-contained, deterministic, accessible and correctly drafted,
 pin the validation rules, check every bundle file, and drive every example in
 Chromium: completing it, reaching a control by keyboard, fitting a phone, and
 using presenter view. A fake LMS hosts each SCORM package the way Canvas's
 player does and checks the status, score, pass mark and best attempt it
-receives, and that showing a model answer never sends a score. The browser
+receives, and that showing a model answer never sends a score. The course tests read
+the sample export, place activities, write the package and check it, and a
+designer's pass through the review app is driven in the browser. The browser
 tests are skipped where Chromium or playwright-core is missing.
 
 ## Layout
@@ -149,6 +169,7 @@ examples/                 grief, instagram, kitchen, science, service, project:
                           proposals, activity specs, research notes
 examples/figures/         standalone figure specs
 examples/build/           everything built, with a dashboard
+examples/course/          a sample Canvas export and a worked course workspace
 tools/
   bin/learnviz.js         the CLI
   src/lo/                 learning objects: schema, page shell, Canvas blocks
@@ -156,6 +177,7 @@ tools/
   src/runtime/            the in-page runtime (SCORM, presenter view), formulas, seeded shuffles
   src/delivery/           bundle, dashboard, teacher guide, review sheet, SCORM, zip
   src/proposal.js         proposals and the gallery
+  src/course/             Canvas exports: reading, the workspace, the review app, writing back
   src/renderers/          the ten figure types
   src/spec.js             the figure schema
   src/a11y.js             alt text, image descriptions, the audit
