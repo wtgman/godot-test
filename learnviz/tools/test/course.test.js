@@ -21,9 +21,10 @@ import { readCourse, writeCourse, canvasId } from '../src/course/imscc.js';
 import {
   importCourse, loadWorkspace, status, reviewData, buildCourse,
   findPage, pageGallery, parseBuildCode, recordDecision, buildPage,
+  allGalleries, extractBuildCodes,
 } from '../src/course/workspace.js';
 import { writePageUpdate } from '../src/course/imscc.js';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 /** Strict XML check with Python's parser, where Python is available. Our own reader is lenient on purpose. */
 function assertWellFormed(xml, what) {
@@ -417,5 +418,85 @@ describe('one page at a time', () => {
 
   test('a page update refuses a page that is not in the export', () => {
     assert.throws(() => writePageUpdate(unzip(readFileSync(SAMPLE)), { file: 'wiki_content/nope.html', html: 'x' }), /not a page/);
+  });
+});
+
+describe('every page at once, and a stack of replies', () => {
+  const copyWorkspace = () => {
+    const dir = tmp();
+    cpSync(WORKSPACE, dir, { recursive: true, filter: (p) => !/\/(build|built|review|galleries|ready-to-import)(\/|$)/.test(p) });
+    rmSync(join(dir, 'choices.json'), { force: true });
+    return dir;
+  };
+
+  test('every page with options gets a gallery, linked to the next and to an index', () => {
+    const ws = loadWorkspace(WORKSPACE);
+    const { files, index } = allGalleries(ws);
+    const ready = ws.pages.filter((p) => p.proposal.status === 'ready');
+    assert.deepEqual(files.map((f) => f.page.slug), ready.map((p) => p.slug));
+    assert.doesNotMatch(files[0].html, /&larr; Page/);
+    assert.match(files[0].html, new RegExp(`<a href="${files[1].file}">Page ${files[1].page.n} &rarr;</a>`));
+    assert.match(files[1].html, new RegExp(`<a href="${files[0].file}">&larr; Page ${files[0].page.n}</a>`));
+    assert.doesNotMatch(files.at(-1).html, /&rarr;<\/a>/);
+    for (const f of files) {
+      assert.match(f.html, /<a href="index.html">All pages<\/a>/);
+      assert.match(index, new RegExp(`href="${f.file}"`));
+    }
+    for (const p of ws.pages.filter((x) => x.proposal.status !== 'ready')) assert.ok(index.includes(p.title));
+  });
+
+  test('build codes are found in a pasted stack, whatever else is around them', () => {
+    const text = [
+      'Page 3, Recognising grief responses: please build option 1 at the end of the page.',
+      'Build code: recognising-grief-responses 1@end',
+      '',
+      'thanks, and this one:',
+      'Page 6: please build options 1 and 2.  Build code: knowing-your-role-and-when-to-refer 1@after:Passing on a concern 2@end  ',
+      'build code: what-is-grief none',
+    ].join('\n');
+    assert.deepEqual(extractBuildCodes(text), [
+      'recognising-grief-responses 1@end',
+      'knowing-your-role-and-when-to-refer 1@after:Passing on a concern 2@end',
+      'what-is-grief none',
+    ]);
+    assert.deepEqual(extractBuildCodes('what-is-grief none\nsome words\nrecognising-grief-responses 2@start'), ['what-is-grief none', 'recognising-grief-responses 2@start']);
+  });
+
+  test('a stack builds every page it can into one folder, and names what is still needed', () => {
+    const dir = copyWorkspace();
+    try {
+      const replies = join(dir, 'replies.txt');
+      writeFileSync(replies, [
+        'Build code: knowing-your-role-and-when-to-refer 1@after:Passing on a concern 2@after:Your role on placement',
+        'Build code: what-is-grief none',
+        'Build code: recognising-grief-responses 2@end',
+        'Build code: no-such-page 1@end',
+      ].join('\n\n'));
+      const cli = join(dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'learnviz.js');
+      const run = () => spawnSync(process.execPath, [cli, 'course', 'build-page', dir, '--from', replies], { encoding: 'utf8', env: { ...process.env, NO_COLOR: '1' } });
+      const r = run();
+      assert.equal(r.status, 1, 'a stack with pages still waiting should not report success');
+      assert.match(r.stdout, /READY.*Knowing your role/);
+      assert.match(r.stdout, /no activity, recorded/);
+      assert.match(r.stderr, /Write specs\/recognising-grief-responses-2\.json/);
+      assert.match(r.stderr, /No page/);
+      const ready = join(dir, 'ready-to-import');
+      const pkgName = readdirSync(ready).find((f) => f.endsWith('.imscc'));
+      assert.match(pkgName, /-knowing-your-role-and-when-to-refer-update\.imscc$/);
+      assert.equal(readdirSync(ready).filter((f) => f.endsWith('.imscc')).length, 1);
+      for (const e of unzip(readFileSync(join(ready, pkgName))).filter((x) => x.name.endsWith('.xml'))) assertWellFormed(e.data, e.name);
+      const log = JSON.parse(readFileSync(join(ready, 'built.json'), 'utf8'));
+      assert.deepEqual(log.map((e) => e.slug), ['knowing-your-role-and-when-to-refer']);
+      assert.equal(log[0].activities.length, 2);
+      assert.match(readFileSync(join(ready, 'index.html'), 'utf8'), new RegExp(pkgName));
+      assert.ok(existsSync(join(ready, log[0].folder, 'how-to-add-it.html')));
+      assert.ok(!readdirSync(ready).some((f) => f.endsWith('.building')), 'a staging folder was left behind');
+      const choices = JSON.parse(readFileSync(join(dir, 'choices.json'), 'utf8')).pages;
+      assert.equal(choices['what-is-grief'].decision, 'skip');
+
+      // Running the same stack again replaces rather than adds.
+      run();
+      assert.equal(JSON.parse(readFileSync(join(ready, 'built.json'), 'utf8')).length, 1);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 });

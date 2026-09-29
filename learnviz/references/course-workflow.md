@@ -1,12 +1,18 @@
 # A whole course, page by page
 
 For when someone hands over a Canvas course export rather than a single piece
-of content. Two ways to work, and the first is the default:
+of content. Three ways to work, and the first is the default:
 
-- **One page at a time.** Show the designer one page's gallery. They tick one
-  or more activities and where each goes, and reply. Build just that page, as
-  a small package that updates that one page in their existing course, then
-  show the next page. Nothing else in the course is touched.
+- **Every page's gallery at once, replies stacked.** Make a gallery for every
+  page with options, all linked to each other and to an index. The designer
+  works through them, ticks one or more activities per page and where each
+  goes, and copies each page's reply into one note. They paste the whole
+  stack back. Every page is built as a small package that updates just that
+  page in their existing course, and all of them land in one folder,
+  `ready-to-import/`. Nothing else in the course is touched.
+- **One page at a time.** The same galleries and packages, one page per round
+  trip. For a short course, or a designer who wants to see each result before
+  choosing the next.
 - **The whole course at once.** A review app for every page, then one build of
   the whole course as a new export. Useful for a new course or a sandbox copy,
   but importing it means working with a whole new copy of the course, which
@@ -106,7 +112,51 @@ node bin/learnviz.js course status ~/courses/my-course
 
 It lists every page with what it needs next and any error in its proposal.
 
-## 5a. One page at a time (the default)
+## 5a. Every page at once (the default)
+
+```
+node bin/learnviz.js course galleries ~/courses/my-course
+```
+
+writes `galleries/`: one self-contained file per page with options,
+`NN-slug.html`, and `index.html` listing every page with its status. Each
+gallery links to the page before, the page after and the index. Send the
+folder (zipped) to the designer. Each gallery has the page's own text, the
+analysis, and every option playable, each with a box to tick and a "Place it"
+menu of the page's headings. They can tick more than one, or press "Nothing
+for this page". The reply they copy ends with a build code:
+
+```
+Build code: swot-analysis-learning-activity 1@after:Example 2@end
+```
+
+They paste each page's reply under the last and send the whole stack. Save it
+as a file and build it:
+
+```
+node bin/learnviz.js course build-page ~/courses/my-course --from replies.txt
+```
+
+Every build code in the file is read, whatever text is around it. Each page's
+decision is recorded in `choices.json`, and each page is built as it comes,
+printing `READY` with its package name. Everything goes into
+`ready-to-import/`:
+
+| Path | What it is |
+|---|---|
+| `NN-slug-update.imscc` | One per page, at the top level. A package holding only that page, under its original identifier, with any figures as files. Importing it updates that page in place |
+| `index.html` | Every page built so far, what to import for each, and the steps |
+| `built.json` | The same, for tools |
+| `NN-slug/` | Each page's folder: the package again, `page-with-activities.html` to paste into the Canvas editor instead, `files/` with the figure images, `scorm/`, `activities/` with teacher guides and review sheets, and `how-to-add-it.html` |
+
+A page is built whole or not at all. If an option chosen has no sketch, that
+page prints `WAIT` and names the spec to write, `specs/<slug>-<option>.json`,
+and the rest of the stack carries on. Write the missing specs and run the
+same command again: pages already built are rebuilt the same, and the waiting
+ones join them. Send each package to the designer as it is ready rather than
+holding them all back.
+
+## 5b. One page at a time
 
 ```
 node bin/learnviz.js course page ~/courses/my-course next
@@ -114,43 +164,23 @@ node bin/learnviz.js course page ~/courses/my-course next
 
 writes `galleries/NN-slug.html` for the first page that has options and no
 decision, and lists the pages before it that were suggested for no activity.
-Send that one file to the designer. It is self-contained: the page's own text,
-the analysis, and every option playable, each with a box to tick and a "Place
-it" menu of the page's headings. They can tick more than one. The reply they
-copy ends with a build code:
-
-```
-Build code: swot-analysis-learning-activity 1@after:Example 2@end
-```
-
-Pass it straight to the build:
+Send that one file, and pass the build code from the reply straight to the
+build:
 
 ```
 node bin/learnviz.js course build-page ~/courses/my-course "swot-analysis-learning-activity 1@after:Example 2@end"
 ```
 
-It records the decision in `choices.json` and writes `built/NN-slug/`:
-
-| Path | What it is |
-|---|---|
-| `NN-slug-update.imscc` | A package holding only this page, under its original identifier, with any figures as files. Importing it updates that page in place |
-| `page-with-activities.html` | The same page as HTML, to paste into the Canvas editor instead |
-| `files/` | The figure images, for the paste route |
-| `scorm/` | Each activity's SCORM package |
-| `activities/` | Each activity's full folder, with its teacher guide and review sheet |
-| `how-to-add-it.html` | The steps, for the designer |
-
-If an option chosen has no sketch, the build stops and names the spec to
-write: `specs/<slug>-<option>.json`. Write it and run the same command again.
-A reply of `slug none` records that the page needs nothing.
+It builds the page into `ready-to-import/` as above. A reply of `slug none`
+records that the page needs nothing.
 
 Then make the next page's gallery with `course page ... next`, and repeat.
 
-Tell the designer, the first time, that importing replaces the page with the
+Either way, tell the designer, the first time, that importing replaces the page with the
 version from their export plus the activities, so an edit made in Canvas since
 the export would be lost, and to try it on a copy of the course once.
 
-## 5b. The whole course at once
+## 5c. The whole course at once
 
 ```
 node bin/learnviz.js course review ~/courses/my-course

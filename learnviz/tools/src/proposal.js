@@ -323,6 +323,8 @@ details.try summary:focus-visible { outline: 3px solid var(--focus); outline-off
 .bar output { white-space: pre-line; flex: 1 1 320px; }
 .where { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 10px 0 0; font-weight: 700; font-size: 14.5px; max-width: 100%; }
 .where select { flex: 1 1 220px; min-width: 0; width: 100%; font: inherit; font-weight: 400; border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 44px; background: #fff; color: var(--ink); text-overflow: ellipsis; }
+.pnav { display: flex; justify-content: space-between; gap: 10px; margin: 0 0 16px; padding: 0 0 10px; border-bottom: 1px solid var(--line); font-weight: 700; }
+.pnav a { color: var(--focus); min-height: 32px; display: inline-flex; align-items: center; }
 .pagetext { border: 1px solid var(--line); border-radius: 12px; margin: 10px 0 0; }
 .pagetext summary { cursor: pointer; font-weight: 800; padding: 10px 14px; min-height: 44px; }
 .pagetext > div { max-height: 420px; overflow: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); }
@@ -489,6 +491,7 @@ export function renderGallery(proposal, { page } = {}) {
 <style>${GALLERY_CSS}</style>
 </head>
 <body${page ? ` data-page="${attr(page.slug)}" data-page-title="${attr(`Page ${page.n}, ${page.title}`)}"` : ''}><main>
+${page && page.nav ? `<nav class="pnav" aria-label="Pages">${page.nav.prev ? `<a href="${attr(page.nav.prev.file)}">&larr; Page ${page.nav.prev.n}</a>` : '<span></span>'}<a href="${attr(page.nav.index)}">All pages</a>${page.nav.next ? `<a href="${attr(page.nav.next.file)}">Page ${page.nav.next.n} &rarr;</a>` : '<span></span>'}</nav>` : ''}
 <p class="kicker">${page ? `${esc(page.module)} &middot; Page ${page.n} of ${page.total}` : 'Activity options'}</p>
 <h1>${esc(page ? page.title : topic)}</h1>
 <p class="lede">${esc(sourceSummary)}</p>

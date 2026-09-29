@@ -392,12 +392,68 @@ export function findPage(ws, which) {
 }
 
 /** The gallery for one page, as a self-contained HTML file. */
-export function pageGallery(ws, p) {
+export function pageGallery(ws, p, nav) {
   if (p.proposal.status !== 'ready') throw new Error(`${p.slug} has no options to show (${p.proposal.status}${p.proposal.error ? `: ${p.proposal.error}` : ''}).`);
   const text = readFileSync(join(ws.dir, p.text), 'utf8').split('\n---\n').slice(1).join('\n---\n').trim();
   return renderGallery(p.proposal.proposal, {
-    page: { slug: p.slug, n: p.n, total: ws.pages.length, title: p.title, module: p.module, text, headings: p.headings.map((h) => h.text) },
+    page: { slug: p.slug, n: p.n, total: ws.pages.length, title: p.title, module: p.module, text, headings: p.headings.map((h) => h.text), nav },
   });
+}
+
+const galleryFile = (p) => `${pad(p.n)}-${p.slug}.html`;
+
+/**
+ * Every page's gallery at once, linked to each other, with an index. For a
+ * designer who wants to go through them all and send back a stack of replies.
+ */
+export function allGalleries(ws) {
+  const pages = ws.pages.filter((p) => p.proposal.status === 'ready');
+  const files = pages.map((p, i) => ({
+    file: galleryFile(p),
+    page: p,
+    html: pageGallery(ws, p, {
+      index: 'index.html',
+      prev: pages[i - 1] ? { file: galleryFile(pages[i - 1]), n: pages[i - 1].n } : null,
+      next: pages[i + 1] ? { file: galleryFile(pages[i + 1]), n: pages[i + 1].n } : null,
+    }),
+  }));
+  const decided = (p) => ws.choices?.pages?.[p.slug];
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const rows = ws.pages.map((p) => {
+    const d = decided(p);
+    const status = d ? (d.decision === 'build' ? `Chosen: ${itemsOf(d).length} activit${itemsOf(d).length === 1 ? 'y' : 'ies'}` : d.decision === 'skip' ? 'No activity' : 'Asked for other options')
+      : p.proposal.status === 'skip' ? 'Suggested: no activity' : p.proposal.status === 'ready' ? '' : 'No options yet';
+    const link = p.proposal.status === 'ready' ? `<a href="${esc(galleryFile(p))}">${esc(p.title)}</a>` : esc(p.title);
+    return `<tr${p.proposal.status === 'ready' ? '' : ' class="quiet"'}><td>${p.n}</td><td>${link}</td><td>${esc(p.module)}</td><td>${esc(status)}</td></tr>`;
+  }).join('');
+  const index = `<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(`Pages: ${ws.meta.title}`)}</title>
+<style>
+body{margin:0;background:#fff;color:#000054;font:16px/1.55 Helvetica,Arial,sans-serif}main{max-width:980px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:28px;line-height:1.2;margin:0 0 8px}ol{padding-left:22px}li{margin:0 0 6px}.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid #d9d9e6}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}tr.quiet td{color:#5a5a86}a{color:#1a56c4;font-weight:700}
+.note{border-left:4px solid #fac800;background:#fffbe6;padding:10px 14px;border-radius:0 8px 8px 0}
+</style></head><body><main>
+<p style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#00706b;margin:0 0 6px">${pages.length} pages with options</p>
+<h1>${esc(ws.meta.title)}</h1>
+<ol>
+<li>Open each page with options, try them, tick what you want and where it goes.</li>
+<li>Press <strong>Copy my reply</strong> and paste it into a note. Keep adding each page's reply underneath the last.</li>
+<li>Paste the whole stack back to Claude at once. Every page is built and put in one folder, ready to import.</li>
+</ol>
+<p class="note">Pages suggested for no activity are listed in grey. Say so in your stack if you want options for one of them.</p>
+<div class="wrap"><table><thead><tr><th scope="col">Page</th><th scope="col">Title</th><th scope="col">Module</th><th scope="col">Status</th></tr></thead><tbody>${rows}</tbody></table></div>
+</main></body></html>
+`;
+  return { files, index };
+}
+
+/** Every build code in a pasted stack of gallery replies, in order. */
+export function extractBuildCodes(text) {
+  const marked = [...String(text).matchAll(/Build code:\s*(.+)/gi)].map((m) => m[1].trim());
+  if (marked.length) return marked;
+  return String(text).split(/\n+/).map((l) => l.trim()).filter((l) => /^\S+\s+(none|\d+@)/i.test(l));
 }
 
 /**
@@ -568,3 +624,52 @@ th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}.draft{backgro
   return { md, html };
 }
 
+
+/* ------------------------------------------------------------------ */
+/* The folder everything goes into                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Record a built page in the ready-to-import folder and rewrite its index, so
+ * the folder always says what is in it, however many runs it took.
+ */
+export function recordReady(ws, readyDir, r) {
+  const logFile = join(readyDir, 'built.json');
+  const log = existsSync(logFile) ? readJson(logFile) : [];
+  const entry = {
+    n: r.page.n,
+    slug: r.page.slug,
+    title: r.page.title,
+    module: r.page.module,
+    package: `${pad(r.page.n)}-${r.page.slug}-update.imscc`,
+    folder: `${pad(r.page.n)}-${r.page.slug}`,
+    activities: r.built.map((b) => ({ title: b.title, pattern: b.pattern, placed: b.placed, draft: b.draft.isDraft })),
+  };
+  const next = [...log.filter((x) => x.slug !== entry.slug), entry].sort((a, b) => a.n - b.n);
+  writeFileSync(logFile, `${JSON.stringify(next, null, 2)}\n`);
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  writeFileSync(join(readyDir, 'index.html'), `<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(`Ready to import: ${ws.meta.title}`)}</title>
+<style>
+body{margin:0;background:#fff;color:#000054;font:16px/1.55 Helvetica,Arial,sans-serif}main{max-width:980px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:28px;line-height:1.2;margin:0 0 8px}ol li{margin:0 0 6px}.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid #d9d9e6}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}a{color:#1a56c4;font-weight:700}code{background:#f5f5fa;padding:1px 5px;border-radius:4px;font-size:14px}
+.draft{background:#fdf223;padding:0 5px;border-radius:4px;font-size:13px}.note{border-left:4px solid #fac800;background:#fffbe6;padding:10px 14px;border-radius:0 8px 8px 0}
+</style></head><body><main>
+<p style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#00706b;margin:0 0 6px">Ready to import</p>
+<h1>${esc(ws.meta.title)}</h1>
+<p>${next.length} page${next.length === 1 ? '' : 's'} built. Each <code>.imscc</code> in this folder updates one page of the course.</p>
+<ol>
+<li>In the course, go to <strong>Settings</strong>, then <strong>Import Course Content</strong>, then <strong>Canvas Course Export Package</strong>.</li>
+<li>Upload one page's <code>.imscc</code>, choose <strong>Select specific content</strong>, and tick only that page and its files.</li>
+<li>Repeat for each page. Each page's folder has the paste-in version, SCORM packages, teacher guides and review sheets.</li>
+</ol>
+<p class="note">Each package is that page as it was in the export, plus its activities. Edits made to the page in Canvas since the export are replaced. Try the first one on a copy of the course.</p>
+<div class="wrap"><table><thead><tr><th scope="col">Page</th><th scope="col">Import this</th><th scope="col">Activities</th></tr></thead><tbody>
+${next.map((e) => `<tr><td>${e.n}. <a href="${esc(e.folder)}/how-to-add-it.html">${esc(e.title)}</a><br><small>${esc(e.module)}</small></td><td><code>${esc(e.package)}</code></td><td>${e.activities.map((a) => `${esc(a.title)}, ${esc(a.placed)}${a.draft ? ' <span class="draft">draft</span>' : ''}`).join('<br>')}</td></tr>`).join('')}
+</tbody></table></div>
+</main></body></html>
+`);
+  return entry;
+}

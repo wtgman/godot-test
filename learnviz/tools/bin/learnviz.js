@@ -18,7 +18,7 @@
  * its paste-ready block, as before.
  */
 
-import { readFile, writeFile, mkdir, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, stat, copyFile, rm, rename } from 'node:fs/promises';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 
 import { validate, SpecError, VISUAL_TYPES } from '../src/spec.js';
@@ -31,6 +31,7 @@ import { writeBundle, dashboard, slugify } from '../src/delivery/bundle.js';
 import {
   importCourse, loadWorkspace, status as courseStatus, reviewData, buildCourse,
   findPage, pageGallery, parseBuildCode, recordDecision, buildPage,
+  allGalleries, extractBuildCodes, recordReady,
 } from '../src/course/workspace.js';
 import { reviewApp } from '../src/course/review.js';
 import { assertPaletteAccessible } from '../src/theme.js';
@@ -53,6 +54,7 @@ function parseFlags(args) {
     else if (a === '--release') { flags.release = true; }
     else if (a === '--video') { flags.video = true; }
     else if (a === '--group') { flags.group = args[++i]; }
+    else if (a === '--from') { flags.from = args[++i]; }
     else if (a === '--width') { flags.width = Number(args[++i]); }
     else if (a === '--scale') { flags.scale = Number(args[++i]); }
     else if (a.startsWith('--')) { throw new Error(`Unknown option ${a}`); }
@@ -431,39 +433,69 @@ async function cmdCourse(args) {
     return;
   }
 
+  // Every page's gallery at once, for a designer who wants to go through
+  // them all and send back a stack of replies.
+  if (sub === 'galleries') {
+    const out = flags.out === 'out' ? join(dir, 'galleries') : flags.out;
+    await mkdir(out, { recursive: true });
+    const { files: pages, index } = allGalleries(ws);
+    for (const g of pages) await writeFile(join(out, g.file), g.html);
+    await writeFile(join(out, 'index.html'), index);
+    console.log(`${green('OK   ')} ${pages.length} page galleries, linked to each other`);
+    console.log(`\nStart here: ${bold(resolve(join(out, 'index.html')))}`);
+    return;
+  }
+
+  // One build code, or a whole pasted stack of replies (--from a file). Each
+  // page lands in ready-to-import/, with its package at the top level.
   if (sub === 'build-page') {
-    const code = files.slice(1).join(' ').trim();
-    if (!code) {
-      console.error('Give the build code from the gallery reply. Try: learnviz course build-page my-course "page-slug 1@end 2@after:Heading"');
+    const text = flags.from ? await readFile(flags.from, 'utf8') : files.slice(1).join(' ');
+    const codes = flags.from ? extractBuildCodes(text) : [text.trim()].filter(Boolean);
+    if (!codes.length) {
+      console.error('No build codes found. Give one, or a file of pasted replies: learnviz course build-page my-course --from replies.txt');
       process.exitCode = 1;
       return;
     }
-    let parsed;
-    try {
-      parsed = parseBuildCode(ws, code);
-    } catch (e) {
-      console.error(`${red('FAILED')} ${e.message}`);
-      process.exitCode = 1;
-      return;
+    const ready = flags.out === 'out' ? join(dir, 'ready-to-import') : flags.out;
+    let failed = 0;
+    for (const code of codes) {
+      let parsed;
+      try {
+        parsed = parseBuildCode(ws, code);
+      } catch (e) {
+        console.error(`${red('FAILED')} ${code.slice(0, 60)}: ${e.message}`);
+        failed += 1;
+        continue;
+      }
+      const label = `${String(parsed.page.n).padStart(2, '0')}. ${parsed.page.title}`;
+      recordDecision(ws, parsed.page.slug, parsed.decision);
+      if (parsed.decision.decision === 'skip') {
+        console.log(`${green('OK   ')} ${label} ${dim('no activity, recorded')}`);
+        continue;
+      }
+      const name = `${String(parsed.page.n).padStart(2, '0')}-${parsed.page.slug}`;
+      // Built beside the page's folder and swapped in only when it worked, so
+      // a rebuild never leaves a mix of old and new activities behind.
+      const out = join(ready, name);
+      const staging = join(ready, `.${name}.building`);
+      await rm(staging, { recursive: true, force: true });
+      const r = await buildPage(ws, parsed.page.slug, { out: staging, release: flags.release, png: rasterise(flags), video: recorder(flags) });
+      if (!r.package) {
+        await rm(staging, { recursive: true, force: true });
+        for (const x of r.refused) console.error(`${red('REFUSED')} ${label}: ${x.reasons.join(' ')}`);
+        for (const x of r.problems) console.error(`${yellow('WAIT ')} ${label}: ${x.message}`);
+        failed += 1;
+        continue;
+      }
+      await rm(out, { recursive: true, force: true });
+      await rename(staging, out);
+      await copyFile(join(out, r.package), join(ready, r.package));
+      recordReady(ws, ready, r);
+      const drafts = r.built.filter((b) => b.draft.isDraft).length;
+      console.log(`${green('READY')} ${label} ${dim(`${r.built.length} activit${r.built.length === 1 ? 'y' : 'ies'}${drafts ? `, ${drafts} draft` : ''}: ${r.package}`)}`);
     }
-    recordDecision(ws, parsed.page.slug, parsed.decision);
-    if (parsed.decision.decision === 'skip') {
-      console.log(`${green('OK   ')} Page ${parsed.page.n}: no activity. Recorded.`);
-      return;
-    }
-    const out = flags.out === 'out' ? join(dir, 'built', `${String(parsed.page.n).padStart(2, '0')}-${parsed.page.slug}`) : flags.out;
-    const r = await buildPage(ws, parsed.page.slug, { out, release: flags.release, png: rasterise(flags), video: recorder(flags) });
-    for (const x of r.refused) console.error(`${red('REFUSED')} ${x.page.slug}: ${x.reasons.join(' ')}`);
-    for (const x of r.problems) console.error(`${red('FAILED')} ${x.page.slug}: ${x.message}`);
-    for (const b of r.built) {
-      const tag = b.problems.length ? red('CHECK') : b.draft.isDraft ? yellow('DRAFT') : green('OK   ');
-      console.log(`${tag} ${b.pattern.padEnd(11)} ${b.title} ${dim(b.placed)}`);
-    }
-    if (r.package) {
-      console.log(`\nUpdate package: ${bold(join(resolve(out), r.package))}`);
-      console.log(`How to add it:  ${bold(join(resolve(out), 'how-to-add-it.html'))}`);
-    }
-    if (r.problems.length || r.refused.length || !r.built.length) process.exitCode = 1;
+    console.log(`\nFolder: ${bold(resolve(ready))}`);
+    if (failed) process.exitCode = 1;
     return;
   }
 
@@ -594,7 +626,9 @@ function usage() {
   ${bold('learnviz validate')} <spec.json...>
   ${bold('learnviz course import')} <export.imscc> --out DIR   a whole Canvas course, page by page
   ${bold('learnviz course page')} DIR [slug|number|next]      one page's gallery
+  ${bold('learnviz course galleries')} DIR                     every page's gallery, linked
   ${bold('learnviz course build-page')} DIR "<build code>"     build that page's choices
+  ${bold('learnviz course build-page')} DIR --from replies.txt  build a whole stack of replies
   ${bold('learnviz course status')} DIR | ${bold('review')} DIR | ${bold('build')} DIR [--release]
   ${bold('learnviz patterns')}     the eight activity patterns
   ${bold('learnviz types')}        the figure types

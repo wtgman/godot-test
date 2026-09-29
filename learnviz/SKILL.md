@@ -1,6 +1,6 @@
 ---
 name: learnviz
-description: Turns a piece of course content into learning activities for Canvas LMS, things a learner does rather than pictures they look at. Reads pasted text, a document or a link, works out what matters and what learners get wrong, and proposes a short menu of activities (predict, estimate, step-through, sort, order or timing, branching scenario, explorable model, recall cards), each with a working sketch to try in a gallery before anything is built. Once chosen, it builds each activity as a self-contained page with a presenter view for class, a SCORM package that reports to the Canvas gradebook, a script-free Canvas page, a teacher guide and a review sheet, plus figures, alt text and text versions. It also works through a whole Canvas course export page by page: the designer chooses an activity for each page in a review app, and everything chosen is built at once and written back into a course package to import. Use it whenever someone hands over course content or a Canvas course export and wants it made more engaging, interactive or visual, wants ideas for how to teach it, or asks how to get an interactive, simulation, animation, timeline, chart or diagram into Canvas. Pairs with cove-canvas-page, which builds the page these drop into.
+description: Turns a piece of course content into learning activities for Canvas LMS, things a learner does rather than pictures they look at. Reads pasted text, a document or a link, works out what matters and what learners get wrong, and proposes a short menu of activities (predict, estimate, step-through, sort, order or timing, branching scenario, explorable model, recall cards), each with a working sketch to try in a gallery before anything is built. Once chosen, it builds each activity as a self-contained page with a presenter view for class, a SCORM package that reports to the Canvas gradebook, a script-free Canvas page, a teacher guide and a review sheet, plus figures, alt text and text versions. It also works through a whole Canvas course export page by page: the designer tries every page's options in linked galleries, ticks what they want and stacks their replies, and each page is built as a small package that updates just that page in the existing course. Use it whenever someone hands over course content or a Canvas course export and wants it made more engaging, interactive or visual, wants ideas for how to teach it, or asks how to get an interactive, simulation, animation, timeline, chart or diagram into Canvas. Pairs with cove-canvas-page, which builds the page these drop into.
 ---
 
 # Learning activity builder
@@ -196,14 +196,17 @@ across the course:
 ```
 node bin/learnviz.js course import my-course.imscc --out my-course   # outline and page texts
 node bin/learnviz.js course status my-course                         # what each page needs next
-node bin/learnviz.js course page my-course next                      # one page's gallery for the designer
-node bin/learnviz.js course build-page my-course "<build code>"      # build that page, as a one-page update
+node bin/learnviz.js course galleries my-course                      # every page's gallery, linked
+node bin/learnviz.js course build-page my-course --from replies.txt  # build the stacked replies
 ```
 
-Work one page at a time by default: send the designer that page's gallery,
-build what they tick from the build code in their reply, hand over the
-one-page update package, then the next page. `course review` and
-`course build` do the whole course at once instead.
+By default, make every page's gallery at once and send them to the designer.
+They tick what they want on each page and stack the replies in one note. Save
+the pasted stack to a file and build it: each page becomes a one-page update
+package in `ready-to-import/`. Send each package as it is ready, and write
+any spec a page is waiting for, then run the build again. `course page` with
+one build code works a page at a time, and `course review` and
+`course build` do the whole course at once.
 
 Read the whole course before proposing for any page. Write
 `proposals/<slug>.json` for every page: options with sketches and a place on

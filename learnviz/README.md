@@ -64,17 +64,20 @@ Give it a Canvas course export and it works through the course page by page.
 ```bash
 node bin/learnviz.js course import my-course.imscc --out my-course
 # Claude reads the course and writes options for every page
-node bin/learnviz.js course page my-course next                  # one page's gallery
-node bin/learnviz.js course build-page my-course "<build code>"  # build what was ticked
+node bin/learnviz.js course galleries my-course                    # every page's gallery, linked
+node bin/learnviz.js course build-page my-course --from replies.txt   # build the stacked replies
 ```
 
 Each page gets a gallery like the proposal galleries: the page's text, then
-the options to try, each with a box to tick and a place on the page. Tick one
-or several, and the reply's build code builds just that page as a small
-package that updates it in the existing course, or as HTML to paste in. Then
-the next page. `course review` and `course build` do the whole course at once
-instead. `examples/course/` has a sample export and a
-worked example. `references/course-workflow.md` has the detail.
+the options to try, each with a box to tick and a place on the page. The
+designer goes through them all, ticks one or several per page, and stacks
+each page's reply in one note. The build reads every build code in the
+stack and builds each page as a small package that updates just that page in
+the existing course, all in one folder, `ready-to-import/`, with an index
+saying what to import. `course page` and a single build code do one page at a
+time, and `course review` and `course build` do the whole course as a new
+export. `examples/course/` has a sample export and a worked example.
+`references/course-workflow.md` has the detail.
 
 ## The eight patterns
 
@@ -148,7 +151,7 @@ build time. The build prints `CHECK` rather than `OK` if anything fails.
 
 ## Tests
 
-`npm test` runs 337 tests in about twelve seconds. They build every example and
+`npm test` runs 340 tests in about twelve seconds. They build every example and
 check it is self-contained, deterministic, accessible and correctly drafted,
 pin the validation rules, check every bundle file, and drive every example in
 Chromium: completing it, reaching a control by keyboard, fitting a phone, and
