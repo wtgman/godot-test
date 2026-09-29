@@ -319,6 +319,14 @@ details.try summary:focus-visible { outline: 3px solid var(--focus); outline-off
 .bar button { font: inherit; font-weight: 800; background: var(--ink); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; min-height: 44px; }
 .bar button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .bar button:disabled { opacity: .45; cursor: default; }
+.bar button.sec { background: #fff; color: var(--ink); border: 2px solid var(--ink); }
+.bar output { white-space: pre-line; flex: 1 1 320px; }
+.where { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 10px 0 0; font-weight: 700; font-size: 14.5px; max-width: 100%; }
+.where select { flex: 1 1 220px; min-width: 0; width: 100%; font: inherit; font-weight: 400; border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 44px; background: #fff; color: var(--ink); text-overflow: ellipsis; }
+.pagetext { border: 1px solid var(--line); border-radius: 12px; margin: 10px 0 0; }
+.pagetext summary { cursor: pointer; font-weight: 800; padding: 10px 14px; min-height: 44px; }
+.pagetext > div { max-height: 420px; overflow: auto; padding: 0 16px 12px; border-top: 1px solid var(--line); }
+.pagetext h4 { margin: 14px 0 4px; font-size: 16px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 `;
@@ -329,18 +337,40 @@ function galleryClient() {
   var out = document.getElementById('g-chosen');
   var copy = document.getElementById('g-copy');
   var live = document.getElementById('g-live');
+  var none = document.getElementById('g-none');
+  var page = document.body.getAttribute('data-page');
+  var nothing = false;
+  var join = function (a) { return a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };
+  function where(n) {
+    var sel = document.getElementById('where-' + n);
+    return sel ? sel.value : null;
+  }
+  function words(w) {
+    if (w === 'start') return 'at the top of the page';
+    if (w && w.indexOf('after:') === 0) return 'at the end of the section "' + w.slice(6) + '"';
+    return 'at the end of the page';
+  }
   function reply() {
     var picked = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+    if (!page) return picked.length ? 'Please build ' + join(picked) + '.' : '';
+    var title = document.body.getAttribute('data-page-title');
+    if (nothing) return title + ': no activity for this page.\nBuild code: ' + page + ' none';
     if (!picked.length) return '';
-    var list = picked.length === 1 ? picked[0] : picked.slice(0, -1).join(', ') + ' and ' + picked[picked.length - 1];
-    return 'Please build ' + list + '.';
+    return title + ': please build ' + join(picked.map(function (n) { return 'option ' + n + ' ' + words(where(n)); })) + '.'
+      + '\nBuild code: ' + page + ' ' + picked.map(function (n) { return n + '@' + (where(n) || 'end'); }).join(' ');
   }
   function sync() {
     var text = reply();
-    out.textContent = text || 'Tick the options you want built.';
+    out.textContent = text ? text.split('\n')[0] : 'Tick the options you want built.';
     copy.disabled = !text;
   }
-  boxes.forEach(function (b) { b.addEventListener('change', sync); });
+  boxes.forEach(function (b) { b.addEventListener('change', function () { if (b.checked) nothing = false; sync(); }); });
+  document.querySelectorAll('.where select').forEach(function (s) { s.addEventListener('change', sync); });
+  if (none) none.addEventListener('click', function () {
+    nothing = true;
+    boxes.forEach(function (b) { b.checked = false; });
+    sync();
+  });
   copy.addEventListener('click', function () {
     var text = reply();
     var done = function () { live.textContent = 'Copied: ' + text; };
@@ -364,12 +394,37 @@ function galleryClient() {
 
 const attr = (s) => esc(s).replace(/"/g, '&quot;');
 
+function placeOptions(headings, insert) {
+  const cur = insert && typeof insert === 'object' ? `after:${insert.after}` : insert || 'end';
+  const opts = [['end', 'At the end of the page'], ['start', 'At the top of the page'], ...headings.map((h) => [`after:${h}`, `At the end of "${h}"`])];
+  if (!opts.some(([v]) => v === cur)) opts.push([cur, `After "${cur.slice(6)}" (not found on the page)`]);
+  return opts.map(([v, l]) => `<option value="${attr(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`).join('');
+}
+
+/** Page text (light Markdown from the course import) as simple HTML. */
+function pageHtml(text) {
+  return text.split('\n').map((line) => {
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) return `<h4>${esc(h[2])}</h4>`;
+    if (!line.trim()) return '';
+    if (/^\[(Image|Embedded)/.test(line)) return `<p class="muted"><em>${esc(line)}</em></p>`;
+    return `<p>${esc(line)}</p>`;
+  }).join('');
+}
+
 /**
  * The gallery: the analysis, the questions, the recommended arc, and every
  * option with a live preview and a box to tick. A teacher can try the sketches
  * as a learner would, choose, and copy a one-line reply.
  */
-export function renderGallery(proposal) {
+/**
+ * @param {object} proposal a validated proposal
+ * @param {{ page?: { slug, n, total, title, module, text, headings } }} [options]
+ *   page: show it as one page of a course. Its text appears above the options,
+ *   each option gets a "Place it" menu of the page's headings, several can be
+ *   ticked, and the reply names the page and a build code for each choice.
+ */
+export function renderGallery(proposal, { page } = {}) {
   const { topic, sourceSummary, audience, analysis } = proposal;
   const questions = proposal.questions || [];
   const rejected = proposal.rejected || [];
@@ -419,6 +474,7 @@ export function renderGallery(proposal) {
     ${c.data.needs ? `<dt>What it needs</dt><dd>${esc(c.data.needs)}</dd>` : ''}
   </dl>
   <label class="choose"><input type="checkbox" value="${n}"> Build option ${n}</label>
+  ${page ? `<span class="where"><label for="where-${n}">Place it</label> <select id="where-${n}">${placeOptions(page.headings, c.insert)}</select></span>` : ''}
   ${preview}
   </div></div>
 </article>`;
@@ -432,10 +488,11 @@ export function renderGallery(proposal) {
 <title>${esc(`Options: ${topic}`)}</title>
 <style>${GALLERY_CSS}</style>
 </head>
-<body><main>
-<p class="kicker">Activity options</p>
-<h1>${esc(topic)}</h1>
+<body${page ? ` data-page="${attr(page.slug)}" data-page-title="${attr(`Page ${page.n}, ${page.title}`)}"` : ''}><main>
+<p class="kicker">${page ? `${esc(page.module)} &middot; Page ${page.n} of ${page.total}` : 'Activity options'}</p>
+<h1>${esc(page ? page.title : topic)}</h1>
 <p class="lede">${esc(sourceSummary)}</p>
+${page ? `<details class="pagetext"><summary>What the page says</summary><div>${pageHtml(page.text)}</div></details>` : ''}
 ${audience ? `<p class="muted"><strong>Who it is for.</strong> ${esc(audience)}</p>` : ''}
 <div class="rule"></div>
 
@@ -448,11 +505,12 @@ ${misconceptions}
 ${questions.length ? `<h2>Questions that would change what I build</h2>
 ${questions.map((q, i) => `<div class="q"><p><strong>${i + 1}. ${esc(q.ask)}</strong></p><p class="muted">${esc(q.why)}</p>${q.options?.length ? `<ul>${q.options.map((o) => `<li>${esc(o)}</li>`).join('')}</ul>` : ''}</div>`).join('')}` : ''}
 
-<h2>Recommended arc</h2>
+${page ? '' : `<h2>Recommended arc</h2>
 <p class="muted">How the recommended options fit across a week. Every option can be tried below before you choose.</p>
-<div class="arc">${arc}</div>${anyNote}
+<div class="arc">${arc}</div>${anyNote}`}
 
 <h2>The options</h2>
+${page ? '<p class="muted">Tick one or more, and choose where each goes on the page. Try any of them first.</p>' : ''}
 ${options}
 
 ${rejected.length ? `<h2>Considered and ruled out</h2>
@@ -460,6 +518,7 @@ ${rejected.length ? `<h2>Considered and ruled out</h2>
 </main>
 <div class="bar" role="region" aria-label="Your choice"><div class="bar-in">
   <output id="g-chosen" aria-live="polite"></output>
+  ${page ? '<button type="button" id="g-none" class="sec">Nothing for this page</button>' : ''}
   <button type="button" id="g-copy">Copy my reply</button>
   <p id="g-live" class="sr" aria-live="polite"></p>
 </div></div>

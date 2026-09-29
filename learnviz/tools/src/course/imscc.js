@@ -182,3 +182,65 @@ export function writeCourse(entries, { pages = new Map(), files = [] } = {}) {
   for (const f of files) out.push({ name: f.path, data: f.data });
   return zip(out, { store: true });
 }
+
+/**
+ * A package that updates one page of a course and nothing else.
+ *
+ * It carries the page under its original identifier, so Canvas matches it to
+ * the page already in the course and updates it in place, plus any new files
+ * the page uses. The course_settings files come along because a Canvas
+ * package is expected to have them, but the module list is emptied, so an
+ * import changes no modules. On import, choose "Select specific content" and
+ * tick only the page and its files.
+ *
+ * @param {{ name, data }[]} entries the original export's entries
+ * @param {{ file: string, html: string, files?: { path, data }[] }} update
+ */
+export function writePageUpdate(entries, { file, html, files = [] }) {
+  const byName = new Map(entries.map((e) => [e.name, e]));
+  if (!byName.has(file)) throw new Error(`${file} is not a page in the export`);
+  const manifest = byName.get('imsmanifest.xml').data.toString('utf8');
+  const root = (manifest.match(/<manifest\b[^>]*>/) || [])[0];
+  if (!root) throw new Error('The manifest has no <manifest> element.');
+  const metadata = (manifest.match(/<metadata\b[\s\S]*?<\/metadata>/) || [''])[0];
+
+  // A resource is either self-closing, or everything up to its own closing
+  // tag. Stopping at the first "/>" would cut it at its first <file/> child.
+  const resources = [...manifest.matchAll(/<resource\b[^>]*\/>|<resource\b[^>]*[^/]>[\s\S]*?<\/resource>/g)].map((m) => m[0]);
+  const page = resources.find((r) => r.includes(`href="${escXml(file)}"`));
+  if (!page) throw new Error(`The manifest has no resource for ${file}`);
+  const settings = resources.find((r) => /href="course_settings\//.test(r));
+
+  const decl = files.map((f) => `    <resource identifier="${canvasId(`learnviz:${f.path}`)}" type="webcontent" href="${escXml(f.path)}">\n      <file href="${escXml(f.path)}"/>\n    </resource>`);
+  const out = [{
+    name: 'imsmanifest.xml',
+    data: `<?xml version="1.0" encoding="UTF-8"?>
+${root}
+  ${metadata}
+  <organizations>
+    <organization identifier="org_1" structure="rooted-hierarchy">
+      <item identifier="LearningModules"/>
+    </organization>
+  </organizations>
+  <resources>
+${[settings, page].filter(Boolean).map((r) => `    ${r}`).join('\n')}
+${decl.join('\n')}
+  </resources>
+</manifest>
+`,
+  }];
+
+  for (const e of entries) {
+    if (!e.name.startsWith('course_settings/') || e.name.endsWith('/')) continue;
+    if (e.name === 'course_settings/module_meta.xml') {
+      // No modules, so importing the page cannot rearrange the course.
+      const open = (e.data.toString('utf8').match(/<modules\b[^>]*>/) || ['<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0">'])[0];
+      out.push({ name: e.name, data: `<?xml version="1.0" encoding="UTF-8"?>\n${open}\n</modules>\n` });
+    } else {
+      out.push({ name: e.name, data: e.data });
+    }
+  }
+  out.push({ name: file, data: html });
+  for (const f of files) out.push({ name: f.path, data: f.data });
+  return zip(out, { store: true });
+}

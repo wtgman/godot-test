@@ -64,15 +64,16 @@ Give it a Canvas course export and it works through the course page by page.
 ```bash
 node bin/learnviz.js course import my-course.imscc --out my-course
 # Claude reads the course and writes options for every page
-node bin/learnviz.js course review my-course     # the designer chooses, page by page
-node bin/learnviz.js course build my-course      # everything chosen, built at once
+node bin/learnviz.js course page my-course next                  # one page's gallery
+node bin/learnviz.js course build-page my-course "<build code>"  # build what was ticked
 ```
 
-The review app shows each page beside its options. The designer tries them,
-picks one and where on the page it goes, and moves straight on to the next
-page. The build writes the course back out as an export with every activity on
-its page and every figure as a course file, ready to import, plus the SCORM
-packages and an upload checklist. `examples/course/` has a sample export and a
+Each page gets a gallery like the proposal galleries: the page's text, then
+the options to try, each with a box to tick and a place on the page. Tick one
+or several, and the reply's build code builds just that page as a small
+package that updates it in the existing course, or as HTML to paste in. Then
+the next page. `course review` and `course build` do the whole course at once
+instead. `examples/course/` has a sample export and a
 worked example. `references/course-workflow.md` has the detail.
 
 ## The eight patterns
@@ -147,7 +148,7 @@ build time. The build prints `CHECK` rather than `OK` if anything fails.
 
 ## Tests
 
-`npm test` runs 329 tests in about twelve seconds. They build every example and
+`npm test` runs 337 tests in about twelve seconds. They build every example and
 check it is self-contained, deterministic, accessible and correctly drafted,
 pin the validation rules, check every bundle file, and drive every example in
 Chromium: completing it, reaching a control by keyboard, fitting a phone, and

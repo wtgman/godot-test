@@ -1,9 +1,16 @@
 # A whole course, page by page
 
 For when someone hands over a Canvas course export rather than a single piece
-of content. The designer works through the course one page at a time, choosing
-an activity for each page or none, and everything chosen is built in one go and
-written back into the course.
+of content. Two ways to work, and the first is the default:
+
+- **One page at a time.** Show the designer one page's gallery. They tick one
+  or more activities and where each goes, and reply. Build just that page, as
+  a small package that updates that one page in their existing course, then
+  show the next page. Nothing else in the course is touched.
+- **The whole course at once.** A review app for every page, then one build of
+  the whole course as a new export. Useful for a new course or a sandbox copy,
+  but importing it means working with a whole new copy of the course, which
+  designers editing a live course usually do not want.
 
 The same principles as a single proposal apply to every page. What changes is
 that the pages are read as a course: an activity on page 3 changes what page 9
@@ -99,7 +106,51 @@ node bin/learnviz.js course status ~/courses/my-course
 
 It lists every page with what it needs next and any error in its proposal.
 
-## 5. Let the designer review
+## 5a. One page at a time (the default)
+
+```
+node bin/learnviz.js course page ~/courses/my-course next
+```
+
+writes `galleries/NN-slug.html` for the first page that has options and no
+decision, and lists the pages before it that were suggested for no activity.
+Send that one file to the designer. It is self-contained: the page's own text,
+the analysis, and every option playable, each with a box to tick and a "Place
+it" menu of the page's headings. They can tick more than one. The reply they
+copy ends with a build code:
+
+```
+Build code: swot-analysis-learning-activity 1@after:Example 2@end
+```
+
+Pass it straight to the build:
+
+```
+node bin/learnviz.js course build-page ~/courses/my-course "swot-analysis-learning-activity 1@after:Example 2@end"
+```
+
+It records the decision in `choices.json` and writes `built/NN-slug/`:
+
+| Path | What it is |
+|---|---|
+| `NN-slug-update.imscc` | A package holding only this page, under its original identifier, with any figures as files. Importing it updates that page in place |
+| `page-with-activities.html` | The same page as HTML, to paste into the Canvas editor instead |
+| `files/` | The figure images, for the paste route |
+| `scorm/` | Each activity's SCORM package |
+| `activities/` | Each activity's full folder, with its teacher guide and review sheet |
+| `how-to-add-it.html` | The steps, for the designer |
+
+If an option chosen has no sketch, the build stops and names the spec to
+write: `specs/<slug>-<option>.json`. Write it and run the same command again.
+A reply of `slug none` records that the page needs nothing.
+
+Then make the next page's gallery with `course page ... next`, and repeat.
+
+Tell the designer, the first time, that importing replaces the page with the
+version from their export plus the activities, so an edit made in Canvas since
+the export would be lost, and to try it on a copy of the course once.
+
+## 5b. The whole course at once
 
 ```
 node bin/learnviz.js course review ~/courses/my-course
@@ -136,7 +187,7 @@ the sketch needs work: the designer's note applied, placeholder content
 replaced, every source listed. The build prefers a spec in `specs/` over the
 sketch.
 
-## 7. Build
+## 7. Build the whole course
 
 ```
 node bin/learnviz.js course build ~/courses/my-course

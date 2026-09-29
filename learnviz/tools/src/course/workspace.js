@@ -18,12 +18,12 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { join, basename, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 
-import { readCourse, writeCourse } from './imscc.js';
+import { readCourse, writeCourse, writePageUpdate } from './imscc.js';
 import { splitPage, placeBlock, withBody } from './html.js';
-import { validateProposal, numbered, DATA_STATUS } from '../proposal.js';
+import { validateProposal, numbered, renderGallery, DATA_STATUS } from '../proposal.js';
 import { validateLO, buildLO, PATTERNS } from '../lo/index.js';
 import { TEACHER_NOTE } from '../lo/native.js';
 import { slugify, writeBundle } from '../delivery/bundle.js';
@@ -177,12 +177,20 @@ export function status(ws) {
     else if (!d) next = 'waiting for the designer';
     else if (d.decision === 'options') next = 'write options: the designer wants some';
     else if (d.decision === 'skip') next = 'nothing, skipped';
-    else if (!p.spec) {
-      const c = p.proposal.proposal?.candidates?.[d.candidate];
-      next = c?.sketch ? 'ready to build from the sketch, as a draft' : 'write the finished spec';
+    else {
+      // Every chosen option needs a finished spec or a sketch to build from.
+      const items = itemsOf(d);
+      const states = items.map((it) => {
+        const spec = specFor(ws, p, it.candidate, items.length === 1);
+        if (spec?.error) return 'error';
+        if (spec?.lo) return 'spec';
+        return p.proposal.proposal?.candidates?.[it.candidate]?.sketch ? 'sketch' : 'none';
+      });
+      if (states.includes('error')) next = 'fix the spec';
+      else if (states.includes('none')) next = 'write the finished spec';
+      else if (states.includes('sketch')) next = `ready to build${items.length > 1 ? ` (${items.length} activities)` : ''} from the sketch, as a draft`;
+      else next = 'ready to build';
     }
-    else if (p.spec.error) next = 'fix the spec';
-    else next = 'ready to build';
     return { slug: p.slug, n: p.n, title: p.title, module: p.module, proposal: p.proposal.status, error: p.proposal.error || p.spec?.error, decision: d?.decision || null, next };
   });
 }
@@ -246,6 +254,95 @@ export function reviewData(ws) {
 /* ------------------------------------------------------------------ */
 
 /**
+ * The activities chosen for a page. A decision is either one choice,
+ * { candidate, insert }, or several, { items: [{ candidate, insert }] }, for a
+ * page that wants more than one activity.
+ */
+export function itemsOf(d) {
+  if (!d || d.decision !== 'build') return [];
+  if (Array.isArray(d.items)) return d.items;
+  return [{ candidate: d.candidate, insert: d.insert }];
+}
+
+/** The finished spec for one chosen option: specs/<slug>-<n>.json, or specs/<slug>.json for a single choice. */
+function specFor(ws, p, candidate, single) {
+  const file = join(ws.dir, 'specs', `${p.slug}-${candidate + 1}.json`);
+  if (existsSync(file)) {
+    try { return { lo: validateLO(readJson(file)), file }; } catch (e) { return { error: e.message, file }; }
+  }
+  if (single && p.spec) return { ...p.spec, file: join(ws.dir, 'specs', `${p.slug}.json`) };
+  return null;
+}
+
+/** Turn one page's decision into build plans, or problems saying why not. */
+function planPage(ws, p, d, release) {
+  const plans = [];
+  const problems = [];
+  const refused = [];
+  const items = itemsOf(d);
+  items.forEach((it, k) => {
+    let lo = null;
+    let fromSketch = false;
+    const spec = specFor(ws, p, it.candidate, items.length === 1);
+    if (spec?.lo) lo = spec.lo;
+    else if (spec?.error) { problems.push({ page: p, message: `${spec.file.split('/').slice(-2).join('/')}: ${spec.error}` }); return; } else if (p.proposal.status === 'ready') {
+      const c = p.proposal.proposal.candidates[it.candidate];
+      if (!c) { problems.push({ page: p, message: `The chosen option (${it.candidate + 1}) is not in the proposal any more. Choose again.` }); return; }
+      if (!c.sketch) { problems.push({ page: p, message: `"${c.name}" has no sketch yet. Write specs/${p.slug}-${it.candidate + 1}.json.` }); return; }
+      lo = validateLO(c.sketch);
+      fromSketch = true;
+    } else { problems.push({ page: p, message: 'Chosen, but the proposal is missing or invalid.' }); return; }
+    const probe = buildLO(lo);
+    if (release && probe.draft.isDraft) { refused.push({ page: p, reasons: probe.draft.reasons }); return; }
+    const suffix = items.length > 1 ? `-${k + 1}` : '';
+    plans.push({ page: p, insert: it.insert || 'end', lo, fromSketch, key: `${p.slug}${suffix}`, name: `${pad(p.n)}-${p.slug}${suffix}` });
+  });
+  return { plans, problems, refused };
+}
+
+/**
+ * Build a set of plans: each activity's bundle and SCORM package, and its
+ * Canvas version placed into its page. Returns the changed pages and the new
+ * files, for whichever package the caller writes.
+ */
+async function makeActivities(ws, plans, { out, png, video, scormNote }) {
+  mkdirSync(join(out, 'scorm'), { recursive: true });
+  const source = readCourse(readFileSync(join(ws.dir, 'source.imscc')));
+  const pageHtml = new Map();
+  const files = [];
+  const built = [];
+  for (const plan of plans) {
+    const { page, insert, lo, fromSketch, key, name } = plan;
+    const moduleSlug = slugify(page.module, 'module');
+    const figurePath = `learnviz/${key}/figure.png`;
+
+    const standalone = buildLO(lo);
+    const dir = join(out, 'activities', moduleSlug, name);
+    const written = await writeBundle(standalone, { dir, slug: key, source: `${JSON.stringify(lo, null, 2)}\n`, png, video });
+    copyFileSync(join(dir, `${key}.scorm.zip`), join(out, 'scorm', `${name}.scorm.zip`));
+
+    const figurePng = written.find((f) => f.name === 'figure.png');
+    const forPage = buildLO(lo, figurePng ? { figureUrl: `$IMS-CC-FILEBASE$/${figurePath}` } : {});
+    if (figurePng) files.push({ path: `web_resources/${figurePath}`, data: readFileSync(join(dir, 'figure.png')) });
+
+    let block = forPage.native.replace(TEACHER_NOTE, scormNote(`scorm/${name}.scorm.zip`));
+    if (forPage.draft.isDraft) {
+      block = `<p><span style="background-color: #fdf223;"><strong>Draft for review.</strong> ${forPage.draft.reasons.join(' ')} Not for students until a subject expert has checked it.</span></p>\n${block}`;
+    }
+    const current = pageHtml.get(page.file) ?? source.entries.find((e) => e.name === page.file).data.toString('utf8');
+    const placed = placeBlock(splitPage(current).body, block, key, insert);
+    pageHtml.set(page.file, withBody(current, placed.body));
+
+    built.push({
+      page, pattern: lo.pattern, title: lo.title, placed: placed.placed, scorm: `scorm/${name}.scorm.zip`,
+      scored: PATTERNS[lo.pattern].meta.scored, passMark: lo.passMark, draft: forPage.draft, fromSketch,
+      problems: standalone.problems, folder: `activities/${moduleSlug}/${name}`,
+    });
+  }
+  return { source, pageHtml, files, built };
+}
+
+/**
  * Build every chosen activity and write the course back out.
  *
  * @returns {{ built: [], skipped: [], problems: [], refused: [] }}
@@ -260,71 +357,152 @@ export async function buildCourse(ws, { out, release = false, png = null, video 
     if (!d || d.decision === 'options') { if (p.proposal.status !== 'skip') results.waiting.push(p); continue; }
     if (d.decision === 'skip') { results.skipped.push(p); continue; }
     if (d.decision !== 'build') { results.problems.push({ page: p, message: `Unknown decision "${d.decision}"` }); continue; }
-
-    // The finished spec if Claude has written one, otherwise the chosen sketch.
-    let lo = null;
-    let fromSketch = false;
-    if (p.spec?.lo) lo = p.spec.lo;
-    else if (p.spec?.error) { results.problems.push({ page: p, message: `specs/${p.slug}.json: ${p.spec.error}` }); continue; } else if (p.proposal.status === 'ready') {
-      const c = p.proposal.proposal.candidates[d.candidate];
-      if (!c) { results.problems.push({ page: p, message: `The chosen option (${d.candidate + 1}) is not in the proposal any more. Choose again.` }); continue; }
-      if (!c.sketch) { results.problems.push({ page: p, message: `"${c.name}" has no sketch yet. Write specs/${p.slug}.json.` }); continue; }
-      lo = validateLO(c.sketch);
-      fromSketch = true;
-    } else { results.problems.push({ page: p, message: 'Chosen, but the proposal is missing or invalid.' }); continue; }
-
-    const probe = buildLO(lo);
-    if (release && probe.draft.isDraft) { results.refused.push({ page: p, reasons: probe.draft.reasons }); continue; }
-    plans.push({ page: p, decision: d, lo, fromSketch });
+    const r = planPage(ws, p, d, release);
+    plans.push(...r.plans);
+    results.problems.push(...r.problems);
+    results.refused.push(...r.refused);
   }
   if (release && results.refused.length) return results;
 
-  mkdirSync(join(out, 'scorm'), { recursive: true });
-  const courseSlug = slugify(ws.meta.title, 'course');
-  const source = readCourse(readFileSync(join(ws.dir, 'source.imscc')));
-  const pageHtml = new Map();
-  const files = [];
-
-  for (const plan of plans) {
-    const { page, decision, lo, fromSketch } = plan;
-    const moduleSlug = slugify(page.module, 'module');
-    const slug = `${pad(page.n)}-${page.slug}`;
-    const figurePath = `learnviz/${page.slug}/figure.png`;
-
-    // The standalone bundle, as for any activity.
-    const standalone = buildLO(lo);
-    const dir = join(out, 'activities', moduleSlug, slug);
-    const written = await writeBundle(standalone, { dir, slug: page.slug, source: `${JSON.stringify(lo, null, 2)}\n`, png, video });
-    copyFileSync(join(dir, `${page.slug}.scorm.zip`), join(out, 'scorm', `${slug}.scorm.zip`));
-
-    // The version for the page, with the figure as a real course file.
-    const figurePng = written.find((f) => f.name === 'figure.png');
-    const forPage = buildLO(lo, figurePng ? { figureUrl: `$IMS-CC-FILEBASE$/${figurePath}` } : {});
-    if (figurePng) files.push({ path: `web_resources/${figurePath}`, data: readFileSync(join(dir, 'figure.png')) });
-
-    let block = forPage.native.replace(TEACHER_NOTE, `For the teacher: the interactive version of this activity is scorm/${slug}.scorm.zip in the course build. Upload it with the SCORM tool and add it to this module, then delete this line.`);
-    if (forPage.draft.isDraft) {
-      block = `<p><span style="background-color: #fdf223;"><strong>Draft for review.</strong> ${forPage.draft.reasons.join(' ')} Not for students until a subject expert has checked it.</span></p>\n${block}`;
-    }
-    const current = pageHtml.get(page.file) ?? source.entries.find((e) => e.name === page.file).data.toString('utf8');
-    const { body } = splitPage(current);
-    const placed = placeBlock(body, block, page.slug, decision.insert || 'end');
-    pageHtml.set(page.file, withBody(current, placed.body));
-
-    results.built.push({
-      page, pattern: lo.pattern, title: lo.title, placed: placed.placed, scorm: `scorm/${slug}.scorm.zip`,
-      scored: PATTERNS[lo.pattern].meta.scored, passMark: lo.passMark, draft: forPage.draft, fromSketch,
-      problems: standalone.problems, folder: `activities/${moduleSlug}/${slug}`,
-    });
-  }
-
-  const pkg = `${courseSlug}-with-activities.imscc`;
-  writeFileSync(join(out, pkg), writeCourse(source.entries, { pages: pageHtml, files }));
+  const made = await makeActivities(ws, plans, {
+    out, png, video,
+    scormNote: (f) => `For the teacher: the interactive version of this activity is ${f} in the course build. Upload it with the SCORM tool and add it to this module, then delete this line.`,
+  });
+  results.built = made.built;
+  const pkg = `${slugify(ws.meta.title, 'course')}-with-activities.imscc`;
+  writeFileSync(join(out, pkg), writeCourse(made.source.entries, { pages: made.pageHtml, files: made.files }));
   const checklist = uploadChecklist(ws, results, pkg);
   writeFileSync(join(out, 'upload-checklist.md'), checklist.md);
   writeFileSync(join(out, 'upload-checklist.html'), checklist.html);
   results.package = pkg;
   return results;
+}
+
+/* ------------------------------------------------------------------ */
+/* One page at a time                                                  */
+/* ------------------------------------------------------------------ */
+
+/** Find a page by slug, by number, or "next": the first with options and no decision. */
+export function findPage(ws, which) {
+  if (which === 'next') {
+    return ws.pages.find((p) => p.proposal.status === 'ready' && !ws.choices?.pages?.[p.slug]) || null;
+  }
+  if (/^\d+$/.test(String(which))) return ws.pages.find((p) => p.n === Number(which)) || null;
+  return ws.pages.find((p) => p.slug === which) || null;
+}
+
+/** The gallery for one page, as a self-contained HTML file. */
+export function pageGallery(ws, p) {
+  if (p.proposal.status !== 'ready') throw new Error(`${p.slug} has no options to show (${p.proposal.status}${p.proposal.error ? `: ${p.proposal.error}` : ''}).`);
+  const text = readFileSync(join(ws.dir, p.text), 'utf8').split('\n---\n').slice(1).join('\n---\n').trim();
+  return renderGallery(p.proposal.proposal, {
+    page: { slug: p.slug, n: p.n, total: ws.pages.length, title: p.title, module: p.module, text, headings: p.headings.map((h) => h.text) },
+  });
+}
+
+/**
+ * Read a build code from the gallery reply: "slug 1@end 3@after:Heading text",
+ * or "slug none". Option numbers are the gallery's, recommended first.
+ */
+export function parseBuildCode(ws, code) {
+  const m = String(code).trim().replace(/^Build code:\s*/i, '').match(/^(\S+)\s+([\s\S]*)$/);
+  if (!m) throw new Error('A build code looks like: page-slug 1@end 2@after:Heading text');
+  const p = findPage(ws, m[1]);
+  if (!p) throw new Error(`No page "${m[1]}" in this course.`);
+  if (/^none$/i.test(m[2].trim())) return { page: p, decision: { decision: 'skip' } };
+  if (p.proposal.status !== 'ready') throw new Error(`${p.slug} has no options to choose from.`);
+  const list = numbered(p.proposal.proposal);
+  const items = [];
+  const re = /(\d+)@(start|end|after:[\s\S]*?)(?=\s+\d+@|\s*$)/g;
+  let pick;
+  while ((pick = re.exec(m[2]))) {
+    const opt = list.find((x) => x.n === Number(pick[1]));
+    if (!opt) throw new Error(`There is no option ${pick[1]} for ${p.slug}. The options go from 1 to ${list.length}.`);
+    const w = pick[2];
+    items.push({ candidate: opt.index, option: opt.n, name: opt.c.name, pattern: opt.c.pattern, insert: w.startsWith('after:') ? { after: w.slice(6).trim() } : w });
+  }
+  if (!items.length) throw new Error('No choices found in the build code. Each looks like 1@end.');
+  return { page: p, decision: { decision: 'build', items } };
+}
+
+/** Record a page's decision in choices.json, keeping everything else there. */
+export function recordDecision(ws, slug, decision) {
+  const file = join(ws.dir, 'choices.json');
+  const choices = existsSync(file) ? readJson(file) : { kind: 'course-choices', course: ws.meta.title, pages: {} };
+  choices.pages = { ...choices.pages, [slug]: decision };
+  writeFileSync(file, `${JSON.stringify(choices, null, 2)}\n`);
+  ws.choices = choices;
+  return choices;
+}
+
+/**
+ * Build one page's chosen activities, and a package that updates just that
+ * page in the original course.
+ */
+export async function buildPage(ws, slug, { out, release = false, png = null, video = null } = {}) {
+  const p = findPage(ws, slug);
+  if (!p) throw new Error(`No page "${slug}" in this course.`);
+  const d = ws.choices?.pages?.[p.slug];
+  if (!d || d.decision !== 'build') throw new Error(`Nothing chosen to build for ${p.slug}.`);
+  const r = planPage(ws, p, d, release);
+  const results = { page: p, built: [], problems: r.problems, refused: r.refused };
+  if ((release && r.refused.length) || !r.plans.length) return results;
+
+  const made = await makeActivities(ws, r.plans, {
+    out, png, video,
+    scormNote: (f) => `For the teacher: the interactive version of this activity is ${f}. Upload it with the SCORM tool and add it to this module next to this page, then delete this line.`,
+  });
+  results.built = made.built;
+  const html = made.pageHtml.get(p.file);
+  const name = `${pad(p.n)}-${p.slug}`;
+  results.package = `${name}-update.imscc`;
+  writeFileSync(join(out, results.package), writePageUpdate(made.source.entries, { file: p.file, html, files: made.files }));
+  writeFileSync(join(out, 'page-with-activities.html'), `${splitPage(html).body.trim()}\n`);
+  for (const f of made.files) {
+    const dest = join(out, 'files', f.path.replace(/^web_resources\/learnviz\//, ''));
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, f.data);
+  }
+  writeFileSync(join(out, 'how-to-add-it.html'), pageInstructions(ws, p, results, made.files));
+  return results;
+}
+
+function pageInstructions(ws, p, r, files) {
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const drafts = r.built.filter((b) => b.draft.isDraft).length;
+  return `<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(`Adding activities to ${p.title}`)}</title>
+<style>
+body{margin:0;background:#fff;color:#000054;font:16px/1.55 Helvetica,Arial,sans-serif}main{max-width:820px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:27px;line-height:1.2;margin:0 0 6px}h2{font-size:19px;margin:26px 0 8px}code{background:#f5f5fa;padding:1px 5px;border-radius:4px;font-size:14px}
+li{margin:0 0 8px}.note{border-left:4px solid #fac800;background:#fffbe6;padding:10px 14px;border-radius:0 8px 8px 0}.draft{background:#fdf223;padding:1px 6px;border-radius:4px}a{color:#1a56c4}
+</style></head><body><main>
+<p style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#00706b;margin:0 0 6px">Page ${p.n} &middot; ${esc(p.module)}</p>
+<h1>${esc(p.title)}</h1>
+<p>${r.built.length} activit${r.built.length === 1 ? 'y' : 'ies'} built for this page:</p>
+<ul>${r.built.map((b) => `<li><strong>${esc(b.title)}</strong>, ${esc(b.placed)}.${b.draft.isDraft ? ` <span class="draft">Draft: ${esc(b.draft.reasons.join(' '))}</span>` : ''}</li>`).join('')}</ul>
+<h2>Either: import it (updates the page in place)</h2>
+<ol>
+<li>In your course, go to <strong>Settings</strong>, then <strong>Import Course Content</strong>.</li>
+<li>Choose <strong>Canvas Course Export Package</strong> and upload <code>${esc(r.package)}</code>.</li>
+<li>Choose <strong>Select specific content</strong>, and after it uploads, tick only this page${files.length ? ' and its files' : ''}. Leave everything else unticked.</li>
+<li>Open the page and check the activities are there.</li>
+</ol>
+<p class="note">The package carries this page under the identifier it has in your course, so Canvas matches it and updates the page. It is built from your export, so any edit made to this page in Canvas since you exported will be replaced. The first time, try it on a copy of the course.</p>
+<h2>Or: paste it in</h2>
+<ol>
+<li>Open the page in Canvas, choose <strong>Edit</strong>, and switch to the HTML editor.</li>
+<li>Replace everything with the contents of <code>page-with-activities.html</code>, then save.</li>
+${files.length ? `<li>Upload the image${files.length === 1 ? '' : 's'} in <code>files/</code> to Course Files, then in the page use <strong>Insert, then Image, then Course Images</strong> to put ${files.length === 1 ? 'it' : 'each one'} where the activity shows it. The alt text is already written.</li>` : ''}
+</ol>
+<h2>Then</h2>
+<ul>
+<li>Upload each SCORM package in <code>scorm/</code> with the SCORM tool if you want the full interactive version, and delete the yellow teacher note on the page.</li>
+${drafts ? `<li>${drafts === 1 ? 'The activity is a draft' : `${drafts} activities are drafts`}: work through the review sheet in <code>activities/</code> before students see ${drafts === 1 ? 'it' : 'them'}.</li>` : ''}
+<li>Each activity's teacher guide is in its folder under <code>activities/</code>.</li>
+</ul>
+</main></body></html>
+`;
 }
 
 /* ------------------------------------------------------------------ */

@@ -28,7 +28,10 @@ import { diagramBlock, genericBlock } from '../src/emble.js';
 import { svgToPng, pageToVideo, capabilities } from '../src/raster.js';
 import { validateLO, buildLO, PATTERNS } from '../src/lo/index.js';
 import { writeBundle, dashboard, slugify } from '../src/delivery/bundle.js';
-import { importCourse, loadWorkspace, status as courseStatus, reviewData, buildCourse } from '../src/course/workspace.js';
+import {
+  importCourse, loadWorkspace, status as courseStatus, reviewData, buildCourse,
+  findPage, pageGallery, parseBuildCode, recordDecision, buildPage,
+} from '../src/course/workspace.js';
 import { reviewApp } from '../src/course/review.js';
 import { assertPaletteAccessible } from '../src/theme.js';
 import { validateProposal, renderProposal, renderGallery, summariseProposal, DATA_STATUS } from '../src/proposal.js';
@@ -409,6 +412,61 @@ async function cmdCourse(args) {
     return;
   }
 
+  // One page at a time: its gallery, then a build of just what was chosen.
+  if (sub === 'page') {
+    const which = files[1] || 'next';
+    const p = findPage(ws, which);
+    if (!p) {
+      console.log(which === 'next' ? `${green('Done.')} Every page with options has a decision.` : red(`No page "${which}".`));
+      if (which !== 'next') process.exitCode = 1;
+      return;
+    }
+    const out = join(dir, 'galleries', `${String(p.n).padStart(2, '0')}-${p.slug}.html`);
+    await mkdir(join(dir, 'galleries'), { recursive: true });
+    await writeFile(out, pageGallery(ws, p));
+    const skipped = ws.pages.filter((x) => x.n < p.n && x.proposal.status === 'skip' && !ws.choices?.pages?.[x.slug]);
+    if (skipped.length) console.log(dim(`Pages ${skipped.map((x) => x.n).join(', ')} before this one are suggested for no activity.`));
+    console.log(`${green('OK   ')} Page ${p.n} of ${ws.pages.length}: ${bold(p.title)}`);
+    console.log(`\nGallery: ${bold(resolve(out))}`);
+    return;
+  }
+
+  if (sub === 'build-page') {
+    const code = files.slice(1).join(' ').trim();
+    if (!code) {
+      console.error('Give the build code from the gallery reply. Try: learnviz course build-page my-course "page-slug 1@end 2@after:Heading"');
+      process.exitCode = 1;
+      return;
+    }
+    let parsed;
+    try {
+      parsed = parseBuildCode(ws, code);
+    } catch (e) {
+      console.error(`${red('FAILED')} ${e.message}`);
+      process.exitCode = 1;
+      return;
+    }
+    recordDecision(ws, parsed.page.slug, parsed.decision);
+    if (parsed.decision.decision === 'skip') {
+      console.log(`${green('OK   ')} Page ${parsed.page.n}: no activity. Recorded.`);
+      return;
+    }
+    const out = flags.out === 'out' ? join(dir, 'built', `${String(parsed.page.n).padStart(2, '0')}-${parsed.page.slug}`) : flags.out;
+    const r = await buildPage(ws, parsed.page.slug, { out, release: flags.release, png: rasterise(flags), video: recorder(flags) });
+    for (const x of r.refused) console.error(`${red('REFUSED')} ${x.page.slug}: ${x.reasons.join(' ')}`);
+    for (const x of r.problems) console.error(`${red('FAILED')} ${x.page.slug}: ${x.message}`);
+    for (const b of r.built) {
+      const tag = b.problems.length ? red('CHECK') : b.draft.isDraft ? yellow('DRAFT') : green('OK   ');
+      console.log(`${tag} ${b.pattern.padEnd(11)} ${b.title} ${dim(b.placed)}`);
+    }
+    if (r.package) {
+      console.log(`\nUpdate package: ${bold(join(resolve(out), r.package))}`);
+      console.log(`How to add it:  ${bold(join(resolve(out), 'how-to-add-it.html'))}`);
+    }
+    if (r.problems.length || r.refused.length || !r.built.length) process.exitCode = 1;
+    return;
+  }
+
   if (sub === 'review') {
     const { data, sketches } = reviewData(ws);
     const out = join(dir, 'review');
@@ -456,7 +514,7 @@ async function cmdCourse(args) {
     return;
   }
 
-  console.error('Try: learnviz course import | status | review | build');
+  console.error('Try: learnviz course import | status | page | build-page | review | build');
   process.exitCode = 1;
 }
 
@@ -535,6 +593,8 @@ function usage() {
   ${bold('learnviz build')} <spec.json...> [--out DIR] [--release] [--group NAME] [--no-png] [--video]
   ${bold('learnviz validate')} <spec.json...>
   ${bold('learnviz course import')} <export.imscc> --out DIR   a whole Canvas course, page by page
+  ${bold('learnviz course page')} DIR [slug|number|next]      one page's gallery
+  ${bold('learnviz course build-page')} DIR "<build code>"     build that page's choices
   ${bold('learnviz course status')} DIR | ${bold('review')} DIR | ${bold('build')} DIR [--release]
   ${bold('learnviz patterns')}     the eight activity patterns
   ${bold('learnviz types')}        the figure types

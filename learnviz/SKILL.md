@@ -196,16 +196,22 @@ across the course:
 ```
 node bin/learnviz.js course import my-course.imscc --out my-course   # outline and page texts
 node bin/learnviz.js course status my-course                         # what each page needs next
-node bin/learnviz.js course review my-course                         # the review app for the designer
-node bin/learnviz.js course build my-course                          # activities, SCORM set, updated export
+node bin/learnviz.js course page my-course next                      # one page's gallery for the designer
+node bin/learnviz.js course build-page my-course "<build code>"      # build that page, as a one-page update
 ```
+
+Work one page at a time by default: send the designer that page's gallery,
+build what they tick from the build code in their reply, hand over the
+one-page update package, then the next page. `course review` and
+`course build` do the whole course at once instead.
 
 Read the whole course before proposing for any page. Write
 `proposals/<slug>.json` for every page: options with sketches and a place on
 the page, or `{ "kind": "skip", "reason": "..." }` for pages that need nothing.
-The designer works through the review app, choosing and moving on, and saves or
-pastes `choices.json`. Write finished specs for chosen options into `specs/`,
-then build. The course package is imported into a sandbox course first.
+A page can take more than one activity. Write finished specs for chosen
+options into `specs/` when a sketch needs work or is missing. The designer
+imports each one-page package into their existing course, choosing only that
+page, or pastes the page HTML instead.
 
 ---
 

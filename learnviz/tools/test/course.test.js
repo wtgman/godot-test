@@ -18,7 +18,22 @@ import { zip, unzip } from '../src/delivery/zip.js';
 import { parseXml, find, kid, textOf } from '../src/course/xml.js';
 import { pageText, placeBlock, splitPage, withBody } from '../src/course/html.js';
 import { readCourse, writeCourse, canvasId } from '../src/course/imscc.js';
-import { importCourse, loadWorkspace, status, reviewData, buildCourse } from '../src/course/workspace.js';
+import {
+  importCourse, loadWorkspace, status, reviewData, buildCourse,
+  findPage, pageGallery, parseBuildCode, recordDecision, buildPage,
+} from '../src/course/workspace.js';
+import { writePageUpdate } from '../src/course/imscc.js';
+import { execFileSync } from 'node:child_process';
+
+/** Strict XML check with Python's parser, where Python is available. Our own reader is lenient on purpose. */
+function assertWellFormed(xml, what) {
+  try {
+    execFileSync('python3', ['-c', 'import sys, xml.dom.minidom; xml.dom.minidom.parseString(sys.stdin.buffer.read())'], { input: xml, stdio: ['pipe', 'ignore', 'pipe'] });
+  } catch (e) {
+    if (e.code === 'ENOENT') return;
+    assert.fail(`${what} is not well-formed XML: ${String(e.stderr).trim().split('\n').pop()}`);
+  }
+}
 import { reviewApp } from '../src/course/review.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'examples', 'course');
@@ -171,6 +186,10 @@ describe('writing the course back', () => {
     }
   });
 
+  test('the rewritten manifest is well-formed XML', () => {
+    assertWellFormed(out[0].data, 'imsmanifest.xml');
+  });
+
   test('declares each new file as a resource with a Canvas-style identifier', () => {
     const manifest = parseXml(out[0].data.toString());
     const res = find(manifest, 'resource').find((r) => r.attrs.href === 'web_resources/learnviz/x/figure.png');
@@ -304,5 +323,97 @@ describe('building the course', () => {
       const r = await buildCourse(loadWorkspace(dir), { out });
       assert.match(r.problems[0].message, /not in the proposal any more/);
     } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* One page at a time                                                  */
+/* ------------------------------------------------------------------ */
+
+describe('one page at a time', () => {
+  const copyWorkspace = () => {
+    const dir = tmp();
+    cpSync(WORKSPACE, dir, { recursive: true, filter: (p) => !/\/(build|built|review|galleries)(\/|$)/.test(p) });
+    rmSync(join(dir, 'choices.json'), { force: true });
+    return dir;
+  };
+
+  test('next finds the first page with options and no decision', () => {
+    const dir = copyWorkspace();
+    try {
+      const ws = loadWorkspace(dir);
+      assert.equal(findPage(ws, 'next').slug, 'what-is-grief');
+      assert.equal(findPage(ws, 6).slug, 'knowing-your-role-and-when-to-refer');
+      recordDecision(ws, 'what-is-grief', { decision: 'skip' });
+      assert.equal(findPage(loadWorkspace(dir), 'next').slug, 'recognising-grief-responses');
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+
+  test('the page gallery shows the page, a placement menu per option, and composes a build code', () => {
+    const ws = loadWorkspace(WORKSPACE);
+    const html = pageGallery(ws, findPage(ws, 'knowing-your-role-and-when-to-refer'));
+    assert.match(html, /data-page="knowing-your-role-and-when-to-refer"/);
+    assert.match(html, /What the page says/);
+    assert.match(html, /<select id="where-1">[\s\S]*?<option value="after:Passing on a concern" selected>/);
+    assert.match(html, /Nothing for this page/);
+    assert.match(html, /Build code: /);
+    assert.equal((html.match(/<input type="checkbox" value="\d+">/g) || []).length, 2);
+  });
+
+  test('a build code can pick several options, with headings that contain spaces', () => {
+    const ws = loadWorkspace(WORKSPACE);
+    const r = parseBuildCode(ws, 'Build code: knowing-your-role-and-when-to-refer 1@after:Passing on a concern 2@after:Your role on placement');
+    assert.equal(r.decision.decision, 'build');
+    assert.deepEqual(r.decision.items.map((i) => [i.option, i.insert]), [[1, { after: 'Passing on a concern' }], [2, { after: 'Your role on placement' }]]);
+    assert.equal(parseBuildCode(ws, 'what-is-grief none').decision.decision, 'skip');
+    assert.throws(() => parseBuildCode(ws, 'what-is-grief 7@end'), /no option 7/);
+    assert.throws(() => parseBuildCode(ws, 'no-such-page 1@end'), /No page/);
+  });
+
+  test('building a page with two activities places both and packages only that page', async () => {
+    const dir = copyWorkspace();
+    const out = tmp();
+    try {
+      const ws = loadWorkspace(dir);
+      const { page, decision } = parseBuildCode(ws, 'knowing-your-role-and-when-to-refer 1@after:Passing on a concern 2@after:Your role on placement');
+      recordDecision(ws, page.slug, decision);
+      const r = await buildPage(ws, page.slug, { out });
+      assert.deepEqual(r.problems, []);
+      assert.equal(r.built.length, 2);
+      const pkg = unzip(readFileSync(join(out, r.package)));
+      const names = pkg.map((e) => e.name);
+      assert.equal(names[0], 'imsmanifest.xml');
+      assert.deepEqual(names.filter((n) => n.startsWith('wiki_content/')), ['wiki_content/knowing-your-role.html']);
+      assert.ok(!names.some((n) => /^g[0-9a-f]{32}/.test(n)), 'other course content in a page update');
+      for (const e of pkg.filter((x) => x.name.endsWith('.xml'))) assertWellFormed(e.data, e.name);
+      assert.doesNotMatch(pkg.find((e) => e.name === 'course_settings/module_meta.xml').data.toString(), /<module\b/);
+      const html = pkg.find((e) => e.name === 'wiki_content/knowing-your-role.html').data.toString();
+      const original = unzip(readFileSync(SAMPLE)).find((e) => e.name === 'wiki_content/knowing-your-role.html').data.toString();
+      assert.equal(splitPage(html).identifier, splitPage(original).identifier);
+      const a = html.indexOf('data-learnviz="knowing-your-role-and-when-to-refer-1"');
+      const b = html.indexOf('data-learnviz="knowing-your-role-and-when-to-refer-2"');
+      assert.ok(b > 0 && b < html.indexOf('Passing on a concern</h2>'), 'second activity not in "Your role on placement"');
+      assert.ok(a > html.indexOf('Check back with the family') && a < html.indexOf('Always refer'), 'first activity not after the steps');
+      assert.ok(existsSync(join(out, 'page-with-activities.html')));
+      assert.match(readFileSync(join(out, 'how-to-add-it.html'), 'utf8'), /Select specific content/);
+      const c = JSON.parse(readFileSync(join(dir, 'choices.json'), 'utf8'));
+      assert.equal(c.pages['knowing-your-role-and-when-to-refer'].items.length, 2);
+    } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
+  });
+
+  test('a chosen option with no sketch asks for its finished spec by name', async () => {
+    const dir = copyWorkspace();
+    const out = tmp();
+    try {
+      const ws = loadWorkspace(dir);
+      const { page, decision } = parseBuildCode(ws, 'recognising-grief-responses 2@end');
+      recordDecision(ws, page.slug, decision);
+      const r = await buildPage(ws, page.slug, { out });
+      assert.match(r.problems[0].message, /Write specs\/recognising-grief-responses-2\.json/);
+    } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
+  });
+
+  test('a page update refuses a page that is not in the export', () => {
+    assert.throws(() => writePageUpdate(unzip(readFileSync(SAMPLE)), { file: 'wiki_content/nope.html', html: 'x' }), /not a page/);
   });
 });
