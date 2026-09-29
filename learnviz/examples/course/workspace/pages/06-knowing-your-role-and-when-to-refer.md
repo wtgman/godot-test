@@ -1,7 +1,7 @@
 # Knowing your role and when to refer
 
 - Page 6 of 7, in "Supporting families"
-- Slug: `knowing-your-role`. Write options to `proposals/knowing-your-role.json`
+- Slug: `knowing-your-role-and-when-to-refer`. Write options to `proposals/knowing-your-role-and-when-to-refer.json`
 - 130 words, published
 - Headings: "Your role on placement", "Passing on a concern", "Always refer straight away"
 

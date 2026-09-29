@@ -78,7 +78,7 @@
           "title": "Knowing your role and when to refer",
           "state": "active",
           "indent": 0,
-          "slug": "knowing-your-role"
+          "slug": "knowing-your-role-and-when-to-refer"
         },
         {
           "kind": "assignment",
@@ -256,7 +256,7 @@
       "text": "pages/05-talking-with-grieving-families.md"
     },
     {
-      "slug": "knowing-your-role",
+      "slug": "knowing-your-role-and-when-to-refer",
       "n": 6,
       "title": "Knowing your role and when to refer",
       "module": "Supporting families",
@@ -281,7 +281,7 @@
         "images": 0,
         "embeds": []
       },
-      "text": "pages/06-knowing-your-role.md"
+      "text": "pages/06-knowing-your-role-and-when-to-refer.md"
     },
     {
       "slug": "looking-after-yourself",

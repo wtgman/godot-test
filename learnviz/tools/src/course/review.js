@@ -177,6 +177,7 @@ function app(D) {
         : d.decision === 'skip' ? '<strong>No activity for this page.</strong>' : '<strong>Asked for other options.</strong>';
       h += '<div class="decided ' + d.decision + '">' + words + (d.note ? '<span>Note: ' + esc(d.note) + '</span>' : '') + '<button type="button" class="btn ghost" data-act="undo">Undo this decision</button></div>';
     }
+    if (p.badAlt) h += '<p class="err"><strong>Accessibility:</strong> ' + p.badAlt + ' image' + (p.badAlt === 1 ? '' : 's') + ' on this page ' + (p.badAlt === 1 ? 'has' : 'have') + ' no useful alt text. Fix in Canvas whatever you decide here.</p>';
     h += '<details class="page"' + (p.status === 'ready' ? '' : ' open') + '><summary>What the page says (' + p.words + ' words)</summary><div class="page-text">' + renderText(p.text) + '</div></details>';
 
     if (p.status === 'missing') {

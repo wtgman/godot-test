@@ -44,6 +44,9 @@ export function importCourse(exportPath, dir) {
   mkdirSync(join(dir, 'specs'), { recursive: true });
   copyFileSync(exportPath, join(dir, 'source.imscc'));
 
+  // Alt text that tells a screen reader user nothing: missing, a file name,
+  // or a placeholder that leaked through from a template.
+  const badAlt = (a) => !a || /^(null|undefined|image|img|picture|photo|graphic)$/i.test(a.trim()) || /\.(png|jpe?g|gif|svg|webp)$/i.test(a.trim());
   const pages = course.pages.map((p) => ({
     slug: p.slug,
     n: p.position,
@@ -53,7 +56,7 @@ export function importCourse(exportPath, dir) {
     file: p.file,
     words: p.words,
     headings: p.headings,
-    media: { images: p.media.images.length, embeds: p.media.embeds.map((e) => e.kind) },
+    media: { images: p.media.images.length, embeds: p.media.embeds.map((e) => e.kind), badAlt: p.media.images.filter(badAlt).length },
     text: `pages/${pad(p.position)}-${p.slug}.md`,
   }));
 
@@ -69,6 +72,7 @@ export function importCourse(exportPath, dir) {
       `- Slug: \`${p.slug}\`. Write options to \`proposals/${p.slug}.json\``,
       `- ${p.words} words, ${p.state}${existing.length ? `. Already has ${existing.join(', ')}` : ''}`,
       p.headings.length ? `- Headings: ${p.headings.map((h) => `"${h.text}"`).join(', ')}` : '- No headings',
+      ...(p.media.images.filter(badAlt).length ? [`- Accessibility: ${p.media.images.filter(badAlt).length} image${p.media.images.filter(badAlt).length === 1 ? '' : 's'} without useful alt text (${p.media.images.filter(badAlt).map((a) => (a ? `"${a}"` : 'none')).join(', ')})`] : []),
       '',
       '---',
       '',
@@ -98,7 +102,7 @@ function outline(meta) {
       if (it.kind === 'heading') { lines.push(`- **${it.title}**`); continue; }
       if (it.kind === 'page') {
         const p = meta.pages.find((x) => x.slug === it.slug);
-        lines.push(`- Page ${p.n}: ${p.title} (\`${p.slug}\`, ${p.words} words${p.headings.length ? `, ${p.headings.length} heading${p.headings.length === 1 ? '' : 's'}` : ''})`);
+        lines.push(`- Page ${p.n}: ${p.title} (\`${p.slug}\`, ${p.words} words${p.headings.length ? `, ${p.headings.length} heading${p.headings.length === 1 ? '' : 's'}` : ''}${p.media.badAlt ? `, **${p.media.badAlt} image${p.media.badAlt === 1 ? '' : 's'} missing alt text**` : ''})`);
       } else {
         lines.push(`- ${it.kind[0].toUpperCase()}${it.kind.slice(1)}: ${it.title}`);
       }
@@ -196,7 +200,7 @@ export function reviewData(ws) {
   const sketches = [];
   const pages = ws.pages.map((p) => {
     const text = readFileSync(join(ws.dir, p.text), 'utf8').split('\n---\n').slice(1).join('\n---\n').trim();
-    const base = { slug: p.slug, n: p.n, title: p.title, module: p.module, state: p.state, words: p.words, headings: p.headings.map((h) => h.text), text, status: p.proposal.status };
+    const base = { slug: p.slug, n: p.n, title: p.title, module: p.module, state: p.state, words: p.words, headings: p.headings.map((h) => h.text), text, status: p.proposal.status, badAlt: p.media.badAlt || 0 };
     if (p.proposal.status === 'skip') return { ...base, reason: p.proposal.reason };
     if (p.proposal.status === 'invalid') return { ...base, error: p.proposal.error };
     if (p.proposal.status !== 'ready') return base;

@@ -71,7 +71,7 @@ describe('reading a Canvas export', () => {
     assert.match(grief.text, /^## Grief is a response to loss$/m);
     assert.match(grief.text, /Kübler-Ross/, 'entities decoded');
     assert.deepEqual(grief.media.images, ['A family member talking with a care worker in a corridor']);
-    const role = course.pages.find((p) => p.slug === 'knowing-your-role');
+    const role = course.pages.find((p) => p.slug === 'knowing-your-role-and-when-to-refer');
     assert.match(role.text, /^1\. Listen without interrupting\.$/m);
     assert.match(role.text, /^6\. Check back/m);
   });
@@ -210,7 +210,7 @@ describe('the workspace', () => {
       assert.match(rows['assessment-overview'].error, /Not valid JSON/);
       assert.equal(rows['what-is-grief'].proposal, 'invalid');
       assert.match(rows['looking-after-yourself'].error, /needs a "reason"/);
-      assert.equal(rows['knowing-your-role'].next, 'write options');
+      assert.equal(rows['knowing-your-role-and-when-to-refer'].next, 'write options');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 
@@ -243,7 +243,7 @@ describe('building the course', () => {
     const out = tmp();
     try {
       const r = await buildCourse(loadWorkspace(WORKSPACE), { out, png: async () => Buffer.from([137, 80, 78, 71]) });
-      assert.deepEqual(r.built.map((b) => b.page.slug), ['what-is-grief', 'recognising-grief-responses', 'talking-with-grieving-families', 'knowing-your-role']);
+      assert.deepEqual(r.built.map((b) => b.page.slug), ['what-is-grief', 'recognising-grief-responses', 'talking-with-grieving-families', 'knowing-your-role-and-when-to-refer']);
       assert.equal(r.skipped.length, 3);
       assert.deepEqual(r.problems, []);
       const pkg = unzip(readFileSync(join(out, r.package)));
@@ -256,7 +256,7 @@ describe('building the course', () => {
       const role = byName.get('wiki_content/knowing-your-role.html');
       assert.ok(role.indexOf('data-learnviz') < role.indexOf('Always refer'));
       assert.ok(!/<script/i.test([...byName.entries()].filter(([n]) => n.startsWith('wiki_content/')).map(([, v]) => v).join('')));
-      assert.ok(existsSync(join(out, 'scorm', '06-knowing-your-role.scorm.zip')));
+      assert.ok(existsSync(join(out, 'scorm', '06-knowing-your-role-and-when-to-refer.scorm.zip')));
       assert.match(readFileSync(join(out, 'upload-checklist.md'), 'utf8'), /Try it in a sandbox course first/);
     } finally { rmSync(out, { recursive: true, force: true }); }
   });
@@ -276,12 +276,12 @@ describe('building the course', () => {
     const out = tmp();
     try {
       cpSync(WORKSPACE, dir, { recursive: true, filter: (p) => !p.includes(`${'/'}build`) && !p.includes(`${'/'}review`) });
-      const spec = JSON.parse(readFileSync(join(dir, 'proposals', 'knowing-your-role.json'), 'utf8')).candidates[0].sketch;
+      const spec = JSON.parse(readFileSync(join(dir, 'proposals', 'knowing-your-role-and-when-to-refer.json'), 'utf8')).candidates[0].sketch;
       spec.title = 'Passing on a concern, finished';
       spec.sources = spec.sources.map((s) => ({ ...s, status: 'verified' }));
-      writeFileSync(join(dir, 'specs', 'knowing-your-role.json'), JSON.stringify(spec));
+      writeFileSync(join(dir, 'specs', 'knowing-your-role-and-when-to-refer.json'), JSON.stringify(spec));
       const r = await buildCourse(loadWorkspace(dir), { out });
-      const b = r.built.find((x) => x.page.slug === 'knowing-your-role');
+      const b = r.built.find((x) => x.page.slug === 'knowing-your-role-and-when-to-refer');
       assert.equal(b.fromSketch, false);
       assert.equal(b.draft.isDraft, false);
       assert.equal(b.title, 'Passing on a concern, finished');
@@ -294,7 +294,7 @@ describe('building the course', () => {
     try {
       cpSync(WORKSPACE, dir, { recursive: true, filter: (p) => !p.includes(`${'/'}build`) && !p.includes(`${'/'}review`) });
       const choices = JSON.parse(readFileSync(join(dir, 'choices.json'), 'utf8'));
-      choices.pages['knowing-your-role'].candidate = 9;
+      choices.pages['knowing-your-role-and-when-to-refer'].candidate = 9;
       writeFileSync(join(dir, 'choices.json'), JSON.stringify(choices));
       const r = await buildCourse(loadWorkspace(dir), { out });
       assert.match(r.problems[0].message, /not in the proposal any more/);

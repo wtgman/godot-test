@@ -86,8 +86,11 @@ export function readCourse(buf) {
     if (!entry) return null;
     const html = entry.data.toString('utf8');
     const split = splitPage(html);
-    let slug = file.replace(/^wiki_content\//, '').replace(/\.html?$/i, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'page';
-    for (let k = 2; slugs.has(slug); k += 1) slug = `${slug.replace(/-\d+$/, '')}-${k}`;
+    // Named from the title, which is what a designer recognises. Canvas's own
+    // file names encode punctuation ("-percent-28learning-activity-percent-29").
+    const fromFile = file.replace(/^wiki_content\//, '').replace(/\.html?$/i, '').replace(/-percent-[0-9a-f]{2}/gi, '-');
+    let slug = (split.title || fromFile).toLowerCase().replace(/&[a-z]+;/g, '').replace(/[^a-z0-9]+/g, '-').slice(0, 70).replace(/^-+|-+$/g, '') || 'page';
+    for (let k = 2, base = slug; slugs.has(slug); k += 1) slug = `${base}-${k}`;
     slugs.add(slug);
     const page = {
       slug,

@@ -38,7 +38,7 @@ Four routes, from the most capable to the most portable. Choose one for students
 
 ### 1. As a SCORM activity (tracked, can be graded)
 
-Upload `knowing-your-role.scorm.zip` through the SCORM tool in your course navigation, if your institution has it switched on. Choose whether to import it as a graded assignment. The activity runs inside Canvas and reports back.
+Upload `knowing-your-role-and-when-to-refer.scorm.zip` through the SCORM tool in your course navigation, if your institution has it switched on. Choose whether to import it as a graded assignment. The activity runs inside Canvas and reports back.
 
 ### 2. As a Canvas page (works everywhere, no hosting)
 
@@ -55,7 +55,7 @@ Open `index.html` in a browser and add `#present` to the end of the address, or 
 ## Files in this folder
 
 - `index.html`. The activity. One self-contained page: no fonts, libraries or data loaded from anywhere. Add #present to the address for presenter view.
-- `knowing-your-role.scorm.zip`. SCORM 1.2 package for the Canvas SCORM tool. Reports completion, and a score where the activity has one.
+- `knowing-your-role-and-when-to-refer.scorm.zip`. SCORM 1.2 package for the Canvas SCORM tool. Reports completion, and a score where the activity has one.
 - `canvas-page.html`. Paste into the HTML editor of a Canvas page. No scripts, so it survives the editor and works in the mobile app.
 - `canvas-embed.html`. Iframe block for when index.html is published on a web host.
 - `text-version.txt`. The whole activity as plain text, for a handout, a screen reader or a transcript.

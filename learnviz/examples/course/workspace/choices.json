@@ -37,7 +37,7 @@
       "label": "Scenario",
       "insert": "end"
     },
-    "knowing-your-role": {
+    "knowing-your-role-and-when-to-refer": {
       "decision": "build",
       "candidate": 0,
       "option": 1,

@@ -18,7 +18,7 @@
 ## Supporting families
 
 - Page 5: Talking with grieving families (`talking-with-grieving-families`, 139 words, 4 headings)
-- Page 6: Knowing your role and when to refer (`knowing-your-role`, 130 words, 3 headings)
+- Page 6: Knowing your role and when to refer (`knowing-your-role-and-when-to-refer`, 130 words, 3 headings)
 - Assignment: Task 2: Case study report
 
 ## Looking after yourself
