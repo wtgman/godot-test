@@ -30,24 +30,51 @@ export function seeded(seed) {
 }
 
 /**
- * Fisher-Yates with a seeded generator. Returns a new array of indices.
- *
- * With `notIdentity`, the result is guaranteed not to be the original order,
- * which matters for an ordering activity: handing a learner the list already
- * in the right order would make the task meaningless. Where every item is
- * identical in position terms (fewer than two items) this is impossible and
- * the identity is returned.
+ * How much of the right order a shuffle gives away: items already in their
+ * place, plus neighbours still next to each other in the right order. A list
+ * with the first item moved to the end scores high, though it is "shuffled".
  */
-export function shuffleIndices(n, seedText, { notIdentity = false } = {}) {
-  const rand = seeded(hashString(seedText));
+export function orderKept(idx) {
+  let kept = 0;
+  for (let i = 0; i < idx.length; i += 1) {
+    if (idx[i] === i) kept += 1;
+    if (i > 0 && idx[i] === idx[i - 1] + 1) kept += 1;
+  }
+  return kept;
+}
+
+function fisherYates(n, rand) {
   const idx = Array.from({ length: n }, (_, i) => i);
   for (let i = n - 1; i > 0; i -= 1) {
     const j = Math.floor(rand() * (i + 1));
     [idx[i], idx[j]] = [idx[j], idx[i]];
   }
-  if (notIdentity && n > 1 && idx.every((v, i) => v === i)) {
-    // Rotate by one: deterministic, and never the identity for n > 1.
-    idx.push(idx.shift());
+  return idx;
+}
+
+/**
+ * Fisher-Yates with a seeded generator. Returns a new array of indices.
+ *
+ * With `notIdentity`, for a list whose order is the answer, the result is
+ * never the original order and gives away as little of it as it can: of a
+ * run of shuffles from the same seed, the first that keeps the least of the
+ * right order (see orderKept). Handing a learner the list in order, or one
+ * move from it, would make the task meaningless. With fewer than two items
+ * this is impossible and the identity is returned.
+ */
+export function shuffleIndices(n, seedText, { notIdentity = false } = {}) {
+  const rand = seeded(hashString(seedText));
+  let idx = fisherYates(n, rand);
+  if (notIdentity && n > 1) {
+    let best = idx.every((v, i) => v === i) ? null : idx;
+    for (let tries = 0; tries < 64 && !(best && orderKept(best) === 0); tries += 1) {
+      const next = fisherYates(n, rand);
+      if (next.every((v, i) => v === i)) continue;
+      if (!best || orderKept(next) < orderKept(best)) best = next;
+    }
+    // Rotate by one if every try came back in order: deterministic, and never
+    // the identity for n > 1.
+    idx = best || [...idx.slice(1), idx[0]];
   }
   return idx;
 }

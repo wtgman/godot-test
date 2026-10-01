@@ -14,7 +14,7 @@ import vm from 'node:vm';
 import { createExpr, createModel } from '../src/runtime/expr.js';
 import { zip } from '../src/delivery/zip.js';
 import { manifest, scormPackage, packageId } from '../src/delivery/scorm.js';
-import { shuffleIndices, hashString } from '../src/runtime/rng.js';
+import { shuffleIndices, hashString, orderKept } from '../src/runtime/rng.js';
 import { runtimeSource, exprSource, safeJson } from '../src/runtime/client.js';
 
 const expr = createExpr();
@@ -195,6 +195,20 @@ describe('seeded shuffle', () => {
         assert.ok(s.some((v, k) => v !== k), `identity for n=${n} seed-${i}`);
       }
     }
+  });
+
+  test('an ordering task never starts one move from the answer', () => {
+    // Moving the first item to the end is not the identity, but a learner
+    // solves it in one move. From four items up, nothing is left in its place
+    // and no neighbours are left in the right order.
+    for (let n = 4; n <= 12; n += 1) {
+      for (let i = 0; i < 200; i += 1) {
+        const s = shuffleIndices(n, `seed-${i}`, { notIdentity: true });
+        assert.equal(orderKept(s), 0, `n=${n} seed-${i}: ${s.join(',')}`);
+      }
+    }
+    assert.ok(orderKept([1, 2, 3, 4, 0]) > 0);
+    assert.equal(orderKept([0, 1, 2]), 5);
   });
 
   test('the hash spreads short strings', () => {
